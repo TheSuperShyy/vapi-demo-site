@@ -1,8 +1,11 @@
 <!doctype html>
-<html lang="he" dir="rtl">
+<html lang="he" dir="rtl" translate="no">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Chrome was auto-translating this page to English, which rewrites the Hebrew
+     text nodes and would mangle the live transcript as it renders. -->
+<meta name="google" content="notranslate">
 <title>CLIX — סוכן קולי בעברית</title>
 <meta name="description" content="הדגמה חיה של סוכן קולי בעברית. לוחצים, מדברים, שומעים תשובה.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,6 +78,11 @@
     line-height:1.7; margin:0;
   }
   .err { color:var(--bad); font-size:13.5px; text-align:center; min-height:20px; }
+  /* Hidden unless the page is opened with ?debug - keeps the demo clean but leaves
+     a one-URL way to see exactly where a failure happens. */
+  .diag { display:none; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; color:var(--faint);
+          direction:ltr; text-align:left; width:100%; max-height:130px; overflow-y:auto;
+          white-space:pre-wrap; word-break:break-word; }
   footer { color:var(--faint); font-size:12px; text-align:center; }
   footer a { color:var(--dim); }
 </style>
@@ -92,7 +100,8 @@
   </div>
   <div class="state" id="state">מוכן. צריך אישור למיקרופון.</div>
   <div class="err" id="err"></div>
-  <div class="feed" id="feed"></div>
+  <div class="diag" id="diag"></div>
+  <div class="feed notranslate" id="feed" translate="no"></div>
 </div>
 
 <p class="note">
@@ -102,8 +111,43 @@
 
 <footer>הדגמה טכנית · <a href="https://vapi.ai" target="_blank" rel="noopener">Vapi</a></footer>
 
+<script>
+// Classic script: runs even if the module below fails to load, so errors are visible
+// on the page instead of only in the console.
+window.__log = (m) => {
+  const d = document.getElementById('diag');
+  if (d) d.textContent += (d.textContent ? String.fromCharCode(10) : String()) + m;
+  console.log('[demo]', m);
+};
+window.addEventListener('error', (e) => {
+  window.__log('ERROR: ' + (e.message || e.error) + (e.filename ? '  @ ' + e.filename : ''));
+});
+window.addEventListener('unhandledrejection', (e) => {
+  window.__log('UNHANDLED: ' + (e.reason?.message || JSON.stringify(e.reason)));
+});
+if (location.search.includes('debug')) {
+  document.getElementById('diag').style.display = 'block';
+}
+window.__log('page loaded, origin=' + location.origin);
+</script>
+
 <script type="module">
-import Vapi from 'https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.7.0/+esm';
+// Dynamic import so a CDN/network failure is catchable and reportable instead of
+// killing the whole module silently (which leaves the button with no handler).
+let Vapi;
+try {
+  window.__log('importing SDK...');
+  const mod = await import('https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.7.0/+esm');
+  // The jsDelivr +esm build wraps the CJS default twice, so `mod.default` is an
+  // object holding the real class rather than the class itself. Unwrap defensively.
+  Vapi = mod.default?.default ?? mod.default ?? mod.Vapi ?? mod;
+  if (typeof Vapi !== 'function') throw new Error('SDK export is ' + typeof Vapi + ', not a constructor');
+  window.__log('SDK loaded, typeof=' + typeof Vapi);
+} catch (e) {
+  window.__log('SDK IMPORT FAILED: ' + e.message);
+  document.getElementById('err').textContent = 'לא הצלחנו לטעון את מנוע השיחה.';
+  throw e;
+}
 
 // A Vapi PUBLIC key is designed to ship to the browser - it can only start calls
 // against this account's assistants. The private key never appears here.
@@ -114,6 +158,7 @@ const $ = (id) => document.getElementById(id);
 const orb = $('orb'), mic = $('mic'), state = $('state'), feed = $('feed'), err = $('err');
 
 const vapi = new Vapi(PUBLIC_KEY);
+window.__log('Vapi instance created, handlers attached');
 let live = false;
 let partial = null;
 
@@ -135,13 +180,17 @@ function bubble(role, text, isPartial) {
 }
 
 mic.onclick = async () => {
+  window.__log('click (live=' + live + ')');
   err.textContent = '';
   if (live) { vapi.stop(); return; }
   mic.disabled = true;
   setState('מתחבר…');
   try {
-    await vapi.start(ASSISTANT_ID);
+    window.__log('requesting microphone + starting call...');
+    const r = await vapi.start(ASSISTANT_ID);
+    window.__log('start() resolved: ' + (r?.id ?? JSON.stringify(r)?.slice(0, 120)));
   } catch (e) {
+    window.__log('START FAILED: ' + (e?.message ?? JSON.stringify(e)));
     mic.disabled = false;
     setState('מוכן. צריך אישור למיקרופון.');
     fail(e?.message?.includes('Permission') || e?.name === 'NotAllowedError'
@@ -151,6 +200,7 @@ mic.onclick = async () => {
 };
 
 vapi.on('call-start', () => {
+  window.__log('event: call-start');
   live = true;
   mic.disabled = false;
   mic.textContent = 'סיים';
@@ -160,6 +210,7 @@ vapi.on('call-start', () => {
 });
 
 vapi.on('call-end', () => {
+  window.__log('event: call-end');
   live = false;
   mic.disabled = false;
   mic.textContent = 'דבר איתי';
@@ -195,6 +246,7 @@ vapi.on('message', (m) => {
 
 vapi.on('error', (e) => {
   console.error(e);
+  window.__log('event: error -> ' + (e?.message ?? e?.error?.message ?? JSON.stringify(e)?.slice(0,200)));
   fail('נפלה שגיאה בשיחה. נסה שוב.');
   live = false;
   mic.disabled = false;

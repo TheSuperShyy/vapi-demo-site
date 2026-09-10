@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLIX — סוכן קולי בעברית</title>
+<meta name="description" content="הדגמה חיה של סוכן קולי בעברית. לוחצים, מדברים, שומעים תשובה.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0b0d; --panel:#131519; --line:#23262d;
+    --text:#eef0f4; --dim:#9aa1ad; --faint:#626a76;
+    --accent:#5b8cff; --live:#35c07f; --bad:#e05c5c;
+    --font:"Heebo", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  }
+  * { box-sizing:border-box; }
+  html,body { height:100%; }
+  body {
+    margin:0; background:var(--bg); color:var(--text); font-family:var(--font);
+    display:flex; flex-direction:column; align-items:center;
+    padding:32px 20px 40px; gap:24px;
+  }
+
+  .brand { font-size:13px; letter-spacing:2px; color:var(--faint); font-weight:500; }
+  h1 { font-size:clamp(26px,5vw,38px); margin:0; text-align:center; font-weight:700; line-height:1.25; }
+  .sub { color:var(--dim); text-align:center; max-width:44ch; margin:0; font-size:15px; line-height:1.7; }
+
+  .stage {
+    width:100%; max-width:620px; background:var(--panel); border:1px solid var(--line);
+    border-radius:18px; padding:30px 24px; display:flex; flex-direction:column;
+    align-items:center; gap:18px;
+  }
+
+  .orb { position:relative; width:132px; height:132px; display:grid; place-items:center; }
+  .ring {
+    position:absolute; inset:0; border-radius:50%; border:2px solid var(--line);
+    transition:transform .12s ease-out, border-color .3s, opacity .3s;
+  }
+  .orb.live .ring { border-color:var(--live); }
+  .orb.speaking .ring { border-color:var(--accent); }
+  .mic {
+    width:96px; height:96px; border-radius:50%; border:none; cursor:pointer;
+    background:var(--accent); color:#fff; font-family:var(--font); font-size:15px;
+    font-weight:700; transition:background .2s, transform .1s;
+  }
+  .mic:hover { background:#6d99ff; }
+  .mic:active { transform:scale(.96); }
+  .mic:disabled { background:#2a2f38; color:var(--faint); cursor:default; }
+  .orb.live .mic { background:var(--bad); }
+  .orb.live .mic:hover { background:#ec7070; }
+
+  .state { font-size:14px; color:var(--dim); min-height:22px; text-align:center; }
+  .state b { color:var(--text); font-weight:500; }
+
+  .feed {
+    width:100%; max-height:300px; overflow-y:auto; display:flex; flex-direction:column;
+    gap:8px; padding-top:6px;
+  }
+  .feed:empty { display:none; }
+  .turn { display:flex; }
+  .turn.me { justify-content:flex-start; }
+  .turn.bot { justify-content:flex-end; }
+  .bubble {
+    max-width:82%; padding:9px 13px; border-radius:14px; font-size:14.5px; line-height:1.6;
+    background:#1b1f26; border:1px solid var(--line);
+  }
+  .turn.me .bubble { background:#1c2740; border-color:#27354f; }
+  .bubble.partial { opacity:.55; }
+  .who { font-size:10px; letter-spacing:1px; color:var(--faint); margin-bottom:2px; }
+
+  .note {
+    color:var(--faint); font-size:12.5px; text-align:center; max-width:46ch;
+    line-height:1.7; margin:0;
+  }
+  .err { color:var(--bad); font-size:13.5px; text-align:center; min-height:20px; }
+  footer { color:var(--faint); font-size:12px; text-align:center; }
+  footer a { color:var(--dim); }
+</style>
+</head>
+<body>
+
+<div class="brand">CLIX</div>
+<h1>סוכן קולי שמדבר עברית</h1>
+<p class="sub">לוחצים על הכפתור, מדברים כרגיל, והסוכן עונה בקול. בלי טפסים, בלי המתנה — פשוט שיחה.</p>
+
+<div class="stage">
+  <div class="orb" id="orb">
+    <div class="ring" id="ring"></div>
+    <button class="mic" id="mic">דבר איתי</button>
+  </div>
+  <div class="state" id="state">מוכן. צריך אישור למיקרופון.</div>
+  <div class="err" id="err"></div>
+  <div class="feed" id="feed"></div>
+</div>
+
+<p class="note">
+  השיחה רצה בדפדפן דרך המיקרופון — לא מתקשרים אליך.
+  צריך דפדפן מודרני והרשאת מיקרופון. עובד הכי טוב בכרום.
+</p>
+
+<footer>הדגמה טכנית · <a href="https://vapi.ai" target="_blank" rel="noopener">Vapi</a></footer>
+
+<script type="module">
+import Vapi from 'https://cdn.jsdelivr.net/npm/@vapi-ai/web@2.7.0/+esm';
+
+// A Vapi PUBLIC key is designed to ship to the browser - it can only start calls
+// against this account's assistants. The private key never appears here.
+const PUBLIC_KEY  = '59fd1b6b-f27d-47ce-ab5b-ff7ccd56277e';
+const ASSISTANT_ID = '1c759c79-2692-43f0-b049-d1ffa363d386';
+
+const $ = (id) => document.getElementById(id);
+const orb = $('orb'), mic = $('mic'), state = $('state'), feed = $('feed'), err = $('err');
+
+const vapi = new Vapi(PUBLIC_KEY);
+let live = false;
+let partial = null;
+
+function setState(text) { state.innerHTML = text; }
+function fail(msg) { err.textContent = msg; }
+
+function bubble(role, text, isPartial) {
+  const turn = document.createElement('div');
+  turn.className = 'turn ' + (role === 'user' ? 'me' : 'bot');
+  turn.innerHTML =
+    `<div class="bubble${isPartial ? ' partial' : ''}">
+       <div class="who">${role === 'user' ? 'אתה' : 'מאיה'}</div>
+       <div class="say"></div>
+     </div>`;
+  turn.querySelector('.say').textContent = text;
+  feed.appendChild(turn);
+  feed.scrollTop = feed.scrollHeight;
+  return turn;
+}
+
+mic.onclick = async () => {
+  err.textContent = '';
+  if (live) { vapi.stop(); return; }
+  mic.disabled = true;
+  setState('מתחבר…');
+  try {
+    await vapi.start(ASSISTANT_ID);
+  } catch (e) {
+    mic.disabled = false;
+    setState('מוכן. צריך אישור למיקרופון.');
+    fail(e?.message?.includes('Permission') || e?.name === 'NotAllowedError'
+      ? 'הדפדפן חסם את המיקרופון. אשר גישה ונסה שוב.'
+      : 'לא הצלחנו להתחיל את השיחה. נסה לרענן.');
+  }
+};
+
+vapi.on('call-start', () => {
+  live = true;
+  mic.disabled = false;
+  mic.textContent = 'סיים';
+  orb.classList.add('live');
+  setState('<b>מחובר</b> — דבר חופשי');
+  feed.innerHTML = '';
+});
+
+vapi.on('call-end', () => {
+  live = false;
+  mic.disabled = false;
+  mic.textContent = 'דבר איתי';
+  orb.classList.remove('live', 'speaking');
+  $('ring').style.transform = '';
+  setState('השיחה הסתיימה. אפשר להתחיל שוב.');
+});
+
+vapi.on('speech-start', () => orb.classList.add('speaking'));
+vapi.on('speech-end',   () => orb.classList.remove('speaking'));
+
+// Volume drives the ring so there is visible feedback that the mic is actually open.
+vapi.on('volume-level', (v) => {
+  $('ring').style.transform = `scale(${1 + Math.min(v, 1) * 0.22})`;
+});
+
+vapi.on('message', (m) => {
+  if (m.type !== 'transcript' || !m.transcript) return;
+  if (m.transcriptType === 'partial') {
+    if (partial && partial.dataset.role === m.role) {
+      partial.querySelector('.say').textContent = m.transcript;
+    } else {
+      partial?.remove();
+      partial = bubble(m.role, m.transcript, true);
+      partial.dataset.role = m.role;
+    }
+  } else {
+    partial?.remove();
+    partial = null;
+    bubble(m.role, m.transcript, false);
+  }
+});
+
+vapi.on('error', (e) => {
+  console.error(e);
+  fail('נפלה שגיאה בשיחה. נסה שוב.');
+  live = false;
+  mic.disabled = false;
+  mic.textContent = 'דבר איתי';
+  orb.classList.remove('live', 'speaking');
+});
+</script>
+</body>
+</html>

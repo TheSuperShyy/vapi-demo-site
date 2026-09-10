@@ -36,6 +36,7 @@
   .orb { position:relative; width:132px; height:132px; display:grid; place-items:center; }
   .ring {
     position:absolute; inset:0; border-radius:50%; border:2px solid var(--line);
+    pointer-events:none;  /* decorative overlay - must never swallow clicks on the button */
     transition:transform .12s ease-out, border-color .3s, opacity .3s;
   }
   .orb.live .ring { border-color:var(--live); }

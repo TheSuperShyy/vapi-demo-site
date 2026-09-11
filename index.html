@@ -76,6 +76,32 @@
     line-height:1.7; margin:0;
   }
   .err { color:var(--bad); font-size:13.5px; text-align:center; min-height:20px; }
+
+  .voicepick {
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center;
+    font-size:12.5px; color:var(--faint); width:100%;
+  }
+  .voicepick select, .voicepick input[type=range] { font:inherit; }
+  .voicepick select {
+    background:var(--bg); color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:5px 8px; font-size:13px;
+  }
+  .voicepick input[type=range] { width:110px; accent-color:var(--accent); }
+  .speedval { font-family:ui-monospace,Menlo,Consolas,monospace; min-width:34px; }
+
+  .chatbar { display:flex; gap:8px; width:100%; }
+  .chatbar input {
+    flex:1; font:inherit; font-size:14.5px; color:var(--text); background:var(--bg);
+    border:1px solid var(--line); border-radius:10px; padding:10px 13px;
+  }
+  .chatbar input:focus { outline:none; border-color:var(--accent); }
+  .chatbar input:disabled { opacity:.45; }
+  .chatbar button {
+    font:inherit; font-weight:700; font-size:14px; color:#fff; background:var(--accent);
+    border:none; border-radius:10px; padding:0 18px; cursor:pointer;
+  }
+  .chatbar button:hover:not(:disabled) { background:#6d99ff; }
+  .chatbar button:disabled { background:#2a2f38; color:var(--faint); cursor:default; }
   /* Hidden unless the page is opened with ?debug - keeps the demo clean but leaves
      a one-URL way to see exactly where a failure happens. */
   .diag { display:none; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:11.5px; color:var(--faint);
@@ -99,12 +125,28 @@
   <div class="state" id="state">מוכן. צריך אישור למיקרופון.</div>
   <div class="err" id="err"></div>
   <div class="diag" id="diag"></div>
+
+  <div class="voicepick" id="voicepick">
+    <label for="voice">קול</label>
+    <select id="voice"></select>
+    <label for="speed">קצב</label>
+    <input type="range" id="speed" min="0.75" max="1.25" step="0.05" value="1">
+    <span class="speedval" id="speedval">1.00</span>
+  </div>
+
   <div class="feed notranslate" id="feed" translate="no"></div>
+
+  <form class="chatbar" id="chatbar" autocomplete="off">
+    <input type="text" id="chatinput" dir="auto"
+           placeholder="…או פשוט תכתוב פה. You can type in English too"
+           disabled>
+    <button type="submit" id="chatsend" disabled>שלח</button>
+  </form>
 </div>
 
 <p class="note">
-  השיחה רצה בדפדפן דרך המיקרופון — לא מתקשרים אליך.
-  צריך דפדפן מודרני והרשאת מיקרופון. עובד הכי טוב בכרום.
+  אפשר לדבר דרך המיקרופון או פשוט לכתוב. כותבים באנגלית — עונה בעברית.
+  השיחה רצה בדפדפן, לא מתקשרים אליך. עובד הכי טוב בכרום.
 </p>
 
 <footer>הדגמה טכנית · <a href="https://vapi.ai" target="_blank" rel="noopener">Vapi</a></footer>
@@ -157,8 +199,49 @@ const ASSISTANT_ID = '1c759c79-2692-43f0-b049-d1ffa363d386';
 
 const $ = (id) => document.getElementById(id);
 const orb = $('orb'), mic = $('mic'), state = $('state'), feed = $('feed'), err = $('err');
+const chatinput = $('chatinput'), chatsend = $('chatsend');
+
+// Voice candidates. Vapi does not support ElevenLabs v3 yet and Hebrew exists only in
+// v3, so 11labs is not an option here - Azure's he-IL voices are the native ones.
+// The OpenAI entries speak Hebrew with a foreign accent but noticeably looser prosody,
+// which some people read as more human. Judge by ear.
+const VOICES = [
+  { id: 'azure:he-IL-HilaNeural',  label: 'הילה · Azure (נקבה, ילידי)',  provider: 'azure',  voiceId: 'he-IL-HilaNeural' },
+  { id: 'azure:he-IL-AvriNeural',  label: 'אברי · Azure (זכר, ילידי)',   provider: 'azure',  voiceId: 'he-IL-AvriNeural' },
+  { id: 'openai:shimmer',          label: 'Shimmer · OpenAI (נקבה)',     provider: 'openai', voiceId: 'shimmer' },
+  { id: 'openai:nova',             label: 'Nova · OpenAI (נקבה)',        provider: 'openai', voiceId: 'nova' },
+  { id: 'openai:alloy',            label: 'Alloy · OpenAI (ניטרלי)',     provider: 'openai', voiceId: 'alloy' },
+];
+
+const voiceSel = $('voice');
+voiceSel.innerHTML = VOICES.map(v => `<option value="${v.id}">${v.label}</option>`).join('');
+// Remember the pick between reloads so A/B testing voices is not tedious.
+try { voiceSel.value = localStorage.getItem('voice') || VOICES[0].id; } catch {}
+voiceSel.onchange = () => { try { localStorage.setItem('voice', voiceSel.value); } catch {} };
+
+const speed = $('speed'), speedval = $('speedval');
+try { speed.value = localStorage.getItem('speed') || '1'; } catch {}
+const showSpeed = () => { speedval.textContent = Number(speed.value).toFixed(2); };
+showSpeed();
+speed.oninput = () => { showSpeed(); try { localStorage.setItem('speed', speed.value); } catch {} };
+
+// Voice is per-call, so overrides let you switch without redeploying the assistant.
+function voiceOverride() {
+  const v = VOICES.find(x => x.id === voiceSel.value) ?? VOICES[0];
+  return {
+    provider: v.provider,
+    voiceId: v.voiceId,
+    speed: Number(speed.value),
+    // Vapi's formatter strips Hebrew niqqud before it reaches the voice engine, which
+    // would kill every pronunciation distinction the prompt depends on.
+    chunkPlan: { formatPlan: { enabled: false } },
+  };
+}
 
 const vapi = new Vapi(PUBLIC_KEY);
+// Debug-only handle so pronunciation can be A/B tested from the console:
+//   __vapi.say('מַטֵּה קוֹל הָעָם')   then read the transcript to hear what came out.
+if (location.search.includes('debug')) window.__vapi = vapi;
 window.__log('Vapi instance created, handlers attached');
 let live = false;
 let partial = null;
@@ -171,7 +254,7 @@ function bubble(role, text, isPartial) {
   turn.className = 'turn ' + (role === 'user' ? 'me' : 'bot');
   turn.innerHTML =
     `<div class="bubble${isPartial ? ' partial' : ''}">
-       <div class="who">${role === 'user' ? 'אתה' : 'מאיה'}</div>
+       <div class="who">${role === 'user' ? 'אתה' : 'שיר'}</div>
        <div class="say"></div>
      </div>`;
   turn.querySelector('.say').textContent = text;
@@ -187,8 +270,9 @@ mic.onclick = async () => {
   mic.disabled = true;
   setState('מתחבר…');
   try {
-    window.__log('requesting microphone + starting call...');
-    const r = await vapi.start(ASSISTANT_ID);
+    const ov = { voice: voiceOverride() };
+    window.__log('starting call with voice=' + ov.voice.provider + '/' + ov.voice.voiceId + ' speed=' + ov.voice.speed);
+    const r = await vapi.start(ASSISTANT_ID, ov);
     window.__log('start() resolved: ' + (r?.id ?? JSON.stringify(r)?.slice(0, 120)));
   } catch (e) {
     window.__log('START FAILED: ' + (e?.message ?? JSON.stringify(e)));
@@ -206,8 +290,12 @@ vapi.on('call-start', () => {
   mic.disabled = false;
   mic.textContent = 'סיים';
   orb.classList.add('live');
-  setState('<b>מחובר</b> — דבר חופשי');
+  setState('<b>מחובר</b> — דבר או כתוב');
   feed.innerHTML = '';
+  chatinput.disabled = false;
+  chatsend.disabled = false;
+  voiceSel.disabled = true;   // voice is fixed for the duration of a call
+  speed.disabled = true;
 });
 
 vapi.on('call-end', () => {
@@ -218,7 +306,25 @@ vapi.on('call-end', () => {
   orb.classList.remove('live', 'speaking');
   $('ring').style.transform = '';
   setState('השיחה הסתיימה. אפשר להתחיל שוב.');
+  chatinput.disabled = true;
+  chatsend.disabled = true;
+  voiceSel.disabled = false;
+  speed.disabled = false;
 });
+
+// Typing goes into the same live conversation as speech: the message is injected as a
+// user turn and the agent answers out loud, in Hebrew, whatever language you typed in.
+$('chatbar').onsubmit = (e) => {
+  e.preventDefault();
+  const text = chatinput.value.trim();
+  if (!text || !live) return;
+  window.__log('sending typed message: ' + text.slice(0, 60));
+  partial?.remove();
+  partial = null;
+  bubble('user', text, false);
+  vapi.send({ type: 'add-message', message: { role: 'user', content: text } });
+  chatinput.value = '';
+};
 
 vapi.on('speech-start', () => orb.classList.add('speaking'));
 vapi.on('speech-end',   () => orb.classList.remove('speaking'));

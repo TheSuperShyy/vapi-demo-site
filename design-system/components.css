@@ -1,0 +1,226 @@
+/* ==========================================================================
+   Stovest components — CSS-class port of components/*.jsx
+   Values are copied from the JSX verbatim (heights, radii, paddings, sizes).
+   All colours/sizes come from tokens; nothing here is hardcoded.
+   Logical properties throughout so [dir="rtl"] mirrors without extra rules.
+   ========================================================================== */
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--text-md);          /* 13px UI default */
+  line-height: var(--leading-normal);
+  transition: background var(--transition-med);
+}
+a { color: var(--accent); text-decoration: none; }
+button, input, select { font-family: var(--font-ui); }
+.muted  { color: var(--text-2); }
+.faint  { color: var(--text-3); }
+.micro  {                              /* MAIN MENU style micro-label */
+  font-size: var(--text-xs); text-transform: uppercase;
+  letter-spacing: var(--tracking-wide); color: var(--text-3);
+}
+
+/* ---------- Button (core/Button.jsx) ---------- */
+.btn {
+  height: var(--control-md); padding: 0 20px; border-radius: var(--radius-pill);
+  font-size: 13px; font-weight: 500; display: inline-flex; align-items: center;
+  justify-content: center; gap: 8px; white-space: nowrap; cursor: pointer;
+  border: 1px solid transparent; background: var(--accent); color: var(--accent-fg);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.btn:hover:not(:disabled) { background: var(--accent-hover); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.sm { height: var(--control-sm); padding: 0 14px; font-size: 12px; }
+.btn.lg { height: var(--control-lg); font-size: 14px; }
+.btn.secondary { background: var(--pill-bg); color: var(--text-1); border-color: var(--pill-border); }
+.btn.secondary:hover:not(:disabled) { background: var(--surface-3); }
+.btn.ghost { background: transparent; color: var(--text-2); }
+.btn.ghost:hover:not(:disabled) { background: var(--surface-2); }
+.btn.danger { background: var(--negative); border-color: var(--negative); color: #fff; }
+
+/* ---------- IconButton (core/IconButton.jsx) ---------- */
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center;
+  justify-content: center; cursor: pointer; padding: 0;
+  background: var(--pill-bg); color: var(--text-1); border: 1px solid var(--pill-border);
+  transition: background var(--transition-fast);
+}
+.icon-btn:hover { background: var(--surface-3); }
+.icon-btn.solid { background: var(--accent); color: var(--accent-fg); border-color: transparent; }
+.icon-btn.solid:hover { background: var(--accent-hover); }
+.icon-btn.ghost { background: transparent; color: var(--text-2); border-color: transparent; }
+.icon-btn.ghost:hover { background: var(--surface-2); }
+.icon-btn svg { width: 16px; height: 16px; }
+
+/* ---------- Input (core/Input.jsx) ---------- */
+.input {
+  display: inline-flex; align-items: center; gap: 10px; height: var(--control-md);
+  padding: 0 16px; border-radius: var(--radius-pill); background: var(--input-bg);
+  border: 1px solid var(--pill-border); min-width: 220px;
+  transition: border-color var(--transition-fast);
+}
+.input:focus-within { border-color: var(--accent); box-shadow: var(--focus-ring); }
+.input > svg { color: var(--text-3); width: 15px; height: 15px; flex: none; }
+.input > input {
+  flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+  color: var(--text-1); font-size: 13px;
+}
+.input > input::placeholder { color: var(--text-3); }
+.input.sm { height: var(--control-sm); }
+.input.lg { height: var(--control-lg); }
+
+/* ---------- Select (core/Select.jsx) ---------- */
+.select { position: relative; display: inline-flex; }
+.select > select {
+  appearance: none; -webkit-appearance: none; height: var(--control-md);
+  padding-block: 0; padding-inline: 16px 36px; border-radius: var(--radius-pill);
+  background: var(--pill-bg); border: 1px solid var(--pill-border); color: var(--text-1);
+  font-size: 13px; cursor: pointer; outline: none;
+}
+.select > select:focus { border-color: var(--accent); box-shadow: var(--focus-ring); }
+.select > svg {
+  position: absolute; inset-inline-end: 14px; top: 50%; transform: translateY(-50%);
+  pointer-events: none; color: var(--text-2); width: 12px; height: 12px;
+}
+.select.sm > select { height: var(--control-sm); }
+
+/* ---------- Switch (core/Switch.jsx) ---------- */
+.switch {
+  width: 40px; height: 22px; border-radius: 999px; padding: 2px; display: inline-flex;
+  cursor: pointer; background: var(--surface-3); border: 1px solid var(--border-2);
+  transition: background var(--transition-med);
+}
+.switch > span {
+  width: 16px; height: 16px; border-radius: 50%; background: #fff;
+  transition: transform var(--transition-med);
+}
+.switch.on { background: var(--accent); border-color: var(--accent); }
+.switch.on > span { transform: translateX(18px); }
+[dir="rtl"] .switch.on > span { transform: translateX(-18px); }
+.switch.disabled { opacity: .45; cursor: default; }
+
+/* ---------- Badge / Delta (core/Badge.jsx) ---------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+  border-radius: var(--radius-pill); font-size: 11px; font-weight: 500;
+  color: var(--text-2); background: var(--surface-2); border: 1px solid var(--border-1);
+}
+.badge.positive { color: var(--positive); background: var(--positive-soft); border-color: transparent; }
+.badge.negative { color: var(--negative); background: var(--negative-soft); border-color: transparent; }
+.badge.accent   { color: var(--accent-fg); background: var(--accent); border-color: transparent; }
+.delta { font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 3px; }
+.delta.up { color: var(--positive); }
+.delta.down { color: var(--negative); }
+
+/* ---------- Avatar (core/Avatar.jsx) ---------- */
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--surface-3);
+  color: var(--text-2); display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex: none; overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Card (display/Card.jsx) ---------- */
+.card {
+  background: var(--surface-1); border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-card); padding: 20px;
+}
+.card.nested { background: var(--surface-2); border-radius: var(--radius-md); }
+.card-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 12px;
+}
+.card-title { font-size: 14px; font-weight: 600; color: var(--text-1); }
+
+/* ---------- StatCard (display/StatCard.jsx) ---------- */
+.stat {
+  background: var(--surface-2); border: 1px solid var(--border-1);
+  border-radius: var(--radius-md); padding: 14px; position: relative; overflow: hidden;
+}
+.stat-label { font-size: 12px; color: var(--text-2); display: flex; align-items: center; gap: 8px; }
+.stat-value { font-size: 15px; font-weight: 600; color: var(--text-1); margin: 8px 0 6px; letter-spacing: -0.01em; }
+.stat-foot  { display: flex; align-items: center; gap: 8px; }
+.stat-sub   { font-size: 11px; color: var(--text-3); }
+.stat.hero  { background: var(--accent-soft); border-color: transparent; border-radius: var(--radius-lg); padding: 24px; }
+.stat.hero .stat-label { font-size: 13px; }
+.stat.hero .stat-value { font-size: var(--text-3xl); margin: 10px 0 8px; }
+.stat-rings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+[dir="rtl"] .stat-rings { transform: scaleX(-1); }
+
+/* ---------- DataTable (display/DataTable.jsx) ---------- */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: start; padding: 10px 12px; font-size: 12px; font-weight: 500;
+  color: var(--text-2); border-bottom: 1px solid var(--border-1);
+}
+.table td { text-align: start; padding: 12px; color: var(--text-1); border-bottom: 1px solid var(--border-1); }
+.table tr:last-child td { border-bottom: none; }
+.table th.end, .table td.end { text-align: end; }
+.table tbody tr.clickable { cursor: pointer; }
+.table tbody tr.clickable:hover td { background: var(--surface-2); }
+.table tbody tr.on td { background: var(--accent-soft); }
+
+/* ---------- Tabs (navigation/Tabs.jsx) ---------- */
+.tabs { display: inline-flex; gap: 8px; }
+.tabs > button {
+  height: var(--control-sm); padding: 0 16px; border-radius: var(--radius-pill); cursor: pointer;
+  font-size: 12px; font-weight: 500; background: var(--pill-bg); color: var(--text-2);
+  border: 1px solid var(--pill-border);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.tabs > button.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.tabs.md > button { height: var(--control-md); }
+
+/* ---------- SidebarItem / SidebarSection (navigation/SidebarItem.jsx) ---------- */
+.nav-item {
+  display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 14px;
+  border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 400;
+  color: var(--text-2); background: transparent; text-decoration: none;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+.nav-item.on { background: var(--accent); color: var(--accent-fg); font-weight: 500; }
+.nav-item > svg { width: 18px; height: 18px; flex: none; }
+.nav-section {
+  font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-wide);
+  color: var(--text-3); padding: 18px 14px 8px;
+}
+
+/* ---------- App shell (ui_kits/dashboard/index.html) ---------- */
+.shell {
+  display: grid; grid-template-columns: var(--sidebar-w) 1fr; min-height: 100vh;
+  background: var(--bg-0);
+}
+.sidebar {
+  background: var(--bg-sidebar); border-inline-end: 1px solid var(--border-1);
+  padding: 22px 16px; display: flex; flex-direction: column; gap: 4px;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.wordmark { font-size: 18px; font-weight: 600; color: var(--text-1); padding: 0 14px; }
+.wordmark b { color: var(--accent); font-weight: inherit; }
+.greeting { padding: 22px 14px 6px; }
+.greeting-title { font-size: 20px; font-weight: 600; color: var(--text-1); }
+.greeting-sub { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.content { display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  height: var(--topbar-h); display: flex; align-items: center; gap: 12px; padding: 0 24px;
+  background: var(--bg-sidebar); border-bottom: 1px solid var(--border-1);
+  position: sticky; top: 0; z-index: 5;
+}
+.topbar-center { flex: 1; display: flex; justify-content: center; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.profile { display: flex; align-items: center; gap: 10px; padding-inline-start: 6px; }
+.profile-name { font-size: 12px; font-weight: 500; color: var(--text-1); }
+.profile-sub  { font-size: 10px; color: var(--text-3); }
+.main { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+.grid { display: grid; gap: 20px; }
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; border-inline-end: none; border-bottom: 1px solid var(--border-1); }
+  .topbar-center { display: none; }
+}

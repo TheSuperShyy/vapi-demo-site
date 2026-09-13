@@ -1,0 +1,13 @@
+/* Poppins — nearest Google Fonts match to the geometric sans in the source dashboards.
+   Heebo — geometric Hebrew companion; Poppins has no Hebrew glyphs. */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Heebo:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-ui: 'Poppins', 'Heebo', 'Segoe UI', system-ui, sans-serif;
+  --font-numeric: 'Poppins', system-ui, sans-serif;
+}
+
+/* In Hebrew, lead with Heebo so Latin fallbacks don't mix mid-word. */
+[dir="rtl"] {
+  --font-ui: 'Heebo', 'Poppins', 'Segoe UI', system-ui, sans-serif;
+}

@@ -102,3 +102,39 @@ audio { width: 100%; margin: 14px 0; }
 }
 [dir="rtl"] .toast { transform: translateX(50%); }
 .toast.err { border-color: var(--negative); }
+
+/* ---------- skeleton loading ---------- */
+.skeleton {
+  position: relative; overflow: hidden; background: var(--surface-2);
+  border-radius: var(--radius-sm); color: transparent !important; pointer-events: none;
+}
+.skeleton::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, var(--surface-3), transparent);
+  transform: translateX(-100%); animation: shimmer 1.3s infinite;
+}
+@keyframes shimmer { to { transform: translateX(100%); } }
+.skel-line { height: 12px; margin: 6px 0; }
+.skel-line.w30 { width: 30%; } .skel-line.w50 { width: 50%; } .skel-line.w70 { width: 70%; }
+.skel-block { height: 190px; border-radius: var(--radius-md); }
+.skel-circle { width: 140px; height: 140px; border-radius: 50%; }
+.skel-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border-1); }
+.skel-row:last-child { border-bottom: none; }
+.skel-pill { width: 72px; height: 22px; border-radius: var(--radius-pill); }
+.skel-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ---------- calls page ---------- */
+.detail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.flags { display: flex; gap: 6px; flex-wrap: wrap; }
+.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; font-size: 13px; }
+@media (max-width: 700px) { .analysis-grid { grid-template-columns: 1fr; } }
+.analysis-grid .k { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: var(--tracking-wide); margin-bottom: 3px; }
+.verbatim { font-size: 13.5px; color: var(--text-1); padding: 10px 12px; background: var(--surface-1); border-radius: var(--radius-sm); border: 1px solid var(--border-1); }
+.summary { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.count { font-size: 12px; color: var(--text-3); font-weight: 400; }
+
+/* ---------- settings ---------- */
+.setting { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border-1); }
+.setting:last-child { border-bottom: none; }
+.setting-k { font-size: 13px; color: var(--text-1); }
+.setting-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }

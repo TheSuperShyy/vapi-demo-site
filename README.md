@@ -37,6 +37,13 @@ place phone calls, or spend outside that. The private key is never in this repo.
 Live transcripts arrive on the `message` event and render as a conversation, with
 partial results shown faded until they finalize.
 
+## Database
+
+Calls are stored in your own Supabase Postgres, filled by a Vapi webhook and read
+by the dashboard. Setup, backfill and verification are in [db/README.md](db/README.md).
+Until `DATABASE_URL` is set the API reads from Vapi directly, so the site works
+either way.
+
 ## Configuration
 
 Both ids are at the top of the `<script>` block in `index.html`:

@@ -1,0 +1,13 @@
+{
+  "name": "vapi-demo-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node serve.mjs",
+    "db:setup": "node db/setup.mjs",
+    "db:sync": "node db/sync.mjs"
+  },
+  "dependencies": {
+    "postgres": "^3.4.9"
+  }
+}

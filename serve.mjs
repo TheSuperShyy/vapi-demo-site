@@ -34,6 +34,7 @@ function vercelify(req, res, url, query) {
 async function apiRoute(pathname) {
   // /api/calls/abc -> api/calls/[id].js ; /api/calls -> api/calls.js ; /api/config -> api/config.js
   const parts = pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
+  if (parts.some((p) => p.startsWith('_'))) return null;   // helpers are not routes (Vercel does the same)
   const candidates = [];
   if (parts.length === 1) candidates.push([`api/${parts[0]}.js`, {}], [`api/${parts[0]}/index.js`, {}]);
   if (parts.length === 2) candidates.push([`api/${parts[0]}/[id].js`, { id: parts[1] }]);

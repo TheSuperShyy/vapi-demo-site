@@ -1,0 +1,104 @@
+/* App-specific layout on top of the design system. Tokens only — no raw values
+   except geometry that the system does not define (chart heights, orb size). */
+
+.sidebar-foot { margin-top: auto; padding: 14px 0 0; }
+.sidebar-foot .btn { width: 100%; }
+.topbar-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+
+.page-empty {
+  color: var(--text-3); text-align: center; padding: 64px 20px; font-size: 13px;
+}
+.page-title { font-size: var(--text-xl); font-weight: 600; color: var(--text-1); margin: 0; }
+.page-sub   { font-size: 12px; color: var(--text-3); margin: 4px 0 0; }
+
+/* stat row — 5 tiles like the reference "My Portfolio" strip */
+.stat-row { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 12px; }
+@media (max-width: 1200px) { .stat-row { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 700px)  { .stat-row { grid-template-columns: 1fr 1fr; } }
+
+/* status dot used in lists and tables */
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); display: inline-block; flex: none; }
+.dot.ended { background: var(--positive); }
+.dot.live  { background: var(--accent); animation: pulse 1.4s infinite; }
+.dot.fail  { background: var(--negative); }
+@keyframes pulse { 50% { opacity: .3; } }
+
+/* bar chart (SVG) — chart tokens from the system */
+.chart { width: 100%; height: 190px; display: block; }
+.chart-axis { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text-3); }
+
+/* recent / watchlist style rows */
+.rows { display: flex; flex-direction: column; }
+.row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border-1); cursor: pointer;
+}
+.row:last-child { border-bottom: none; }
+.row:hover { background: var(--surface-2); margin-inline: -8px; padding-inline: 8px; border-radius: var(--radius-sm); }
+.row-main { flex: 1; min-width: 0; }
+.row-title { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.row-sub   { font-size: 11px; color: var(--text-3); }
+.row-end   { text-align: end; }
+.row-val   { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; }
+
+/* calls page: table + detail split */
+.split { display: grid; grid-template-columns: minmax(360px, 1fr) minmax(380px, 1.1fr); gap: 20px; align-items: start; }
+@media (max-width: 1100px) { .split { grid-template-columns: 1fr; } }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; font-size: 13px; }
+.kv dt { color: var(--text-3); }
+.kv dd { margin: 0; color: var(--text-1); }
+audio { width: 100%; margin: 14px 0; }
+
+/* conversation bubbles */
+.convo { display: flex; flex-direction: column; gap: 8px; }
+.turn { display: flex; }
+.turn.user { justify-content: flex-end; }
+.bubble {
+  max-width: 78%; padding: 9px 13px; border-radius: var(--radius-md);
+  background: var(--surface-2); border: 1px solid var(--border-1); font-size: 13.5px; line-height: 1.6;
+}
+.turn.user .bubble { background: var(--accent-soft); border-color: transparent; }
+.bubble.partial { opacity: .55; }
+.who { font-size: 10px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-3); margin-bottom: 2px; }
+.say { white-space: pre-wrap; word-break: break-word; }
+
+/* voice agent page */
+.orb { position: relative; width: 132px; height: 132px; display: grid; place-items: center; margin: 0 auto; }
+.ring {
+  position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--border-2);
+  pointer-events: none; transition: transform .12s ease-out, border-color var(--transition-med);
+}
+.orb.live .ring { border-color: var(--positive); }
+.orb.speaking .ring { border-color: var(--accent); }
+.mic {
+  width: 96px; height: 96px; border-radius: 50%; border: none; cursor: pointer;
+  background: var(--accent); color: var(--accent-fg); font-size: 14px; font-weight: 600;
+  transition: background var(--transition-fast), transform .1s;
+}
+.mic:hover:not(:disabled) { background: var(--accent-hover); }
+.mic:active { transform: scale(.96); }
+.mic:disabled { background: var(--surface-3); color: var(--text-3); cursor: default; }
+.orb.live .mic { background: var(--negative); }
+.state { font-size: 13px; color: var(--text-2); text-align: center; min-height: 20px; margin-top: 14px; }
+.state b { color: var(--text-1); font-weight: 500; }
+.err { color: var(--negative); font-size: 12.5px; text-align: center; min-height: 18px; }
+.diag {
+  display: none; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: var(--text-3);
+  direction: ltr; text-align: left; max-height: 130px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
+  background: var(--surface-2); border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 12px;
+}
+.feed { max-height: 320px; overflow-y: auto; margin-top: 16px; }
+.feed:empty { display: none; }
+.chatbar { display: flex; gap: 8px; margin-top: 14px; }
+.chatbar .input { flex: 1; min-width: 0; }
+.controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 16px; font-size: 12px; color: var(--text-3); }
+.controls input[type=range] { width: 110px; accent-color: var(--accent); }
+
+.toast {
+  position: fixed; bottom: 18px; inset-inline-start: 50%; transform: translateX(-50%);
+  background: var(--surface-3); border: 1px solid var(--border-2); border-radius: var(--radius-md);
+  padding: 10px 16px; box-shadow: var(--shadow-pop); z-index: 20; font-size: 13px;
+}
+[dir="rtl"] .toast { transform: translateX(50%); }
+.toast.err { border-color: var(--negative); }

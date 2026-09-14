@@ -6,6 +6,7 @@
 // Either is accepted; with no secret configured the endpoint refuses everything.
 
 import { sql, upsertCall } from './_db.js';
+import { sameSecret } from './_vapi.js';
 
 export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
 
@@ -20,9 +21,11 @@ async function readJson(req) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
 
+  // Vapi always sends the X-Vapi-Secret header, empty when no credential is set, so the
+  // header must not shadow the URL token: either one matching is enough.
   const secret = process.env.VAPI_WEBHOOK_SECRET;
-  const got = req.headers['x-vapi-secret'] ?? req.query?.token ?? '';
-  if (!secret || got !== secret) return res.status(401).json({ error: 'unauthorized' });
+  const ok = !!secret && [req.headers['x-vapi-secret'], req.query?.token].some((v) => typeof v === 'string' && sameSecret(v, secret));
+  if (!ok) return res.status(401).json({ error: 'unauthorized' });
 
   let body, msg;
   try {

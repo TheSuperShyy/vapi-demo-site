@@ -25,7 +25,7 @@ export function requireAuth(req, res) {
 }
 
 // Constant-time compare so response timing does not leak how many characters match.
-function sameSecret(a, b) {
+export function sameSecret(a, b) {
   const x = Buffer.from(String(a)), y = Buffer.from(String(b));
   return x.length === y.length && timingSafeEqual(x, y);
 }

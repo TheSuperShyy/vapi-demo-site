@@ -174,3 +174,18 @@ audio { width: 100%; margin: 14px 0; }
   20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
   60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
 }
+
+/* ---------------------------------------------------------------- pager (calls table footer) */
+.pager {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 12px 8px 4px; margin-top: 4px; border-top: 1px solid var(--border-1);
+}
+.pager-info { font-size: 12px; }
+.pager-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pager .icon-btn { width: var(--control-sm); height: var(--control-sm); }
+.pager .icon-btn:disabled { opacity: .45; cursor: default; }
+.pager .icon-btn:disabled:hover { background: var(--pill-bg); }
+.pager .tabs { gap: 6px; }
+.pager .tabs > button { min-width: var(--control-sm); padding: 0 10px; }
+.pager-gap { color: var(--text-3); font-size: 12px; padding: 0 2px; }
+[dir="rtl"] .pager .chev { transform: scaleX(-1); }

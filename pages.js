@@ -21,6 +21,7 @@ Object.assign(I18N.en, {
   'empty.calls': 'No calls yet. Open the Voice Agent page and press the button.',
   'empty.search': 'Nothing matches your search.',
   'unit.calls': 'calls',
+  'pager.of': '{a}–{b} of {n}', 'pager.prev': 'Previous', 'pager.next': 'Next', 'pager.size': 'per page',
   'day.0': 'Sun', 'day.1': 'Mon', 'day.2': 'Tue', 'day.3': 'Wed', 'day.4': 'Thu', 'day.5': 'Fri', 'day.6': 'Sat',
   'col.status': 'Status', 'col.source': 'Source', 'col.started': 'Started', 'col.length': 'Length', 'col.intent': 'Intent', 'col.cost': 'Cost',
   'detail.pick': 'Select a call to read the conversation', 'detail.title': 'Conversation', 'detail.empty': 'No transcript for this call',
@@ -54,6 +55,7 @@ Object.assign(I18N.he, {
   'empty.calls': 'עדיין אין שיחות. פתחו את עמוד הסוכן הקולי ולחצו על הכפתור.',
   'empty.search': 'אין תוצאות לחיפוש.',
   'unit.calls': 'שיחות',
+  'pager.of': '{a}–{b} מתוך {n}', 'pager.prev': 'הקודם', 'pager.next': 'הבא', 'pager.size': 'בעמוד',
   'day.0': 'א׳', 'day.1': 'ב׳', 'day.2': 'ג׳', 'day.3': 'ד׳', 'day.4': 'ה׳', 'day.5': 'ו׳', 'day.6': 'ש׳',
   'col.status': 'סטטוס', 'col.source': 'מקור', 'col.started': 'התחילה', 'col.length': 'אורך', 'col.intent': 'כוונה', 'col.cost': 'עלות',
   'detail.pick': 'בחרו שיחה כדי לקרוא את השיחה', 'detail.title': 'השיחה', 'detail.empty': 'אין תמלול לשיחה הזאת',
@@ -150,6 +152,7 @@ const reasonLabel = (k) => (k ? t('reason.' + k) : '—');
 let query = '';
 $('search').oninput = () => {
   query = $('search').value.trim().toLowerCase();
+  pager.page = 1;
   if (!location.hash.startsWith('#/calls')) location.hash = '#/calls';
   else render();
 };
@@ -274,6 +277,63 @@ registerPage('overview', {
 
 // ------------------------------------------------------------------ calls
 
+// Paging state outlives renders. `keep` is the selected call at the time of the
+// last explicit page change, so paging away from the selected row is honoured
+// while a *new* selection (or a deep link) still jumps to the page that holds it.
+const PAGE_SIZES = [10, 25, 50];
+const pager = { page: 1, size: PAGE_SIZES.includes(Number(store.get('page_size'))) ? Number(store.get('page_size')) : 10, keep: null };
+const pageOf = (index) => Math.floor(index / pager.size) + 1;
+
+// 1 … 4 5 6 … 12  (never more than seven slots)
+function pageNumbers(page, pages) {
+  if (pages <= 7) return Array.from({ length: pages }, (_, i) => i + 1);
+  let keep;
+  if (page <= 4) keep = [1, 2, 3, 4, 5, pages];
+  else if (page >= pages - 3) keep = [1, pages - 4, pages - 3, pages - 2, pages - 1, pages];
+  else keep = [1, page - 1, page, page + 1, pages];
+  const out = []; let prev = 0;
+  for (const p of keep) { if (p - prev > 1) out.push('…'); out.push(p); prev = p; }
+  return out;
+}
+
+function pagerBar(total, page, pages) {
+  const from = total ? (page - 1) * pager.size + 1 : 0, to = Math.min(total, page * pager.size);
+  const chev = (d) => `<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d === 'prev' ? 'm15 18-6-6 6-6' : 'm9 18 6-6-6-6'}"/></svg>`;
+  return `<div class="pager">
+    <span class="pager-info faint">${t('pager.of').replace('{a}', from).replace('{b}', to).replace('{n}', total)}</span>
+    <div class="pager-nav">
+      <label class="select sm"><select id="page-size" aria-label="${t('pager.size')}">${PAGE_SIZES.map((n) => `<option value="${n}"${n === pager.size ? ' selected' : ''}>${n} ${t('pager.size')}</option>`).join('')}</select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>
+      ${pages > 1 ? `
+      <button class="icon-btn" id="page-prev" type="button"${page <= 1 ? ' disabled' : ''} title="${t('pager.prev')}" aria-label="${t('pager.prev')}">${chev('prev')}</button>
+      <div class="tabs" id="page-nums">${pageNumbers(page, pages).map((p) => p === '…' ? `<span class="pager-gap">…</span>` : `<button type="button" data-page="${p}"${p === page ? ' class="on" aria-current="page"' : ''}>${p}</button>`).join('')}</div>
+      <button class="icon-btn" id="page-next" type="button"${page >= pages ? ' disabled' : ''} title="${t('pager.next')}" aria-label="${t('pager.next')}">${chev('next')}</button>` : ''}
+    </div>
+  </div>`;
+}
+
+// Fills the list card for the current page and wires its controls. Paging
+// re-runs only this, so the detail panel beside it never blinks.
+function renderCallsList(main, calls, selectedId) {
+  const box = main.querySelector('#calls-list'); if (!box) return;
+  const pages = Math.max(1, Math.ceil(calls.length / pager.size));
+  if (selectedId && selectedId !== pager.keep) {
+    const idx = calls.findIndex((c) => c.id === selectedId);
+    if (idx >= 0) pager.page = pageOf(idx);
+    pager.keep = selectedId;
+  }
+  pager.page = Math.min(Math.max(1, pager.page), pages);
+  const slice = calls.slice((pager.page - 1) * pager.size, pager.page * pager.size);
+  box.innerHTML = callsTable(slice, selectedId) + (calls.length ? pagerBar(calls.length, pager.page, pages) : '');
+  const go = (p) => { pager.page = p; pager.keep = selectedId; renderCallsList(main, calls, selectedId); };
+  box.querySelectorAll('tr[data-id]').forEach((tr) => { tr.onclick = () => { location.hash = '#/calls/' + tr.dataset.id; }; });
+  box.querySelectorAll('#page-nums button[data-page]').forEach((b) => { b.onclick = () => go(Number(b.dataset.page)); });
+  const prev = box.querySelector('#page-prev'); if (prev) prev.onclick = () => go(pager.page - 1);
+  const next = box.querySelector('#page-next'); if (next) next.onclick = () => go(pager.page + 1);
+  const size = box.querySelector('#page-size');
+  if (size) size.onchange = () => { pager.size = Number(size.value); store.set('page_size', size.value); pager.page = 1; pager.keep = null; renderCallsList(main, calls, selectedId); };
+}
+
 function callsTable(calls, selectedId) {
   if (!calls.length) return `<div class="page-empty">${query ? t('empty.search') : t('empty.calls')}</div>`;
   return `<div style="overflow-x:auto"><table class="table">
@@ -333,11 +393,11 @@ registerPage('calls', {
     const calls = all.filter(matches);
     const html = pageHead('page.calls', 'page.calls.sub', `<span class="badge">${calls.length} ${t('unit.calls')}</span>`) + `
       <div class="split">
-        <div class="card" style="padding:12px 8px 8px">${callsTable(calls, id)}</div>
+        <div class="card" id="calls-list" style="padding:12px 8px 8px"></div>
         ${detail?.error ? `<div class="card"><div class="page-empty">${escapeHtml(detail.error)}</div></div>` : detailPanel(detail)}
       </div>`;
     return { html, mount(main) {
-      main.querySelectorAll('tr[data-id]').forEach((tr) => { tr.onclick = () => { location.hash = `#/calls/${tr.dataset.id}`; }; });
+      renderCallsList(main, calls, id);
       if (detail && !detail.endedAt) setTimeout(() => { if (location.hash === `#/calls/${id}`) render(); }, 5000);
     } };
   },

@@ -566,6 +566,8 @@ registerPage('list', {
 const VOICES = [
   { id: 'azure:he-IL-HilaNeural', label: 'Hila · Azure (native)', provider: 'azure', voiceId: 'he-IL-HilaNeural' },
   { id: 'azure:he-IL-AvriNeural', label: 'Avri · Azure (native, male)', provider: 'azure', voiceId: 'he-IL-AvriNeural' },
+  // Vapi's own multilingual voice (generation 2), pinned to Hebrew: the same "Primary language" setting as in the Vapi dashboard. Generation 1 rejects Hebrew.
+  { id: 'vapi:Naina', label: 'Naina · Vapi', provider: 'vapi', voiceId: 'Naina', extra: { version: '2', language: 'he' } },
   { id: 'openai:shimmer', label: 'Shimmer · OpenAI', provider: 'openai', voiceId: 'shimmer' },
   { id: 'openai:nova', label: 'Nova · OpenAI', provider: 'openai', voiceId: 'nova' },
   { id: 'openai:alloy', label: 'Alloy · OpenAI', provider: 'openai', voiceId: 'alloy' },
@@ -739,7 +741,7 @@ registerPage('agent', {
           if (!$('mic')) return;                       // navigated away while the SDK loaded
           $('mic').disabled = true; $('state').textContent = t('agent.connecting');
           const pick = VOICES.find((x) => x.id === $('voice').value) ?? VOICES[0];
-          const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, speed: Number($('speed').value), chunkPlan: { formatPlan: { enabled: false } } } };
+          const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, ...pick.extra, speed: Number($('speed').value), chunkPlan: { formatPlan: { enabled: false } } } };
           // Tag the call with the number it stands in for; the server reads it back
           // from call.assistantOverrides.variableValues and updates the lead.
           if (agent.lead && agent.lead.status !== 'do_not_call') overrides.variableValues = { leadId: String(agent.lead.id), leadPhone: agent.lead.phone, leadName: agent.lead.name ?? '', leadCity: agent.lead.city ?? '' };

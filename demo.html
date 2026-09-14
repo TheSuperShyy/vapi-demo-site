@@ -203,6 +203,7 @@ const chatinput = $('chatinput'), chatsend = $('chatsend');
 const VOICES = [
   { id: 'azure:he-IL-HilaNeural',  label: 'הילה · Azure (נקבה, ילידי)',  provider: 'azure',  voiceId: 'he-IL-HilaNeural' },
   { id: 'azure:he-IL-AvriNeural',  label: 'אברי · Azure (זכר, ילידי)',   provider: 'azure',  voiceId: 'he-IL-AvriNeural' },
+  { id: 'vapi:Naina',               label: 'נאינה · Vapi (נקבה)',        provider: 'vapi',   voiceId: 'Naina', extra: { version: '2', language: 'he' } },
   { id: 'openai:shimmer',          label: 'Shimmer · OpenAI (נקבה)',     provider: 'openai', voiceId: 'shimmer' },
   { id: 'openai:nova',             label: 'Nova · OpenAI (נקבה)',        provider: 'openai', voiceId: 'nova' },
   { id: 'openai:alloy',            label: 'Alloy · OpenAI (ניטרלי)',     provider: 'openai', voiceId: 'alloy' },
@@ -226,6 +227,7 @@ function voiceOverride() {
   return {
     provider: v.provider,
     voiceId: v.voiceId,
+    ...v.extra,                       // e.g. Vapi voices take a language hint
     speed: Number(speed.value),
     // Vapi's formatter strips Hebrew niqqud before it reaches the voice engine, which
     // would kill every pronunciation distinction the prompt depends on.

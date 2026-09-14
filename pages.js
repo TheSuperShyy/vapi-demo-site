@@ -248,6 +248,7 @@ function barChart(buckets) {
 const TREND = ['yes', 'no', 'not_reached'];
 function lineChart(buckets) {
   const w = 900, h = 190, top = 12, bottom = 6, n = buckets.length, slot = w / n, rows = 4;
+  if (!n) return '';
   const rawMax = Math.max(1, ...buckets.flatMap((b) => TREND.map((k) => b[k])));
   const step = Math.ceil(rawMax / rows), max = step * rows;                // integer labels on every grid line
   const px = (i) => i * slot + slot / 2, py = (v) => top + (1 - v / max) * (h - top - bottom);
@@ -277,6 +278,7 @@ function bindLineChart(root, buckets) {
   const plot = root.querySelector('.linechart-plot'); if (!plot) return;
   const svg = plot.querySelector('svg'), guide = plot.querySelector('.linechart-guide'), tip = plot.querySelector('.linechart-tip');
   const n = buckets.length, locale = lang === 'he' ? 'he-IL' : 'en-GB';
+  tip.dir = document.documentElement.dir;           // the plot is LTR; the tooltip text follows the UI
   plot.onpointermove = (e) => {
     const r = svg.getBoundingClientRect();
     const i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n)));

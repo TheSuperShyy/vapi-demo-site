@@ -60,9 +60,12 @@ export function statsFromList(summaries, days) {
   const intents = Object.fromEntries(INTENTS.map((k) => [k, 0]));
   for (const c of summaries) intents[intentOf(c)]++;
   const keys = lastDays(days);
-  const counts = Object.fromEntries(keys.map((k) => [k, 0]));
-  for (const c of summaries) { const k = dayKey(c.createdAt); if (k in counts) counts[k]++; }
-  const perDay = keys.map((day) => ({ day, n: counts[day] }));
+  const counts = Object.fromEntries(keys.map((k) => [k, { n: 0, yes: 0, no: 0, unsure: 0, not_reached: 0 }]));
+  for (const c of summaries) {
+    const k = dayKey(c.createdAt); if (!(k in counts)) continue;
+    counts[k].n++; const i = intentOf(c); if (i in counts[k]) counts[k][i]++;
+  }
+  const perDay = keys.map((day) => ({ day, ...counts[day] }));
   return {
     total: summaries.length, ended: ended.length, live,
     avgSeconds: secs.length ? secs.reduce((a, b) => a + b, 0) / secs.length : 0,

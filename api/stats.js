@@ -1,6 +1,6 @@
 // GET /api/stats?days=7|30|90 -> the numbers on the Overview, computed by the
 // database so they stay right at any volume:
-//   { total, ended, live, avgSeconds, cost, intents:{yes,no,...}, perDay:[{day,n}], inRange, recent:[8] }
+//   { total, ended, live, avgSeconds, cost, intents:{yes,no,...}, perDay:[{day,n,yes,no,unsure,not_reached}], inRange, recent:[8] }
 // Days are bucketed in Israel time (the campaign's clock), not the viewer's.
 // Without DATABASE_URL the same shape is computed from Vapi's list (max 1000).
 
@@ -30,12 +30,15 @@ export default async function handler(req, res) {
           from calls) as totals,
         (select coalesce(json_object_agg(k, n), '{}'::json)
           from (select (case when intent in ('yes', 'no', 'unsure', 'refused', 'not_reached') then intent else 'unknown' end) as k, count(*)::int as n from calls group by 1) i) as intents,
-        (select json_agg(json_build_object('day', to_char(d.day, 'YYYY-MM-DD'), 'n', coalesce(c.n, 0)) order by d.day)
+        (select json_agg(json_build_object('day', to_char(d.day, 'YYYY-MM-DD'), 'n', coalesce(c.n, 0),
+              'yes', coalesce(c.yes, 0), 'no', coalesce(c.no, 0), 'unsure', coalesce(c.unsure, 0), 'not_reached', coalesce(c.not_reached, 0)) order by d.day)
           from generate_series(
             (now() at time zone ${TZ})::date - (${days}::int - 1),
             (now() at time zone ${TZ})::date, interval '1 day') as d(day)
           left join (
-            select (created_at at time zone ${TZ})::date as day, count(*)::int as n
+            select (created_at at time zone ${TZ})::date as day, count(*)::int as n,
+                   count(*) filter (where intent = 'yes')::int as yes, count(*) filter (where intent = 'no')::int as "no",
+                   count(*) filter (where intent = 'unsure')::int as unsure, count(*) filter (where intent = 'not_reached')::int as not_reached
             from calls where created_at >= now() - (${days}::int + 1) * interval '1 day' group by 1) c
           on c.day = d.day::date) as per_day,
         (select coalesce(json_agg(row_to_json(r)), '[]'::json)

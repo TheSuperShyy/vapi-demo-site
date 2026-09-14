@@ -14,6 +14,7 @@ Object.assign(I18N.en, {
   'stat.completed': 'Completed', 'stat.live': 'in progress', 'stat.avg': 'Avg length',
   'stat.cost': 'Total cost', 'stat.yes': 'Said yes', 'stat.yes.sub': 'of answered',
   'card.week': 'Calls', 'card.intent': 'Intent', 'card.recent': 'Recent calls', 'see.all': 'See all',
+  'card.trend': 'Answers over time', 'card.trend.sub': 'per day',
   'intent.yes': 'Will vote', 'intent.no': 'Will not vote', 'intent.unsure': 'Unsure',
   'intent.refused': 'Refused', 'intent.not_reached': 'Not reached', 'intent.unknown': 'No analysis',
   'src.web': 'Browser', 'src.phone': 'Phone',
@@ -57,6 +58,7 @@ Object.assign(I18N.he, {
   'stat.completed': 'הסתיימו', 'stat.live': 'בשיחה', 'stat.avg': 'אורך ממוצע',
   'stat.cost': 'עלות כוללת', 'stat.yes': 'ענו כן', 'stat.yes.sub': 'מתוך שענו',
   'card.week': 'שיחות', 'card.intent': 'כוונת הצבעה', 'card.recent': 'שיחות אחרונות', 'see.all': 'הצג הכל',
+  'card.trend': 'תשובות לאורך זמן', 'card.trend.sub': 'לפי יום',
   'intent.yes': 'יצביעו', 'intent.no': 'לא יצביעו', 'intent.unsure': 'לא בטוחים',
   'intent.refused': 'סירבו', 'intent.not_reached': 'לא הושגו', 'intent.unknown': 'ללא ניתוח',
   'src.web': 'דפדפן', 'src.phone': 'טלפון',
@@ -218,7 +220,13 @@ const statTile = ({ label, value, sub, hero }) => `<div class="stat${hero ? ' he
   <div class="stat-foot">${sub ? `<span class="stat-sub">${sub}</span>` : ''}</div></div>`;
 
 // perDay arrives as [{ day: 'YYYY-MM-DD', n }] in Israel time; parse as local midnight for labels.
-const toBuckets = (perDay) => perDay.map((b) => ({ date: new Date(b.day + 'T00:00:00'), n: Number(b.n) }));
+const toBuckets = (perDay) => perDay.map((b) => ({ date: new Date(b.day + 'T00:00:00'), n: Number(b.n), yes: Number(b.yes || 0), no: Number(b.no || 0), unsure: Number(b.unsure || 0), not_reached: Number(b.not_reached || 0) }));
+
+// Day labels under a chart: weekday names for a week, day-of-month every 5th/10th day beyond that.
+function axisLabels(buckets) {
+  const n = buckets.length, k = n > 45 ? 10 : n > 14 ? 5 : 1;
+  return buckets.map((b, i) => `<span style="flex:1;text-align:center">${n <= 7 ? t('day.' + b.date.getDay()) : (i % k === 0 ? b.date.getDate() : '')}</span>`).join('');
+}
 
 function barChart(buckets) {
   const w = 900, h = 190, pad = 22;
@@ -231,9 +239,56 @@ function barChart(buckets) {
       (b.n ? `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 7).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--text-2)" font-family="var(--font-ui)">${b.n}</text>` : '');
   }).join('');
   const grid = [0.33, 0.66].map((f) => `<line x1="0" x2="${w}" y1="${(h * f).toFixed(1)}" y2="${(h * f).toFixed(1)}" stroke="var(--chart-grid)"/>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-axis">${axisLabels(buckets)}</div>`;
+}
+
+// One line per answer, per day, on the same day grid as the bars. Straight segments
+// so a quiet day reads as a dip rather than a smoothed-over bump. The SVG is
+// stretched to the card width, so every stroke is non-scaling.
+const TREND = ['yes', 'no', 'not_reached'];
+function lineChart(buckets) {
+  const w = 900, h = 190, top = 12, bottom = 6, n = buckets.length, slot = w / n, rows = 4;
+  const rawMax = Math.max(1, ...buckets.flatMap((b) => TREND.map((k) => b[k])));
+  const step = Math.ceil(rawMax / rows), max = step * rows;                // integer labels on every grid line
+  const px = (i) => i * slot + slot / 2, py = (v) => top + (1 - v / max) * (h - top - bottom);
+  const dash = 'stroke="var(--chart-grid)" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"';
+  const grid = Array.from({ length: rows + 1 }, (_, r) => `<line x1="0" x2="${w}" y1="${py(r * step).toFixed(1)}" y2="${py(r * step).toFixed(1)}" ${dash}/>`).join('');
   const k = n > 45 ? 10 : n > 14 ? 5 : 1;
-  const labels = buckets.map((b, i) => `<span style="flex:1;text-align:center">${n <= 7 ? t('day.' + b.date.getDay()) : (i % k === 0 ? b.date.getDate() : '')}</span>`).join('');
-  return `<svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-axis">${labels}</div>`;
+  const vgrid = buckets.map((_, i) => (i % k === 0 ? `<line x1="${px(i).toFixed(1)}" x2="${px(i).toFixed(1)}" y1="${top}" y2="${(h - bottom).toFixed(1)}" ${dash}/>` : '')).join('');
+  const series = TREND.map((key) => {
+    const pts = buckets.map((b, i) => [px(i).toFixed(1), py(b[key]).toFixed(1)]);
+    const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
+    const area = `${line} L${pts[n - 1][0]} ${py(0).toFixed(1)} L${pts[0][0]} ${py(0).toFixed(1)} Z`;
+    const dots = n > 31 ? '' : buckets.map((b, i) => (b[key] ? `<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="3.5" fill="${INTENT_COLOR[key]}" stroke="var(--surface-1)" stroke-width="2" vector-effect="non-scaling-stroke"/>` : '')).join('');
+    return `<path d="${area}" fill="url(#trend-${key})"/><path d="${line}" fill="none" stroke="${INTENT_COLOR[key]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>${dots}`;
+  }).join('');
+  const defs = `<defs>${TREND.map((key) => `<linearGradient id="trend-${key}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${INTENT_COLOR[key]};stop-opacity:.22"/><stop offset="1" style="stop-color:${INTENT_COLOR[key]};stop-opacity:0"/></linearGradient>`).join('')}</defs>`;
+  const yLabels = Array.from({ length: rows + 1 }, (_, r) => `<span>${max - r * step}</span>`).join('');
+  return `<div class="linechart">
+    <div class="linechart-y">${yLabels}</div>
+    <div class="linechart-plot"><svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${defs}${grid}${vgrid}${series}</svg><div class="chart-axis">${axisLabels(buckets)}</div>
+      <div class="linechart-guide" hidden></div><div class="linechart-tip" hidden></div></div></div>`;
+}
+
+const trendLegend = (buckets) => `<div class="legend">${TREND.map((key) => `<span class="legend-item"><span class="dot" style="background:${INTENT_COLOR[key]}"></span>${t('intent.' + key)} <b>${buckets.reduce((a, b) => a + b[key], 0)}</b></span>`).join('')}</div>`;
+
+// Hover: a dashed guide on the nearest day and a tooltip with that day's three counts.
+function bindLineChart(root, buckets) {
+  const plot = root.querySelector('.linechart-plot'); if (!plot) return;
+  const svg = plot.querySelector('svg'), guide = plot.querySelector('.linechart-guide'), tip = plot.querySelector('.linechart-tip');
+  const n = buckets.length, locale = lang === 'he' ? 'he-IL' : 'en-GB';
+  plot.onpointermove = (e) => {
+    const r = svg.getBoundingClientRect();
+    const i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n)));
+    const b = buckets[i], x = (i + 0.5) / n * r.width;
+    guide.style.left = `${x}px`; guide.hidden = false;
+    tip.innerHTML = `<b>${b.date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })}</b>` +
+      TREND.map((key) => `<span class="tip-row"><span class="dot" style="background:${INTENT_COLOR[key]}"></span><span>${t('intent.' + key)}</span><b>${b[key]}</b></span>`).join('');
+    tip.hidden = false;
+    const flip = x + 14 + tip.offsetWidth > r.width;
+    tip.style.left = `${flip ? x - 14 - tip.offsetWidth : x + 14}px`;
+  };
+  plot.onpointerleave = () => { guide.hidden = true; tip.hidden = true; };
 }
 
 function donut(counts, total) {
@@ -277,6 +332,7 @@ registerPage('overview', {
       ${sk.card(`${sk.line('w30')}<div class="skeleton skel-block" style="margin-top:16px"></div>`)}
       ${sk.card(`${sk.line('w30')}<div style="display:flex;gap:20px;align-items:center;margin-top:16px"><div class="skeleton skel-circle"></div><div style="flex:1">${sk.line()}${sk.line('w70')}${sk.line('w50')}</div></div>`)}
     </div>
+    ${sk.card(`${sk.line('w30')}<div class="skeleton skel-block" style="margin-top:16px"></div>`)}
     ${sk.card(`${sk.line('w30')}${sk.rows(4)}`)}`,
   async load() {
     const [s] = await Promise.all([loadStats(range), loadConfig().catch(() => null)]);
@@ -298,9 +354,11 @@ registerPage('overview', {
         <div class="card"><div class="card-head"><span class="card-title">${t('card.week')} <span class="count">· ${fmtN(s.inRange)} ${t('unit.calls')}</span></span><span class="badge">${range}d</span></div>${barChart(buckets)}</div>
         <div class="card"><div class="card-head"><span class="card-title">${t('card.intent')}</span></div>${s.total ? donut(counts, s.total) : `<div class="page-empty">${t('empty.calls')}</div>`}</div>
       </div>
+      <div class="card"><div class="card-head"><span class="card-title">${t('card.trend')} <span class="count">· ${t('card.trend.sub')}</span></span>${trendLegend(buckets)}</div>${lineChart(buckets)}</div>
       <div class="card"><div class="card-head"><span class="card-title">${t('card.recent')}</span><a class="btn secondary sm" href="#/calls">${t('see.all')}</a></div>${recentRows(s.recent)}</div>`;
     return { html, mount(main) {
       main.querySelectorAll('.row[data-id]').forEach((el) => { el.onclick = () => { location.hash = `#/calls/${el.dataset.id}`; }; });
+      bindLineChart(main, buckets);
     } };
   },
 });

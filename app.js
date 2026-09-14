@@ -1,4 +1,4 @@
-// CLIX voice agent dashboard — shell, router, i18n, theme.
+// מטה קול העם voice agent dashboard — shell, router, i18n, theme.
 //
 // A page is { skeleton(params) -> html, load(params) -> { html, mount?(main) } }.
 // render() paints the skeleton immediately, awaits load(), and only commits the

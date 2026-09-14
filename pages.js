@@ -1,5 +1,5 @@
 // Dashboard pages: Overview, Calls, Voice Agent, Settings.
-import { registerPage, render, t, I18N, lang, escapeHtml, pageHead, toast, sk, store, applyLang, applyTheme, currentTheme, toggleTheme, authRequired, showLogin, signOut } from './app.js';
+import { registerPage, render, route, t, I18N, lang, escapeHtml, pageHead, toast, sk, store, applyLang, applyTheme, currentTheme, toggleTheme, authRequired, showLogin, signOut } from './app.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -26,7 +26,7 @@ Object.assign(I18N.en, {
   'list.all': 'All cities', 'list.any': 'Any status', 'list.card': 'Numbers',
   'col.pos': '#', 'col.name': 'Name', 'col.phone': 'Phone', 'col.city': 'City', 'col.attempts': 'Attempts', 'col.last': 'Last call',
   'status.new': 'Not called', 'status.called': 'Called', 'status.do_not_call': 'Do not call',
-  'empty.list': 'The list is empty. Import it with: node db/leads.mjs <file.csv>', 'list.nodb': 'The calling list needs the database. See db/README.md.',
+  'empty.list': 'The list is empty. Import it with: node db/leads.mjs list.csv', 'list.nodb': 'The calling list needs the database. See db/README.md.',
   'day.0': 'Sun', 'day.1': 'Mon', 'day.2': 'Tue', 'day.3': 'Wed', 'day.4': 'Thu', 'day.5': 'Fri', 'day.6': 'Sat',
   'col.status': 'Status', 'col.source': 'Source', 'col.started': 'Started', 'col.length': 'Length', 'col.intent': 'Intent', 'col.cost': 'Cost',
   'detail.pick': 'Select a call to read the conversation', 'detail.title': 'Conversation', 'detail.empty': 'No transcript for this call',
@@ -69,7 +69,7 @@ Object.assign(I18N.he, {
   'list.all': 'כל הערים', 'list.any': 'כל סטטוס', 'list.card': 'מספרים',
   'col.pos': '#', 'col.name': 'שם', 'col.phone': 'טלפון', 'col.city': 'עיר', 'col.attempts': 'ניסיונות', 'col.last': 'שיחה אחרונה',
   'status.new': 'טרם חויג', 'status.called': 'חויג', 'status.do_not_call': 'לא להתקשר',
-  'empty.list': 'הרשימה ריקה. ייבוא: node db/leads.mjs <file.csv>', 'list.nodb': 'רשימת החיוג צריכה את מסד הנתונים. ראו db/README.md.',
+  'empty.list': 'הרשימה ריקה. ייבוא: node db/leads.mjs list.csv', 'list.nodb': 'רשימת החיוג צריכה את מסד הנתונים. ראו db/README.md.',
   'day.0': 'א׳', 'day.1': 'ב׳', 'day.2': 'ג׳', 'day.3': 'ד׳', 'day.4': 'ה׳', 'day.5': 'ו׳', 'day.6': 'ש׳',
   'col.status': 'סטטוס', 'col.source': 'מקור', 'col.started': 'התחילה', 'col.length': 'אורך', 'col.intent': 'כוונה', 'col.cost': 'עלות',
   'detail.pick': 'בחרו שיחה כדי לקרוא את השיחה', 'detail.title': 'השיחה', 'detail.empty': 'אין תמלול לשיחה הזאת',
@@ -159,6 +159,7 @@ const fmtTime = (iso) => iso
   ? new Date(iso).toLocaleString(lang === 'he' ? 'he-IL' : 'en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
   : '—';
 const money = (n) => '$' + (n || 0).toFixed(2);
+const fmtSecs = (secs) => { const s = Math.max(0, Math.round(secs || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
 const statusOf = (c) => {
   if (!c.endedAt && ['in-progress', 'ringing', 'queued'].includes(c.status)) return 'live';
   if (/error|did-not-answer|busy|failed/.test(c.endedReason || '')) return 'failed';
@@ -166,6 +167,8 @@ const statusOf = (c) => {
 };
 const dotClass = (c) => ({ live: 'live', failed: 'fail', ended: 'ended', queued: '' })[statusOf(c)];
 const srcOf = (c) => (c.number ? fmtPhone(c.number) : c.type === 'webCall' ? t('src.web') : t('src.phone'));
+// Escaped HTML for the same, keeping a phone number a left-to-right run inside Hebrew text.
+const srcHtml = (c) => (c.number ? `<span dir="ltr">${escapeHtml(fmtPhone(c.number))}</span>` : escapeHtml(srcOf(c)));
 const INTENT_ORDER = ['yes', 'no', 'unsure', 'refused', 'not_reached', 'unknown'];
 const INTENT_TONE = { yes: 'positive', no: 'negative', unsure: 'accent', refused: '', not_reached: '', unknown: '' };
 const INTENT_COLOR = { yes: 'var(--positive)', no: 'var(--negative)', unsure: 'var(--accent)', refused: 'var(--text-2)', not_reached: 'var(--text-3)', unknown: 'var(--border-2)' };
@@ -259,7 +262,7 @@ const recentRows = (calls) => !calls.length ? `<div class="page-empty">${t('empt
   <div class="row" data-id="${c.id}">
     <span class="dot ${dotClass(c)}"></span>
     <div class="row-main">
-      <div class="row-title">${escapeHtml(srcOf(c))} <span class="faint" style="font-weight:400">· ${t('status.' + statusOf(c))}</span></div>
+      <div class="row-title">${srcHtml(c)} <span class="faint" style="font-weight:400">· ${t('status.' + statusOf(c))}</span></div>
       <div class="row-sub">${fmtTime(c.createdAt)}</div></div>
     ${intentBadge(c)}
     <div class="row-end"><div class="row-val mono">${fmtDur(c.startedAt, c.endedAt)}</div><div class="row-sub">${money(c.cost)}</div></div>
@@ -287,7 +290,7 @@ registerPage('overview', {
       <div class="stat-row">
         ${statTile({ hero: true, label: t('stat.total'), value: fmtN(s.total), sub: t('stat.total.sub') })}
         ${statTile({ label: t('stat.completed'), value: fmtN(s.ended), sub: s.live ? `${s.live} ${t('stat.live')}` : '' })}
-        ${statTile({ label: t('stat.avg'), value: `${Math.floor(avg / 60)}:${String(Math.round(avg % 60)).padStart(2, '0')}` })}
+        ${statTile({ label: t('stat.avg'), value: fmtSecs(avg) })}
         ${statTile({ label: t('stat.cost'), value: money(s.cost) })}
         ${statTile({ label: t('stat.yes'), value: `${yesPct}%`, sub: `${fmtN(counts.yes || 0)}/${fmtN(answered)} ${t('stat.yes.sub')}` })}
       </div>
@@ -308,6 +311,7 @@ registerPage('overview', {
 // last explicit page change, so paging away from the selected row is honoured
 // while a *new* selection (or a deep link) still jumps to the page that holds it.
 const PAGE_SIZES = [10, 25, 50];
+let livePoll = 0;   // re-render timer while a call is still live
 const pager = { page: 1, size: PAGE_SIZES.includes(Number(store.get('page_size'))) ? Number(store.get('page_size')) : 10, keep: null };
 
 // 1 … 4 5 6 … 12  (never more than seven slots)
@@ -326,7 +330,7 @@ function pagerBar(total, page, pages, size = pager.size) {
   const from = total ? (page - 1) * size + 1 : 0, to = Math.min(total, page * size);
   const chev = (d) => `<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d === 'prev' ? 'm15 18-6-6 6-6' : 'm9 18 6-6-6-6'}"/></svg>`;
   return `<div class="pager">
-    <span class="pager-info faint">${t('pager.of').replace('{a}', from).replace('{b}', to).replace('{n}', total)}</span>
+    <span class="pager-info faint">${t('pager.of').replace('{a}', fmtN(from)).replace('{b}', fmtN(to)).replace('{n}', fmtN(total))}</span>
     <div class="pager-nav">
       <label class="select sm"><select id="page-size" aria-label="${t('pager.size')}">${PAGE_SIZES.map((n) => `<option value="${n}"${n === size ? ' selected' : ''}>${n} ${t('pager.size')}</option>`).join('')}</select>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>
@@ -343,27 +347,40 @@ function pagerBar(total, page, pages, size = pager.size) {
 // Asks the server for the current page. `locate` is sent only when the selection
 // changed since the last explicit page turn, so the row is brought into view on
 // deep links but paging away from it is honoured.
+let callsFetchGen = 0;
 async function fetchCallsPage(selectedId) {
+  const my = ++callsFetchGen;
   const locate = selectedId && selectedId !== pager.keep ? selectedId : '';
   const res = await loadCalls({ page: pager.page, size: pager.size, locate, ...searchParams() });
-  pager.page = res.page;
-  if (selectedId) pager.keep = selectedId;
+  if (my === callsFetchGen) {                 // a newer fetch owns the state now
+    pager.page = res.page;
+    if (selectedId) pager.keep = selectedId;
+  }
   return res;
 }
+let lastPageName = null;
 
 // Paints one page into the list card and wires its controls. Only this card is
 // redrawn on a page turn, so the conversation panel beside it never blinks.
 function renderCallsList(main, res, selectedId) {
   const box = main.querySelector('#calls-list'); if (!box) return;
   box.innerHTML = callsTable(res.items, selectedId) + (res.total ? pagerBar(res.total, res.page, res.pages) : '');
-  const head = main.querySelector('#calls-count'); if (head) head.textContent = `${res.total.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US')} ${t('unit.calls')}`;
+  const head = main.querySelector('#calls-count'); if (head) head.textContent = `${fmtN(res.total)} ${t('unit.calls')}`;
   let busy = false;
-  const go = async (p) => {
+  // relocate: after a size change the selected call should be brought back into view.
+  const go = async (p, { relocate = false } = {}) => {
     if (busy) return; busy = true;
-    pager.page = p; pager.keep = selectedId;
+    pager.page = p; pager.keep = relocate ? null : selectedId;
     box.innerHTML = sk.rows(Math.min(pager.size, 7));
-    try { renderCallsList(main, await fetchCallsPage(selectedId), selectedId); }
-    catch (e) { box.innerHTML = `<div class="page-empty">${escapeHtml(e.message)}</div>`; }
+    try {
+      const next = await fetchCallsPage(selectedId);
+      if (!box.isConnected) return;             // the page was re-rendered meanwhile; leave the new card alone
+      renderCallsList(main, next, selectedId);
+    } catch (e) {
+      if (!box.isConnected) return;
+      box.innerHTML = `<div class="page-empty">${escapeHtml(e.message)}<br><br><button class="btn secondary sm" type="button" id="calls-retry">${t('retry')}</button></div>`;
+      box.querySelector('#calls-retry').onclick = () => { busy = false; go(p, { relocate }); };
+    }
     busy = false;
   };
   box.querySelectorAll('tr[data-id]').forEach((tr) => { tr.onclick = () => { location.hash = '#/calls/' + tr.dataset.id; }; });
@@ -371,7 +388,7 @@ function renderCallsList(main, res, selectedId) {
   const prev = box.querySelector('#page-prev'); if (prev) prev.onclick = () => go(pager.page - 1);
   const next = box.querySelector('#page-next'); if (next) next.onclick = () => go(pager.page + 1);
   const size = box.querySelector('#page-size');
-  if (size) size.onchange = () => { pager.size = Number(size.value); store.set('page_size', size.value); pager.keep = null; go(1); };
+  if (size) size.onchange = () => { pager.size = listPager.size = Number(size.value); store.set('page_size', size.value); go(1, { relocate: true }); };
 }
 
 function callsTable(calls, selectedId) {
@@ -380,7 +397,7 @@ function callsTable(calls, selectedId) {
     <thead><tr><th>${t('col.status')}</th><th>${t('col.source')}</th><th>${t('col.started')}</th><th>${t('col.length')}</th><th>${t('col.intent')}</th><th class="end">${t('col.cost')}</th></tr></thead>
     <tbody>${calls.map((c) => `<tr class="clickable${c.id === selectedId ? ' on' : ''}" data-id="${c.id}">
       <td><span style="display:inline-flex;align-items:center;gap:8px"><span class="dot ${dotClass(c)}"></span>${t('status.' + statusOf(c))}</span></td>
-      <td>${escapeHtml(srcOf(c))}</td><td class="faint">${fmtTime(c.createdAt)}</td>
+      <td>${srcHtml(c)}</td><td class="faint">${fmtTime(c.createdAt)}</td>
       <td class="mono">${fmtDur(c.startedAt, c.endedAt)}</td><td>${intentBadge(c)}</td><td class="end mono">${money(c.cost)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
@@ -408,7 +425,7 @@ function detailPanel(d) {
     : `<div class="page-empty">${d.endedAt ? t('detail.empty') : t('detail.live')}</div>`;
   return `<div class="card">
     <div class="detail-head">
-      <span class="card-title">${t('detail.title')} <span class="count">· ${escapeHtml(srcOf(d))} · ${fmtTime(d.createdAt)}</span></span>
+      <span class="card-title">${t('detail.title')} <span class="count">· ${srcHtml(d)} · ${fmtTime(d.createdAt)}</span></span>
       <span style="display:inline-flex;gap:8px;align-items:center">${intentBadge(d)}<span class="mono faint">${fmtDur(d.startedAt, d.endedAt)} · ${money(d.cost)}</span></span>
     </div>
     ${d.recordingUrl ? `<audio controls preload="none" src="${escapeHtml(d.recordingUrl)}"></audio>` : ''}
@@ -429,6 +446,9 @@ registerPage('calls', {
   skeleton: (params) => `<div class="split">${sk.card(sk.rows(7))}${sk.card(params[0] ? `${sk.line('w50')}${sk.rows(4)}` : `<div class="page-empty">${t('detail.pick')}</div>`)}</div>`,
   async load(params) {
     const id = params[0] || null;
+    clearTimeout(livePoll);
+    if (lastPageName !== 'calls') pager.keep = null;   // arriving from elsewhere: a selected call is a fresh selection
+    lastPageName = 'calls';
     const [res, detail] = await Promise.all([fetchCallsPage(id), id ? loadDetail(id).catch((e) => ({ error: e.message })) : null]);
     const html = pageHead('page.calls', 'page.calls.sub', `<span class="badge" id="calls-count">${res.total.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US')} ${t('unit.calls')}</span>`) + `
       <div class="split">
@@ -437,7 +457,7 @@ registerPage('calls', {
       </div>`;
     return { html, mount(main) {
       renderCallsList(main, res, id);
-      if (detail && !detail.endedAt) setTimeout(() => { if (location.hash === `#/calls/${id}`) render(); }, 5000);
+      if (detail && !detail.error && !detail.endedAt) livePoll = setTimeout(() => { if (location.hash === `#/calls/${id}`) render(); }, 5000);
     } };
   },
 });
@@ -493,10 +513,19 @@ function renderLeadsList(main, res) {
   let busy = false;
   const go = async (patch) => {
     if (busy) return; busy = true;
+    const before = { ...listPager };
     Object.assign(listPager, patch);
     box.querySelector('table')?.replaceWith(Object.assign(document.createElement('div'), { innerHTML: sk.rows(Math.min(listPager.size, 7)) }));
-    try { renderLeadsList(main, await fetchLeadsPage()); }
-    catch (e) { box.innerHTML = `<div class="page-empty">${escapeHtml(e.message)}</div>`; }
+    try {
+      const next = await fetchLeadsPage();
+      if (!box.isConnected) return;
+      renderLeadsList(main, next);
+    } catch (e) {
+      if (!box.isConnected) return;
+      Object.assign(listPager, before);          // keep the filters the user had
+      renderLeadsList(main, res);                // put the previous page back
+      toast(e.message, true);
+    }
     busy = false;
   };
   box.querySelectorAll('#lead-city button').forEach((b) => { b.onclick = () => go({ city: b.dataset.value, page: 1 }); });
@@ -507,7 +536,7 @@ function renderLeadsList(main, res) {
   const prev = box.querySelector('#page-prev'); if (prev) prev.onclick = () => go({ page: listPager.page - 1 });
   const next = box.querySelector('#page-next'); if (next) next.onclick = () => go({ page: listPager.page + 1 });
   const size = box.querySelector('#page-size');
-  if (size) size.onchange = () => { store.set('page_size', size.value); go({ size: Number(size.value), page: 1 }); };
+  if (size) size.onchange = () => { store.set('page_size', size.value); pager.size = Number(size.value); go({ size: Number(size.value), page: 1 }); };
 }
 
 registerPage('list', {
@@ -611,7 +640,7 @@ function refreshAgentRecent() {
 // poll that id (2s, 6s, 15s, 30s); without an id we fall back to a list sync.
 function pullFinishedCall(callId = agent.callId) {
   const delays = [2000, 6000, 15000, 30000];
-  const done = () => { invalidate(); refreshAgentRecent(); refreshLeadCard(); };
+  const done = () => { invalidate(); if (route().name === 'agent') { refreshAgentRecent(); refreshLeadCard(); } else render(); };
   const attempt = async (i) => {
     try {
       if (callId) {
@@ -707,6 +736,7 @@ registerPage('agent', {
         try {
           const v = await getVapi();
           if (agent.live) { v.stop(); return; }
+          if (!$('mic')) return;                       // navigated away while the SDK loaded
           $('mic').disabled = true; $('state').textContent = t('agent.connecting');
           const pick = VOICES.find((x) => x.id === $('voice').value) ?? VOICES[0];
           const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, speed: Number($('speed').value), chunkPlan: { formatPlan: { enabled: false } } } };
@@ -720,7 +750,7 @@ registerPage('agent', {
         } catch (e) {
           dlog('START FAILED: ' + (e?.message ?? JSON.stringify(e)));
           syncAgentUi();
-          $('err').textContent = (e?.message?.includes('Permission') || e?.name === 'NotAllowedError') ? t('agent.mic.blocked') : t('agent.start.failed');
+          const err = $('err'); if (err) err.textContent = (e?.message?.includes('Permission') || e?.name === 'NotAllowedError') ? t('agent.mic.blocked') : t('agent.start.failed');
         }
       };
       $('chatbar').onsubmit = (e) => {

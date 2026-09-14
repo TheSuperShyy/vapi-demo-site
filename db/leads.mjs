@@ -35,7 +35,8 @@ function parseCsv(text) {
 export function toE164(raw) {
   let d = String(raw ?? '').replace(/\D/g, '');
   if (!d) return null;
-  if (d.startsWith('972')) d = d.slice(3);
+  if (d.startsWith('00')) d = d.slice(2);                       // 00972…
+  if (d.startsWith('972')) { d = d.slice(3); if (d.startsWith('0')) d = d.slice(1); }   // +972 050… keeps a stray 0
   else if (d.startsWith('0')) d = d.slice(1);
   if (d.length < 8 || d.length > 9) return null;
   return '+972' + d;
@@ -44,6 +45,7 @@ export function toE164(raw) {
 // ---------------------------------------------------------------- run
 const text = fs.readFileSync(file, 'utf8').replace(/^﻿/, '');
 const rows = parseCsv(text);
+if (!rows.length) { console.error('the file is empty'); process.exit(1); }
 const header = rows[0].map((h) => h.trim().toLowerCase());
 const col = (n) => header.indexOf(n);
 if (col('phone') < 0) { console.error(`no "phone" column; header is: ${header.join(',')}`); process.exit(1); }
@@ -61,14 +63,17 @@ console.log(`read ${rows.length - 1} rows -> ${leads.length} unique numbers (${d
 
 const sql = postgres(url, { prepare: false, max: 1, ssl: 'require' });
 try {
-  if (replace) { await sql`truncate leads restart identity`; console.log('table emptied'); }
-  const BATCH = 500;
-  for (let i = 0; i < leads.length; i += BATCH) {
-    const batch = leads.slice(i, i + BATCH);
-    await sql`insert into leads ${sql(batch, 'position', 'phone', 'phone_raw', 'name', 'city')}
-      on conflict (phone) do update set position = excluded.position, phone_raw = excluded.phone_raw, name = excluded.name, city = excluded.city`;
-    process.stdout.write(`\r  written ${Math.min(i + BATCH, leads.length)}/${leads.length}`);
-  }
+  // One transaction: a failed batch (or a failed --replace) leaves the previous list intact.
+  await sql.begin(async (tx) => {
+    if (replace) { await tx`truncate leads restart identity`; console.log('table emptied'); }
+    const BATCH = 500;
+    for (let i = 0; i < leads.length; i += BATCH) {
+      const batch = leads.slice(i, i + BATCH);
+      await tx`insert into leads ${tx(batch, 'position', 'phone', 'phone_raw', 'name', 'city')}
+        on conflict (phone) do update set position = excluded.position, phone_raw = excluded.phone_raw, name = excluded.name, city = excluded.city`;
+      process.stdout.write(`\r  written ${Math.min(i + BATCH, leads.length)}/${leads.length}`);
+    }
+  });
   console.log('');
   // Bring status/attempts in line with any calls that already exist for these numbers.
   await sql`

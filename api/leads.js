@@ -11,6 +11,17 @@ import { escapeLike } from './_list.js';
 
 const STATUSES = ['new', 'called', 'do_not_call'];
 
+// Typed digits -> a LIKE pattern over the stored +972 number. 050…, 00972 50…,
+// +972 050… all anchor at the start; a bare fragment matches anywhere.
+export function phonePattern(digits) {
+  let d = digits;
+  if (d.length < 3) return null;
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.startsWith('972')) { d = d.slice(3); if (d.startsWith('0')) d = d.slice(1); return '+972' + escapeLike(d) + '%'; }
+  if (d.startsWith('0')) return '+972' + escapeLike(d.slice(1)) + '%';
+  return '%' + escapeLike(d) + '%';
+}
+
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return;
   res.setHeader('Cache-Control', 'no-store');
@@ -26,8 +37,7 @@ export default async function handler(req, res) {
     const like = `%${escapeLike(text.toLowerCase())}%`;
     // Typed digits match the stored E.164 number: a local prefix such as 050 or 03
     // becomes +97250 / +9723 anchored at the start; anything else matches anywhere.
-    const digits = text.replace(/\D/g, '');
-    const phonePat = digits.length < 3 ? null : digits.startsWith('0') ? '+972' + escapeLike(digits.slice(1)) + '%' : '%' + escapeLike(digits) + '%';
+    const phonePat = phonePattern(text.replace(/\D/g, ''));
     const where = s`where true
       ${text ? s`and (lower(name) like ${like} or lower(city) like ${like} or lower(phone_raw) like ${like} ${phonePat ? s`or phone like ${phonePat}` : s``})` : s``}
       ${city ? s`and city = ${city}` : s``}

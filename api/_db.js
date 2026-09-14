@@ -84,7 +84,7 @@ export async function upsertCall(c, source) {
       opt_out = excluded.opt_out, asked_if_bot = excluded.asked_if_bot,
       call_quality_ok = excluded.call_quality_ok, voice = excluded.voice,
       raw = excluded.raw, source = excluded.source`;
-  if (r.customer_number) await refreshLead(s, r.customer_number);
+  if (r.customer_number) { try { await refreshLead(s, r.customer_number); } catch (e) { console.error('[lead refresh]', e.message); } }   // the call is stored; the lead can catch up on the next sync
   return r.id;
 }
 

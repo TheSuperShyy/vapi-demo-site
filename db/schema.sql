@@ -80,7 +80,6 @@ create table if not exists leads (
 create index if not exists leads_position_idx on leads (position);
 create index if not exists leads_city_idx     on leads (city);
 create index if not exists leads_status_idx   on leads (status);
-create index if not exists calls_number_idx2  on calls (customer_number) where customer_number is not null;
 drop trigger if exists leads_touch on leads;
 create trigger leads_touch before update on leads for each row execute function touch_updated_at();
 alter table leads enable row level security;

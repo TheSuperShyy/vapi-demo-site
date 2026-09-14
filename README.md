@@ -40,10 +40,25 @@ partial results shown faded until they finalize.
 ## Pages
 
 Overview (totals, calls per day, intent split), Calls (every conversation with
-transcript, recording and analysis, paged), List (the calling list in campaign
-order with per-number status), Voice Agent (talk to her from the browser) and
-Settings. Totals and pages are computed by the database, so the dashboard stays
-fast at any number of calls.
+transcript, recording and analysis, paged), Analysis (see below), List (the
+calling list in campaign order with per-number status), Voice Agent (talk to her
+from the browser) and Settings. Totals and pages are computed by the database, so
+the dashboard stays fast at any number of calls. Under 900px wide the sidebar
+becomes a bottom tab bar and tables become stacked cards.
+
+## Analysis and the Excel report
+
+`/api/analysis?days=7|30|90` returns, for the range: the funnel (reached, answered,
+yes/no/unsure, refused, not reached, opt-outs, early hang-ups), reasons for not
+voting, how unanswered calls ended (Vapi's `endedReason` folded into groups), what
+the agent did (detected from her own transcript lines; the phrases are
+`SCRIPT_MARKERS` in `api/_analysis.js`, update them when the script changes), per
+city (joined to the calling list by phone), per day, and the latest quotes. The
+page's "Key findings" are plain rules over those numbers, no AI model.
+
+`/api/export?days=N&lang=en|he` downloads the same data as an `.xlsx` workbook
+(Summary, Daily, Calls, Reasons, Cities, Quotes) written by `api/_xlsx.js`, with
+no spreadsheet dependency. Both routes need `DATABASE_URL`.
 
 ## Sign-in
 

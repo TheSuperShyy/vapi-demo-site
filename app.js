@@ -67,6 +67,7 @@ export function applyLang(next, rerender = true) {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
   // The brand reads "headquarters" first in Hebrew and last in English, with the name itself in the accent colour.
   document.querySelectorAll('.wordmark').forEach((el) => {
     const name = document.createElement('b'); name.textContent = t('brand.name');
@@ -183,6 +184,7 @@ export function route() {
 }
 
 let gen = 0;
+let lastRouteKey = null;
 export async function render() {
   const my = ++gen;
   const { name, params } = route();
@@ -193,7 +195,9 @@ export async function render() {
 
   // Skeleton first, so navigation feels instant even when the API takes a second.
   main.innerHTML = pageHead(`page.${name}`, `page.${name}.sub`) + (page.skeleton?.(params) ?? '');
-  main.scrollTop = 0;
+  // The window scrolls, not <main>: back to the top when the route changed, not on in-page re-renders.
+  const routeKey = name + '/' + params.join('/');
+  if (routeKey !== lastRouteKey) { lastRouteKey = routeKey; window.scrollTo(0, 0); }
 
   try {
     const out = await page.load(params);

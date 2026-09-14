@@ -188,7 +188,9 @@ $('search').oninput = () => {
   clearTimeout(searchTimer);
   listPager.page = 1;
   searchTimer = setTimeout(() => {
-    if (location.hash.startsWith('#/list') || location.hash.startsWith('#/calls')) render();
+    // On a phone an open call hides the list, so a search there goes back to the list.
+    if (location.hash.startsWith('#/calls/') && matchMedia('(max-width: 900px)').matches) location.hash = '#/calls';
+    else if (location.hash.startsWith('#/list') || location.hash.startsWith('#/calls')) render();
     else location.hash = '#/calls';
   }, 250);
 };
@@ -241,7 +243,7 @@ function barChart(buckets) {
     return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="${b.n ? 'var(--chart-line)' : 'var(--chart-grid)'}"/>`;
   }).join('');
   const grid = [0.33, 0.66].map((f) => `<line x1="0" x2="${w}" y1="${(h * f).toFixed(1)}" y2="${(h * f).toFixed(1)}" stroke="var(--chart-grid)"/>`).join('');
-  return `<div class="chart-box"><svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-values">${labels.join('')}</div></div><div class="chart-axis">${axisLabels(buckets)}</div>`;
+  return `<div class="chart-box${n > 31 ? ' very-dense' : n > 7 ? ' dense' : ''}"><svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-values">${labels.join('')}</div></div><div class="chart-axis">${axisLabels(buckets)}</div>`;
 }
 
 // One line per answer, the running total over the range, on the same day grid as
@@ -488,7 +490,7 @@ function renderCallsList(main, res, selectedId) {
 
 function callsTable(calls, selectedId) {
   if (!calls.length) return `<div class="page-empty">${query ? t('empty.search') : t('empty.calls')}</div>`;
-  return `<div style="overflow-x:auto"><table class="table calls-table">
+  return `<div style="overflow-x:auto"><table class="table cards calls-table">
     <thead><tr><th>${t('col.status')}</th><th>${t('col.source')}</th><th>${t('col.started')}</th><th>${t('col.length')}</th><th>${t('col.intent')}</th><th class="end">${t('col.cost')}</th></tr></thead>
     <tbody>${calls.map((c) => `<tr class="clickable${c.id === selectedId ? ' on' : ''}" data-id="${c.id}">
       <td><span style="display:inline-flex;align-items:center;gap:8px"><span class="dot ${dotClass(c)}"></span>${t('status.' + statusOf(c))}</span></td>
@@ -498,6 +500,9 @@ function callsTable(calls, selectedId) {
 
 const bubble = (role, text, partial = false) => `<div class="turn ${role === 'user' ? 'user' : ''}"><div class="bubble${partial ? ' partial' : ''}">
   <div class="who">${role === 'user' ? t('who.user') : t('who.agent')}</div><div class="say" dir="auto">${escapeHtml(text)}</div></div></div>`;
+
+// Phones hide the list behind an open call; this is the way back (desktop hides it).
+const backLink = () => `<a class="btn secondary sm only-mobile detail-back" href="#/calls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> ${t('detail.back')}</a>`;
 
 function detailPanel(d) {
   if (!d) return `<div class="card"><div class="page-empty">${t('detail.pick')}</div></div>`;
@@ -519,7 +524,7 @@ function detailPanel(d) {
     ? `<div class="convo">${turns.map((m) => bubble(m.role, m.text.trim())).join('')}</div>`
     : `<div class="page-empty">${d.endedAt ? t('detail.empty') : t('detail.live')}</div>`;
   return `<div class="card">
-    <a class="btn secondary sm only-mobile detail-back" href="#/calls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> ${t('detail.back')}</a>
+    ${backLink()}
     <div class="detail-head">
       <span class="card-title">${t('detail.title')} <span class="count">· ${srcHtml(d)} · ${fmtTime(d.createdAt)}</span></span>
       <span style="display:inline-flex;gap:8px;align-items:center">${intentBadge(d)}<span class="mono faint">${fmtDur(d.startedAt, d.endedAt)} · ${money(d.cost)}</span></span>
@@ -549,7 +554,7 @@ registerPage('calls', {
     const html = pageHead('page.calls', 'page.calls.sub', `<span class="badge" id="calls-count">${res.total.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US')} ${t('unit.calls')}</span>`) + `
       <div class="split${id ? ' has-detail' : ''}">
         <div class="card" id="calls-list" style="padding:12px 8px 8px"></div>
-        ${detail?.error ? `<div class="card"><div class="page-empty">${escapeHtml(detail.error)}</div></div>` : detailPanel(detail)}
+        ${detail?.error ? `<div class="card">${backLink()}<div class="page-empty">${escapeHtml(detail.error)}</div></div>` : detailPanel(detail)}
       </div>`;
     return { html, mount(main) {
       renderCallsList(main, res, id);
@@ -577,7 +582,7 @@ const fmtN = (n) => Number(n || 0).toLocaleString(lang === 'he' ? 'he-IL' : 'en-
 
 function leadsTable(items) {
   if (!items.length) return `<div class="page-empty">${query || listPager.city || listPager.status ? t('empty.search') : t('empty.list')}</div>`;
-  return `<div style="overflow-x:auto"><table class="table leads-table">
+  return `<div style="overflow-x:auto"><table class="table cards leads-table">
     <thead><tr><th class="faint">${t('col.pos')}</th><th>${t('col.name')}</th><th>${t('col.phone')}</th><th>${t('col.city')}</th><th>${t('col.status')}</th><th class="end">${t('col.attempts')}</th><th>${t('col.last')}</th><th></th></tr></thead>
     <tbody>${items.map((l) => `<tr${l.lastCallId ? ` class="clickable" data-call="${escapeHtml(l.lastCallId)}"` : ''}>
       <td class="faint mono">${fmtN(l.position)}</td>
@@ -586,7 +591,7 @@ function leadsTable(items) {
       <td><span dir="auto">${escapeHtml(l.city || '—')}</span></td>
       <td><span class="badge ${STATUS_TONE[l.status] ?? ''}">${t('status.' + l.status)}</span></td>
       <td class="end mono">${l.attempts || 0}</td>
-      <td>${l.lastCallId ? `${intentBadge({ intent: l.lastOutcome })} <span class="faint" style="font-size:12px">${fmtTime(l.lastCalledAt)}</span>` : '<span class="faint">—</span>'}</td>
+      <td>${l.lastCallId ? `${intentBadge({ intent: l.lastOutcome })} <span class="faint when" style="font-size:12px">${fmtTime(l.lastCalledAt)}</span>` : '<span class="faint">—</span>'}</td>
       <td class="end"><button class="btn secondary sm lead-call" type="button" data-lead="${l.id}"${l.status === 'do_not_call' ? ` disabled title="${t('agent.dial.dnc')}"` : ''}>${PHONE_ICON} ${t('list.call')}</button></td></tr>`).join('')}</tbody></table></div>`;
 }
 

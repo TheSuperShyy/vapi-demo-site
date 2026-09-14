@@ -244,7 +244,7 @@ function barChart(buckets) {
 
 // One line per answer, per day, on the same day grid as the bars. Straight segments
 // so a quiet day reads as a dip rather than a smoothed-over bump. The SVG is
-// stretched to the card width, so every stroke is non-scaling.
+// stretched to the card width, so every stroke is non-scaling and nothing is drawn as fill geometry.
 const TREND = ['yes', 'no', 'not_reached'];
 function lineChart(buckets) {
   const w = 900, h = 190, top = 12, bottom = 6, n = buckets.length, slot = w / n, rows = 4;
@@ -260,7 +260,8 @@ function lineChart(buckets) {
     const pts = buckets.map((b, i) => [px(i).toFixed(1), py(b[key]).toFixed(1)]);
     const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
     const area = `${line} L${pts[n - 1][0]} ${py(0).toFixed(1)} L${pts[0][0]} ${py(0).toFixed(1)} Z`;
-    const dots = n > 31 ? '' : buckets.map((b, i) => (b[key] ? `<circle cx="${pts[i][0]}" cy="${pts[i][1]}" r="3.5" fill="${INTENT_COLOR[key]}" stroke="var(--surface-1)" stroke-width="2" vector-effect="non-scaling-stroke"/>` : '')).join('');
+    // Dots are zero-length round-capped strokes: a <circle> would be squashed by the horizontal stretch, a stroke width is not.
+    const dots = n > 31 ? '' : buckets.map((b, i) => (b[key] ? `<path d="M${pts[i][0]} ${pts[i][1]}h0.01" stroke="var(--surface-1)" stroke-width="11" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M${pts[i][0]} ${pts[i][1]}h0.01" stroke="${INTENT_COLOR[key]}" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` : '')).join('');
     return `<path d="${area}" fill="url(#trend-${key})"/><path d="${line}" fill="none" stroke="${INTENT_COLOR[key]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>${dots}`;
   }).join('');
   const defs = `<defs>${TREND.map((key) => `<linearGradient id="trend-${key}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${INTENT_COLOR[key]};stop-opacity:.22"/><stop offset="1" style="stop-color:${INTENT_COLOR[key]};stop-opacity:0"/></linearGradient>`).join('')}</defs>`;
@@ -288,7 +289,7 @@ function bindLineChart(root, buckets) {
       TREND.map((key) => `<span class="tip-row"><span class="dot" style="background:${INTENT_COLOR[key]}"></span><span>${t('intent.' + key)}</span><b>${b[key]}</b></span>`).join('');
     tip.hidden = false;
     const flip = x + 14 + tip.offsetWidth > r.width;
-    tip.style.left = `${flip ? x - 14 - tip.offsetWidth : x + 14}px`;
+    tip.style.left = `${Math.max(0, Math.min(r.width - tip.offsetWidth, flip ? x - 14 - tip.offsetWidth : x + 14))}px`;
   };
   plot.onpointerleave = () => { guide.hidden = true; tip.hidden = true; };
 }
@@ -356,7 +357,7 @@ registerPage('overview', {
         <div class="card"><div class="card-head"><span class="card-title">${t('card.week')} <span class="count">· ${fmtN(s.inRange)} ${t('unit.calls')}</span></span><span class="badge">${range}d</span></div>${barChart(buckets)}</div>
         <div class="card"><div class="card-head"><span class="card-title">${t('card.intent')}</span></div>${s.total ? donut(counts, s.total) : `<div class="page-empty">${t('empty.calls')}</div>`}</div>
       </div>
-      <div class="card"><div class="card-head"><span class="card-title">${t('card.trend')} <span class="count">· ${t('card.trend.sub')}</span></span>${trendLegend(buckets)}</div>${lineChart(buckets)}</div>
+      <div class="card"><div class="card-head wrap"><span class="card-title">${t('card.trend')} <span class="count">· ${t('card.trend.sub')}</span></span>${trendLegend(buckets)}</div>${lineChart(buckets)}</div>
       <div class="card"><div class="card-head"><span class="card-title">${t('card.recent')}</span><a class="btn secondary sm" href="#/calls">${t('see.all')}</a></div>${recentRows(s.recent)}</div>`;
     return { html, mount(main) {
       main.querySelectorAll('.row[data-id]').forEach((el) => { el.onclick = () => { location.hash = `#/calls/${el.dataset.id}`; }; });

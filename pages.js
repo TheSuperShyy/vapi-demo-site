@@ -43,6 +43,10 @@ Object.assign(I18N.en, {
   'agent.mic.blocked': 'The browser blocked the microphone. Allow access and try again.', 'agent.start.failed': 'Could not start the call. Try refreshing.',
   'agent.error': 'The call hit an error. Try again.', 'agent.type': 'Or just type here. English works too, she answers in Hebrew.',
   'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
+  'agent.lead': 'Calling', 'agent.lead.sub': 'You answer as the person who picked up. The call is recorded against this number.',
+  'agent.dial': 'Dial this number', 'agent.dial.note': 'Needs a phone number in Vapi. Until then the same call runs in the browser.',
+  'agent.dial.dnc': 'This number asked not to be called.', 'agent.dialed': 'Dialing. The call will appear in Calls.', 'agent.pick': 'Pick a number from the List to call it.',
+  'list.call': 'Call', 'list.calls': 'calls',
   'agent.saved': 'Call saved. It will appear in Calls in a moment.',
   'set.appearance': 'Appearance', 'set.theme': 'Light theme', 'set.theme.sub': 'Dark is the default', 'set.lang': 'Language', 'set.lang.sub': 'English or Hebrew, layout flips with it',
   'set.assistant': 'Assistant', 'set.name': 'Name', 'set.transcriber': 'Transcriber', 'set.voice': 'Voice', 'set.model': 'Model', 'set.first': 'First message', 'set.updated': 'Last updated',
@@ -82,6 +86,10 @@ Object.assign(I18N.he, {
   'agent.mic.blocked': 'הדפדפן חסם את המיקרופון. אשרו גישה ונסו שוב.', 'agent.start.failed': 'לא הצלחנו להתחיל את השיחה. נסו לרענן.',
   'agent.error': 'נפלה שגיאה בשיחה. נסו שוב.', 'agent.type': 'או פשוט תכתבו פה. גם באנגלית, היא עונה בעברית.',
   'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
+  'agent.lead': 'מתקשרים אל', 'agent.lead.sub': 'אתם עונים כמי שהרים את הטלפון. השיחה נרשמת על המספר הזה.',
+  'agent.dial': 'חיוג למספר', 'agent.dial.note': 'דורש מספר טלפון ב-Vapi. עד אז אותה שיחה רצה בדפדפן.',
+  'agent.dial.dnc': 'המספר הזה ביקש שלא להתקשר.', 'agent.dialed': 'מחייג. השיחה תופיע בעמוד השיחות.', 'agent.pick': 'בחרו מספר מהרשימה כדי להתקשר אליו.',
+  'list.call': 'התקשר', 'list.calls': 'שיחות',
   'agent.saved': 'השיחה נשמרה. היא תופיע בעמוד השיחות בעוד רגע.',
   'set.appearance': 'מראה', 'set.theme': 'ערכת נושא בהירה', 'set.theme.sub': 'כהה היא ברירת המחדל', 'set.lang': 'שפה', 'set.lang.sub': 'אנגלית או עברית, הפריסה מתהפכת בהתאם',
   'set.assistant': 'הסוכנת', 'set.name': 'שם', 'set.transcriber': 'תמלול', 'set.voice': 'קול', 'set.model': 'מודל', 'set.first': 'משפט פתיחה', 'set.updated': 'עודכן לאחרונה',
@@ -157,7 +165,7 @@ const statusOf = (c) => {
   return c.endedAt ? 'ended' : 'queued';
 };
 const dotClass = (c) => ({ live: 'live', failed: 'fail', ended: 'ended', queued: '' })[statusOf(c)];
-const srcOf = (c) => (c.type === 'webCall' ? t('src.web') : c.number || t('src.phone'));
+const srcOf = (c) => (c.number ? fmtPhone(c.number) : c.type === 'webCall' ? t('src.web') : t('src.phone'));
 const INTENT_ORDER = ['yes', 'no', 'unsure', 'refused', 'not_reached', 'unknown'];
 const INTENT_TONE = { yes: 'positive', no: 'negative', unsure: 'accent', refused: '', not_reached: '', unknown: '' };
 const INTENT_COLOR = { yes: 'var(--positive)', no: 'var(--negative)', unsure: 'var(--accent)', refused: 'var(--text-2)', not_reached: 'var(--text-3)', unknown: 'var(--border-2)' };
@@ -448,12 +456,13 @@ function fmtPhone(e164) {
   return local.length === 10 ? `${local.slice(0, 3)}-${local.slice(3, 6)}-${local.slice(6)}` : `${local.slice(0, 2)}-${local.slice(2, 5)}-${local.slice(5)}`;
 }
 const STATUS_TONE = { new: '', called: 'accent', do_not_call: 'negative' };
+const PHONE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>';
 const fmtN = (n) => Number(n || 0).toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
 
 function leadsTable(items) {
   if (!items.length) return `<div class="page-empty">${query || listPager.city || listPager.status ? t('empty.search') : t('empty.list')}</div>`;
   return `<div style="overflow-x:auto"><table class="table">
-    <thead><tr><th class="faint">${t('col.pos')}</th><th>${t('col.name')}</th><th>${t('col.phone')}</th><th>${t('col.city')}</th><th>${t('col.status')}</th><th class="end">${t('col.attempts')}</th><th>${t('col.last')}</th></tr></thead>
+    <thead><tr><th class="faint">${t('col.pos')}</th><th>${t('col.name')}</th><th>${t('col.phone')}</th><th>${t('col.city')}</th><th>${t('col.status')}</th><th class="end">${t('col.attempts')}</th><th>${t('col.last')}</th><th></th></tr></thead>
     <tbody>${items.map((l) => `<tr${l.lastCallId ? ` class="clickable" data-call="${escapeHtml(l.lastCallId)}"` : ''}>
       <td class="faint mono">${fmtN(l.position)}</td>
       <td><span dir="auto">${escapeHtml(l.name || '—')}</span></td>
@@ -461,7 +470,8 @@ function leadsTable(items) {
       <td><span dir="auto">${escapeHtml(l.city || '—')}</span></td>
       <td><span class="badge ${STATUS_TONE[l.status] ?? ''}">${t('status.' + l.status)}</span></td>
       <td class="end mono">${l.attempts || 0}</td>
-      <td>${l.lastCallId ? `${intentBadge({ intent: l.lastOutcome })} <span class="faint" style="font-size:12px">${fmtTime(l.lastCalledAt)}</span>` : '<span class="faint">—</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+      <td>${l.lastCallId ? `${intentBadge({ intent: l.lastOutcome })} <span class="faint" style="font-size:12px">${fmtTime(l.lastCalledAt)}</span>` : '<span class="faint">—</span>'}</td>
+      <td class="end"><button class="btn secondary sm lead-call" type="button" data-lead="${l.id}"${l.status === 'do_not_call' ? ` disabled title="${t('agent.dial.dnc')}"` : ''}>${PHONE_ICON} ${t('list.call')}</button></td></tr>`).join('')}</tbody></table></div>`;
 }
 
 function chips(id, current, options) {
@@ -492,6 +502,7 @@ function renderLeadsList(main, res) {
   box.querySelectorAll('#lead-city button').forEach((b) => { b.onclick = () => go({ city: b.dataset.value, page: 1 }); });
   box.querySelectorAll('#lead-status button').forEach((b) => { b.onclick = () => go({ status: b.dataset.value, page: 1 }); });
   box.querySelectorAll('tr[data-call]').forEach((tr) => { tr.onclick = () => { location.hash = '#/calls/' + tr.dataset.call; }; });
+  box.querySelectorAll('button.lead-call').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); location.hash = '#/agent/' + b.dataset.lead; }; });
   box.querySelectorAll('#page-nums button[data-page]').forEach((b) => { b.onclick = () => go({ page: Number(b.dataset.page) }); });
   const prev = box.querySelector('#page-prev'); if (prev) prev.onclick = () => go({ page: listPager.page - 1 });
   const next = box.querySelector('#page-next'); if (next) next.onclick = () => go({ page: listPager.page + 1 });
@@ -533,7 +544,7 @@ const VOICES = [
 
 // The SDK instance and call state outlive the page so navigating away mid-call
 // does not drop the call; coming back re-binds the UI to the live state.
-const agent = { vapi: null, live: false, partial: null, feedHtml: '', log: [] };
+const agent = { vapi: null, live: false, partial: null, feedHtml: '', log: [], lead: null, callId: null };
 const dlog = (m) => { agent.log.push(m); console.log('[agent]', m); const d = $('diag'); if (d) d.textContent = agent.log.join('\n'); };
 
 async function getVapi() {
@@ -595,21 +606,70 @@ function refreshAgentRecent() {
 // arrives later and fills in the analysis. A short delay lets Vapi mark the
 // call as ended first. With no database, /api/sync answers 409 and we just
 // refresh; the list then comes straight from Vapi anyway.
-function pullFinishedCall() {
-  setTimeout(async () => {
-    try { await api('/api/sync?limit=5', { method: 'POST' }); } catch (e) { dlog('sync after call: ' + e.message); }
-    invalidate();
-    refreshAgentRecent();
-  }, 3000);
+// Vapi's call list can lag a few seconds after hangup, but the call is readable
+// by id at once, and /api/calls/:id stores it the moment it has ended. So we
+// poll that id (2s, 6s, 15s, 30s); without an id we fall back to a list sync.
+function pullFinishedCall(callId = agent.callId) {
+  const delays = [2000, 6000, 15000, 30000];
+  const done = () => { invalidate(); refreshAgentRecent(); refreshLeadCard(); };
+  const attempt = async (i) => {
+    try {
+      if (callId) {
+        const d = await api('/api/calls/' + encodeURIComponent(callId));
+        dlog(`pull ${i + 1}: ${callId.slice(0, 8)} ended=${!!d.endedAt} source=${d.source}`);
+        if (d.endedAt) return done();
+      } else {
+        await api('/api/sync?limit=5', { method: 'POST' });
+        return done();
+      }
+    } catch (e) { dlog(`pull ${i + 1} failed: ${e.message}`); }
+    if (i + 1 < delays.length) setTimeout(() => attempt(i + 1), delays[i + 1]);
+    else done();
+  };
+  setTimeout(() => attempt(0), delays[0]);
+}
+
+// Re-reads the lead behind the "Calling" card so its status flips to called / do not call.
+async function refreshLeadCard() {
+  if (!agent.lead || !$('lead-card')) return;
+  try {
+    const { lead } = await api('/api/leads/' + agent.lead.id);
+    agent.lead = lead;
+    const badge = $('lead-card').querySelector('.badge');
+    if (badge) { badge.className = `badge ${STATUS_TONE[lead.status] ?? ''}`; badge.textContent = t('status.' + lead.status); }
+    const meta = $('lead-card').querySelector('.lead-meta .faint:last-child');
+    if (meta) meta.textContent = `${fmtN(lead.attempts)} ${t('list.calls')}`;
+  } catch {}
 }
 
 registerPage('agent', {
   skeleton: () => sk.card(`<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px 0"><div class="skeleton" style="width:132px;height:132px;border-radius:50%"></div>${sk.line('w30')}</div>`),
-  async load() {
+  async load(params) {
     const voiceSel = store.get('voice', VOICES[0].id), speedVal = store.get('speed', '1');
+    // Lead mode: #/agent/<leadId> - the call is made for one number from the List.
+    const leadId = /^\d+$/.test(params[0] ?? '') ? Number(params[0]) : null;
+    let lead = null, leadErr = null, cfg = null;
+    if (leadId) {
+      [lead, cfg] = await Promise.all([
+        api('/api/leads/' + leadId).then((r) => r.lead).catch((e) => { leadErr = e.message; return null; }),
+        loadConfig().catch(() => null),
+      ]);
+    }
+    agent.lead = lead;
+    const dialReady = !!cfg?.dialReady, dnc = lead?.status === 'do_not_call';
+    const leadCard = leadId ? `<div class="card nested lead-card" id="lead-card">${lead ? `
+          <div class="lead-head"><span class="lead-k">${t('agent.lead')}</span><span class="badge ${STATUS_TONE[lead.status] ?? ''}">${t('status.' + lead.status)}</span></div>
+          <div class="lead-name" dir="auto">${escapeHtml(lead.name || '—')}</div>
+          <div class="lead-meta"><span class="mono" dir="ltr">${escapeHtml(fmtPhone(lead.phone))}</span><span dir="auto">${escapeHtml(lead.city || '')}</span><span class="faint">#${fmtN(lead.position)}</span><span class="faint">${fmtN(lead.attempts)} ${t('list.calls')}</span></div>
+          <div class="lead-actions">
+            <button class="btn secondary sm" id="dial" type="button"${dialReady && !dnc ? '' : ' disabled'}>${PHONE_ICON} ${t('agent.dial')}</button>
+            <span class="faint" style="font-size:12px">${dnc ? t('agent.dial.dnc') : dialReady ? '' : t('agent.dial.note')}</span>
+          </div>
+          <div class="faint" style="font-size:12px;margin-top:8px">${t('agent.lead.sub')}</div>` : `<div class="page-empty">${escapeHtml(leadErr || t('err.generic'))}</div>`}</div>` : '';
     const html = pageHead('page.agent', 'page.agent.sub') + `
       <div class="grid" style="grid-template-columns:${innerWidth < 1100 ? '1fr' : 'minmax(0,1fr) 380px'}">
         <div class="card" style="padding:28px 24px">
+          ${leadCard}
           <div class="orb" id="orb"><div class="ring" id="ring"></div><button class="mic" id="mic" type="button">${t('agent.talk')}</button></div>
           <div class="state" id="state">${t('agent.ready')}</div>
           <div class="err" id="err"></div>
@@ -629,11 +689,17 @@ registerPage('agent', {
         </div>
         <div class="card"><div class="card-head"><span class="card-title">${t('card.recent')}</span><a class="btn secondary sm" href="#/calls">${t('see.all')}</a></div><div id="agent-recent">${sk.rows(4)}</div></div>
       </div>
-      <p class="page-sub" style="text-align:center">${t('agent.note')}</p>`;
+      <p class="page-sub" style="text-align:center">${t('agent.note')} ${leadId ? '' : `<a href="#/list">${t('agent.pick')}</a>`}</p>`;
     return { html, async mount(main) {
       if (location.search.includes('debug')) { $('diag').style.display = 'block'; $('diag').textContent = agent.log.join('\n'); }
       syncAgentUi();
       refreshAgentRecent();
+      const dial = $('dial');
+      if (dial) dial.onclick = async () => {
+        dial.disabled = true;
+        try { const r = await api('/api/dial', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ leadId: agent.lead.id }) }); toast(t('agent.dialed')); pullFinishedCall(r.id); }
+        catch (e) { toast(e.message, true); dial.disabled = false; }
+      };
       $('voice').onchange = () => store.set('voice', $('voice').value);
       $('speed').oninput = () => { $('speedval').textContent = Number($('speed').value).toFixed(2); store.set('speed', $('speed').value); };
       $('mic').onclick = async () => {
@@ -644,9 +710,13 @@ registerPage('agent', {
           $('mic').disabled = true; $('state').textContent = t('agent.connecting');
           const pick = VOICES.find((x) => x.id === $('voice').value) ?? VOICES[0];
           const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, speed: Number($('speed').value), chunkPlan: { formatPlan: { enabled: false } } } };
+          // Tag the call with the number it stands in for; the server reads it back
+          // from call.assistantOverrides.variableValues and updates the lead.
+          if (agent.lead && agent.lead.status !== 'do_not_call') overrides.variableValues = { leadId: String(agent.lead.id), leadPhone: agent.lead.phone, leadName: agent.lead.name ?? '', leadCity: agent.lead.city ?? '' };
           dlog(`starting call voice=${pick.provider}/${pick.voiceId}`);
           const r = await v.start(ASSISTANT_ID, overrides);
-          dlog('start() resolved: ' + (r?.id ?? '?'));
+          agent.callId = r?.id ?? null;
+          dlog('start() resolved: ' + (agent.callId ?? '?'));
         } catch (e) {
           dlog('START FAILED: ' + (e?.message ?? JSON.stringify(e)));
           syncAgentUi();

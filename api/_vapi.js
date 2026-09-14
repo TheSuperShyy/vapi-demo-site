@@ -53,7 +53,7 @@ export function summarise(c) {
     type: c.type ?? null,                     // webCall | outboundPhoneCall | inboundPhoneCall
     status: c.status,
     endedReason: c.endedReason ?? null,
-    number: c.customer?.number ?? null,
+    number: c.customer?.number ?? c.assistantOverrides?.variableValues?.leadPhone ?? null,
     createdAt: c.createdAt,
     startedAt: c.startedAt ?? null,
     endedAt: c.endedAt ?? null,

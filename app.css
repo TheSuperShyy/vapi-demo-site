@@ -199,3 +199,13 @@ audio { width: 100%; margin: 14px 0; }
 @media (max-width: 1100px) { .stat-row.four { grid-template-columns: 1fr 1fr; } }
 #leads-list .card-head { padding: 0 8px; }
 #leads-list .tabs > button .faint { margin-inline-start: 6px; }
+
+/* "Calling" card on the Voice Agent page */
+.lead-card { margin-bottom: 20px; text-align: start; }
+.lead-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.lead-k { font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--text-3); }
+.lead-name { font-size: 16px; font-weight: 600; margin-top: 6px; }
+.lead-meta { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--text-2); margin-top: 4px; }
+.lead-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.lead-actions .btn svg, .lead-call svg { margin-inline-end: 6px; }
+.page-sub a { color: var(--accent); text-decoration: none; }

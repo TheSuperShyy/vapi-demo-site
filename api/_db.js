@@ -39,7 +39,9 @@ export function callToRow(c, source = 'webhook') {
     type: c.type ?? null,
     status: c.status ?? null,
     ended_reason: c.endedReason ?? null,
-    customer_number: c.customer?.number || null,
+    // Phone calls carry the number on `customer`; a browser call placed for a
+    // lead from the List carries it in the overrides we sent (variableValues.leadPhone).
+    customer_number: c.customer?.number || c.assistantOverrides?.variableValues?.leadPhone || null,
     created_at: c.createdAt,
     started_at: c.startedAt ?? null,
     ended_at: c.endedAt ?? null,

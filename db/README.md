@@ -82,6 +82,14 @@ stored call updates its lead automatically: attempts, latest outcome, and
 `do_not_call` the moment a call records an opt-out. The CSV itself never enters
 the repo; only the database holds it.
 
+**Calling a number from the list.** Each row has a Call button that opens the
+Voice Agent page for that number. With `VAPI_PHONE_NUMBER_ID` set (a phone
+number connected in Vapi) the Dial button places a real outbound call through
+`POST /api/dial`. Without it, the same agent runs in the browser and the call is
+tagged with the number (`assistantOverrides.variableValues.leadPhone`), so it is
+recorded against that row exactly as a phone call would be. Numbers marked
+`do_not_call` cannot be called either way.
+
 ## What is stored
 
 One row per number in `leads` (see above), and one row per call in `calls`: who/when/how long/cost, the recording URL, the full

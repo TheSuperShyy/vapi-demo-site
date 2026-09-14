@@ -17,6 +17,9 @@ export default async function handler(req, res) {
       model: `${a.model?.provider ?? '?'} · ${a.model?.model ?? '?'}`,
       firstMessage: a.firstMessage ?? '',
       updatedAt: a.updatedAt,
+      // True once a Vapi phone number is connected (VAPI_PHONE_NUMBER_ID); until
+      // then the List's Call button runs the agent in the browser instead.
+      dialReady: !!process.env.VAPI_PHONE_NUMBER_ID,
     });
   } catch (e) { fail(res, e); }
 }

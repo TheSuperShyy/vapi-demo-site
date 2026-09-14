@@ -19,11 +19,12 @@ export const I18N = {
     'greeting.title': 'Welcome',
     'greeting.sub': "Here's what's happening with your agent",
     'nav.main': 'Main Menu', 'nav.overview': 'Overview', 'nav.calls': 'Calls',
-    'nav.agent': 'Voice Agent', 'nav.system': 'System', 'nav.settings': 'Settings',
+    'nav.agent': 'Voice Agent', 'nav.system': 'System', 'nav.settings': 'Settings', 'nav.list': 'List',
     'search.placeholder': 'Search calls', 'topbar.light': 'Light', 'topbar.refresh': 'Refresh',
     'profile.sub': 'Voice agent', 'loading': 'Loading…', 'lang.other': 'עברית',
     'page.overview': 'Overview', 'page.overview.sub': 'This is what happened with the agent',
     'page.calls': 'Calls', 'page.calls.sub': 'Every conversation, with the full transcript',
+    'page.list': 'Calling list', 'page.list.sub': 'Who the agent will call, in campaign order',
     'page.agent': 'Voice Agent', 'page.agent.sub': 'Talk to her from the browser. No phone call.',
     'page.settings': 'Settings', 'page.settings.sub': 'Appearance and agent details',
     'err.generic': 'Something went wrong', 'retry': 'Try again',
@@ -36,11 +37,12 @@ export const I18N = {
     'greeting.title': 'שלום',
     'greeting.sub': 'זה מה שקורה היום עם הסוכן',
     'nav.main': 'תפריט ראשי', 'nav.overview': 'סקירה', 'nav.calls': 'שיחות',
-    'nav.agent': 'סוכן קולי', 'nav.system': 'מערכת', 'nav.settings': 'הגדרות',
+    'nav.agent': 'סוכן קולי', 'nav.system': 'מערכת', 'nav.settings': 'הגדרות', 'nav.list': 'רשימה',
     'search.placeholder': 'חיפוש שיחות', 'topbar.light': 'בהיר', 'topbar.refresh': 'רענון',
     'profile.sub': 'סוכנת קולית', 'loading': 'טוען…', 'lang.other': 'English',
     'page.overview': 'סקירה', 'page.overview.sub': 'זה מה שקרה עם הסוכן',
     'page.calls': 'שיחות', 'page.calls.sub': 'כל שיחה, עם התמלול המלא',
+    'page.list': 'רשימת חיוג', 'page.list.sub': 'למי הסוכנת תתקשר, לפי סדר הקמפיין',
     'page.agent': 'סוכן קולי', 'page.agent.sub': 'דברו איתה מהדפדפן. בלי שיחת טלפון.',
     'page.settings': 'הגדרות', 'page.settings.sub': 'מראה ופרטי הסוכן',
     'err.generic': 'משהו השתבש', 'retry': 'נסו שוב',
@@ -227,7 +229,7 @@ export const sk = {
 // ------------------------------------------------------------------ boot
 
 // Fallback page so the shell never dead-ends if pages.js fails to load.
-for (const name of ['overview', 'calls', 'agent', 'settings']) {
+for (const name of ['overview', 'calls', 'list', 'agent', 'settings']) {
   registerPage(name, {
     skeleton: () => sk.card(sk.rows(4)),
     load: async () => ({ html: pageHead(`page.${name}`, `page.${name}.sub`) + sk.card(`<div class="page-empty">${t('loading')}</div>`) }),

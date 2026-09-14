@@ -189,3 +189,13 @@ audio { width: 100%; margin: 14px 0; }
 .pager .tabs > button { min-width: var(--control-sm); padding: 0 10px; }
 .pager-gap { color: var(--text-3); font-size: 12px; padding: 0 2px; }
 [dir="rtl"] .pager .chev { transform: scaleX(-1); }
+
+/* topbar refresh while it pulls from Vapi */
+.icon-btn.spin svg { animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* calling list */
+.stat-row.four { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
+@media (max-width: 1100px) { .stat-row.four { grid-template-columns: 1fr 1fr; } }
+#leads-list .card-head { padding: 0 8px; }
+#leads-list .tabs > button .faint { margin-inline-start: 6px; }

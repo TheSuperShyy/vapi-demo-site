@@ -58,3 +58,29 @@ create trigger calls_touch before update on calls for each row execute function 
 -- connection string, so nothing needs anon/public access through PostgREST.
 alter table calls       enable row level security;
 alter table webhook_log enable row level security;
+
+-- ---------------------------------------------------------------- calling list
+-- One row per number to call, in campaign order. Filled by db/leads.mjs from the
+-- CSV; kept up to date from calls (attempts / last outcome) by api/_db.js.
+create table if not exists leads (
+  id             bigserial primary key,
+  position       int not null,                    -- order in the calling list
+  phone          text not null unique,            -- E.164, e.g. +972501234567
+  phone_raw      text,                            -- as it appeared in the list
+  name           text,
+  city           text,
+  status         text not null default 'new',     -- new | called | do_not_call
+  attempts       int not null default 0,
+  last_call_id   text,
+  last_outcome   text,                            -- intent of the latest call
+  last_called_at timestamptz,
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+create index if not exists leads_position_idx on leads (position);
+create index if not exists leads_city_idx     on leads (city);
+create index if not exists leads_status_idx   on leads (status);
+create index if not exists calls_number_idx2  on calls (customer_number) where customer_number is not null;
+drop trigger if exists leads_touch on leads;
+create trigger leads_touch before update on leads for each row execute function touch_updated_at();
+alter table leads enable row level security;

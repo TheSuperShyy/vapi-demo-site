@@ -65,9 +65,26 @@ npm run db:sync
 or, once deployed, `POST https://<your-site>.vercel.app/api/sync` (send the
 dashboard password as a bearer token if you set one).
 
+## The calling list
+
+The List page shows who the agent will call, in campaign order, with each
+number's status (not called / called / do not call), attempts and last outcome.
+Import it once from a CSV with `phone`, `name` and `city` columns (header row,
+any order; row order becomes the calling order):
+
+```bash
+node db/leads.mjs path/to/list.csv            # upsert by phone, safe to re-run
+node db/leads.mjs path/to/list.csv --replace  # start over
+```
+
+Phones are stored as `+972…` so they match what Vapi reports. From then on every
+stored call updates its lead automatically: attempts, latest outcome, and
+`do_not_call` the moment a call records an opt-out. The CSV itself never enters
+the repo; only the database holds it.
+
 ## What is stored
 
-One row per call in `calls`: who/when/how long/cost, the recording URL, the full
+One row per number in `leads` (see above), and one row per call in `calls`: who/when/how long/cost, the recording URL, the full
 conversation as JSON, the transcript, and the analysis the assistant produces
 (intent, reason, verbatim quote, opt-out and asked-if-bot flags). The complete raw
 Vapi payload is kept in `raw` so nothing is lost if we want a field later.
@@ -90,6 +107,7 @@ see why.
 | `db/schema.sql` | tables, indexes, trigger |
 | `db/setup.mjs` | applies the schema |
 | `db/sync.mjs` | backfill from the command line |
+| `db/leads.mjs` | imports the calling list |
 | `db/register-webhook.mjs` | points the Vapi assistant at `/api/webhook` |
 | `api/_db.js` | connection + Vapi→row mapping |
 | `api/webhook.js` | receives end-of-call reports |

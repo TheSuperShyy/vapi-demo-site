@@ -2,8 +2,10 @@
 // DATABASE_URL (Supabase -> Connect -> Transaction pooler, port 6543).
 //
 // postgres.js with prepare:false, because Supabase's transaction pooler does not
-// support prepared statements. max:1 because each serverless invocation is its
-// own process; the pooler multiplexes on its side.
+// support prepared statements. A tiny pool (2) so one slow or stuck query cannot
+// hold up every other request in a long-lived process such as the dev server;
+// each serverless invocation is its own process anyway. Keepalives and a bounded
+// connection lifetime guard against silently dropped sockets.
 
 import postgres from 'postgres';
 
@@ -12,7 +14,7 @@ export function sql() {
   if (_sql) return _sql;
   const url = process.env.DATABASE_URL;
   if (!url) throw Object.assign(new Error('DATABASE_URL is not set'), { status: 500 });
-  _sql = postgres(url, { prepare: false, max: 1, idle_timeout: 20, connect_timeout: 10, ssl: 'require' });
+  _sql = postgres(url, { prepare: false, max: 2, idle_timeout: 20, connect_timeout: 10, max_lifetime: 15 * 60, keep_alive: 30, ssl: 'require' });
   return _sql;
 }
 
@@ -80,7 +82,25 @@ export async function upsertCall(c, source) {
       opt_out = excluded.opt_out, asked_if_bot = excluded.asked_if_bot,
       call_quality_ok = excluded.call_quality_ok, voice = excluded.voice,
       raw = excluded.raw, source = excluded.source`;
+  if (r.customer_number) await refreshLead(s, r.customer_number);
   return r.id;
+}
+
+// Keeps the calling list in step with the calls: attempts, latest outcome, and
+// status (do_not_call as soon as any call recorded an opt-out). Derived from the
+// calls table each time, so re-delivered webhooks never double count.
+export async function refreshLead(s, phone) {
+  await s`
+    update leads l set
+      attempts = c.n, last_call_id = c.last_id, last_outcome = c.last_intent, last_called_at = c.last_at,
+      status = case when c.opted_out then 'do_not_call' when c.n > 0 then 'called' else 'new' end
+    from (
+      select count(*)::int as n, bool_or(coalesce(opt_out, false)) as opted_out,
+             (array_agg(id order by created_at desc))[1] as last_id,
+             (array_agg(intent order by created_at desc))[1] as last_intent,
+             max(created_at) as last_at
+      from calls where customer_number = ${phone}) c
+    where l.phone = ${phone}`;
 }
 
 // Row -> the shape the dashboard already consumes (same as api/_vapi.js summarise()).

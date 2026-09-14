@@ -11,7 +11,7 @@ const ANALYSIS_GRACE_MS = 10 * 60 * 1000;
 function settled(row) {
   if (!row || !row.ended_at) return false;
   if (row.intent != null || row.summary != null) return true;
-  if (row.source === 'webhook') return true;
+  if (row.source === 'webhook' || row.source === 'simulated') return true;   // nothing more is coming for these
   return Date.now() - new Date(row.ended_at).getTime() > ANALYSIS_GRACE_MS;
 }
 

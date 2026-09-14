@@ -37,6 +37,14 @@ place phone calls, or spend outside that. The private key is never in this repo.
 Live transcripts arrive on the `message` event and render as a conversation, with
 partial results shown faded until they finalize.
 
+## Pages
+
+Overview (totals, calls per day, intent split), Calls (every conversation with
+transcript, recording and analysis, paged), List (the calling list in campaign
+order with per-number status), Voice Agent (talk to her from the browser) and
+Settings. Totals and pages are computed by the database, so the dashboard stays
+fast at any number of calls.
+
 ## Sign-in
 
 Set `DASHBOARD_PASSWORD` (Vercel → Settings → Environment Variables) and the

@@ -20,8 +20,13 @@ Object.assign(I18N.en, {
   'status.live': 'Live', 'status.ended': 'Ended', 'status.failed': 'Failed', 'status.queued': 'Queued',
   'empty.calls': 'No calls yet. Open the Voice Agent page and press the button.',
   'empty.search': 'Nothing matches your search.',
-  'unit.calls': 'calls',
+  'unit.calls': 'calls', 'unit.numbers': 'numbers',
   'pager.of': '{a}–{b} of {n}', 'pager.prev': 'Previous', 'pager.next': 'Next', 'pager.size': 'per page',
+  'list.total': 'Numbers', 'list.total.sub': 'in the list', 'list.new': 'Not called yet', 'list.called': 'Called', 'list.dnc': 'Do not call',
+  'list.all': 'All cities', 'list.any': 'Any status', 'list.card': 'Numbers',
+  'col.pos': '#', 'col.name': 'Name', 'col.phone': 'Phone', 'col.city': 'City', 'col.attempts': 'Attempts', 'col.last': 'Last call',
+  'status.new': 'Not called', 'status.called': 'Called', 'status.do_not_call': 'Do not call',
+  'empty.list': 'The list is empty. Import it with: node db/leads.mjs <file.csv>', 'list.nodb': 'The calling list needs the database. See db/README.md.',
   'day.0': 'Sun', 'day.1': 'Mon', 'day.2': 'Tue', 'day.3': 'Wed', 'day.4': 'Thu', 'day.5': 'Fri', 'day.6': 'Sat',
   'col.status': 'Status', 'col.source': 'Source', 'col.started': 'Started', 'col.length': 'Length', 'col.intent': 'Intent', 'col.cost': 'Cost',
   'detail.pick': 'Select a call to read the conversation', 'detail.title': 'Conversation', 'detail.empty': 'No transcript for this call',
@@ -54,8 +59,13 @@ Object.assign(I18N.he, {
   'status.live': 'פעילה', 'status.ended': 'הסתיימה', 'status.failed': 'נכשלה', 'status.queued': 'בתור',
   'empty.calls': 'עדיין אין שיחות. פתחו את עמוד הסוכן הקולי ולחצו על הכפתור.',
   'empty.search': 'אין תוצאות לחיפוש.',
-  'unit.calls': 'שיחות',
+  'unit.calls': 'שיחות', 'unit.numbers': 'מספרים',
   'pager.of': '{a}–{b} מתוך {n}', 'pager.prev': 'הקודם', 'pager.next': 'הבא', 'pager.size': 'בעמוד',
+  'list.total': 'מספרים', 'list.total.sub': 'ברשימה', 'list.new': 'טרם חויגו', 'list.called': 'חויגו', 'list.dnc': 'לא להתקשר',
+  'list.all': 'כל הערים', 'list.any': 'כל סטטוס', 'list.card': 'מספרים',
+  'col.pos': '#', 'col.name': 'שם', 'col.phone': 'טלפון', 'col.city': 'עיר', 'col.attempts': 'ניסיונות', 'col.last': 'שיחה אחרונה',
+  'status.new': 'טרם חויג', 'status.called': 'חויג', 'status.do_not_call': 'לא להתקשר',
+  'empty.list': 'הרשימה ריקה. ייבוא: node db/leads.mjs <file.csv>', 'list.nodb': 'רשימת החיוג צריכה את מסד הנתונים. ראו db/README.md.',
   'day.0': 'א׳', 'day.1': 'ב׳', 'day.2': 'ג׳', 'day.3': 'ד׳', 'day.4': 'ה׳', 'day.5': 'ו׳', 'day.6': 'ש׳',
   'col.status': 'סטטוס', 'col.source': 'מקור', 'col.started': 'התחילה', 'col.length': 'אורך', 'col.intent': 'כוונה', 'col.cost': 'עלות',
   'detail.pick': 'בחרו שיחה כדי לקרוא את השיחה', 'detail.title': 'השיחה', 'detail.empty': 'אין תמלול לשיחה הזאת',
@@ -97,13 +107,21 @@ export async function api(path, init = {}) {
   return data;
 }
 
-const cache = { calls: null, config: null, at: 0, detail: new Map() };
-async function loadCalls(force = false) {
-  if (!force && cache.calls && Date.now() - cache.at < 4000) return cache.calls;
-  cache.calls = await api('/api/calls?limit=200');
-  cache.at = Date.now();
-  return cache.calls;
+// Lists and stats come one page / one summary at a time from the server, so the
+// browser never holds the whole history. Short cache keyed by the exact query.
+const cache = { lists: new Map(), config: null, detail: new Map() };
+const qs = (o) => Object.entries(o).filter(([, v]) => v !== '' && v != null && !(Array.isArray(v) && !v.length)).map(([k, v]) => `${k}=${encodeURIComponent(Array.isArray(v) ? v.join(',') : v)}`).join('&');
+async function cached(path) {
+  const hit = cache.lists.get(path);
+  if (hit && Date.now() - hit.at < 4000) return hit.data;
+  const data = await api(path);
+  cache.lists.set(path, { data, at: Date.now() });
+  return data;
 }
+// { items, total, page, size, pages }
+const loadCalls = (params = {}) => cached('/api/calls?' + qs(params));
+// { total, ended, live, avgSeconds, cost, intents, perDay, inRange, recent }
+const loadStats = (days) => cached('/api/stats?' + qs({ days }));
 async function loadConfig() {
   if (cache.config) return cache.config;
   cache.config = await api('/api/config');
@@ -120,7 +138,7 @@ async function loadDetail(id, force = false) {
   cache.detail.set(id, d);
   return d;
 }
-const invalidate = () => { cache.calls = null; cache.detail.clear(); };
+const invalidate = () => { cache.lists.clear(); cache.detail.clear(); };
 
 // ------------------------------------------------------------------ formatting
 
@@ -150,13 +168,28 @@ const reasonLabel = (k) => (k ? t('reason.' + k) : '—');
 // ------------------------------------------------------------------ topbar search
 
 let query = '';
+let searchTimer = 0;
 $('search').oninput = () => {
   query = $('search').value.trim().toLowerCase();
   pager.page = 1;
-  if (!location.hash.startsWith('#/calls')) location.hash = '#/calls';
-  else render();
+  clearTimeout(searchTimer);
+  listPager.page = 1;
+  searchTimer = setTimeout(() => {
+    if (location.hash.startsWith('#/list') || location.hash.startsWith('#/calls')) render();
+    else location.hash = '#/calls';
+  }, 250);
 };
-const matches = (c) => !query || [c.id, c.number, srcOf(c), t('intent.' + intentKey(c)), c.endedReason].filter(Boolean).some((v) => String(v).toLowerCase().includes(query));
+// The server searches raw fields; typed labels ("Will vote", "Browser", "בחר") are
+// mapped to the intent keys / call types whose label contains the text, in either language.
+function searchParams() {
+  if (!query) return {};
+  const hasLabel = (key) => [I18N.en[key], I18N.he[key]].some((l) => l && l.toLowerCase().includes(query));
+  return {
+    q: query,
+    intents: INTENT_ORDER.filter((k) => hasLabel('intent.' + k)),
+    types: hasLabel('src.web') ? ['webCall'] : [],
+  };
+}
 
 // ------------------------------------------------------------------ overview
 
@@ -173,18 +206,8 @@ const statTile = ({ label, value, sub, hero }) => `<div class="stat${hero ? ' he
   <div class="stat-label">${label}</div><div class="stat-value">${value}</div>
   <div class="stat-foot">${sub ? `<span class="stat-sub">${sub}</span>` : ''}</div></div>`;
 
-function dayBuckets(calls, days) {
-  const now = new Date(); now.setHours(0, 0, 0, 0);
-  const buckets = [];
-  for (let i = days - 1; i >= 0; i--) { const d = new Date(now); d.setDate(now.getDate() - i); buckets.push({ date: d, n: 0 }); }
-  const start = buckets[0].date.getTime();
-  for (const c of calls) {
-    const d = new Date(c.createdAt); d.setHours(0, 0, 0, 0);
-    const idx = Math.round((d.getTime() - start) / 86400000);
-    if (idx >= 0 && idx < days) buckets[idx].n++;
-  }
-  return buckets;
-}
+// perDay arrives as [{ day: 'YYYY-MM-DD', n }] in Israel time; parse as local midnight for labels.
+const toBuckets = (perDay) => perDay.map((b) => ({ date: new Date(b.day + 'T00:00:00'), n: Number(b.n) }));
 
 function barChart(buckets) {
   const w = 900, h = 190, pad = 22;
@@ -245,30 +268,26 @@ registerPage('overview', {
     </div>
     ${sk.card(`${sk.line('w30')}${sk.rows(4)}`)}`,
   async load() {
-    const [calls] = await Promise.all([loadCalls(), loadConfig().catch(() => null)]);
-    const ended = calls.filter((c) => c.endedAt);
-    const live = calls.filter((c) => statusOf(c) === 'live').length;
-    const secs = ended.map((c) => (new Date(c.endedAt) - new Date(c.startedAt)) / 1000).filter((n) => n > 0);
-    const avg = secs.length ? secs.reduce((a, b) => a + b, 0) / secs.length : 0;
-    const cost = calls.reduce((a, c) => a + (c.cost || 0), 0);
-    const counts = {}; for (const c of calls) counts[intentKey(c)] = (counts[intentKey(c)] || 0) + 1;
+    const [s] = await Promise.all([loadStats(range), loadConfig().catch(() => null)]);
+    const counts = s.intents;
     const answered = (counts.yes || 0) + (counts.no || 0) + (counts.unsure || 0);
     const yesPct = answered ? Math.round((counts.yes || 0) / answered * 100) : 0;
-    const buckets = dayBuckets(calls, range);
-    const inRange = buckets.reduce((a, b) => a + b.n, 0);
+    const avg = s.avgSeconds;
+    const buckets = toBuckets(s.perDay);
+    const fmtN = (n) => n.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
     const html = pageHead('page.overview', 'page.overview.sub') + `
       <div class="stat-row">
-        ${statTile({ hero: true, label: t('stat.total'), value: calls.length, sub: t('stat.total.sub') })}
-        ${statTile({ label: t('stat.completed'), value: ended.length, sub: live ? `${live} ${t('stat.live')}` : '' })}
+        ${statTile({ hero: true, label: t('stat.total'), value: fmtN(s.total), sub: t('stat.total.sub') })}
+        ${statTile({ label: t('stat.completed'), value: fmtN(s.ended), sub: s.live ? `${s.live} ${t('stat.live')}` : '' })}
         ${statTile({ label: t('stat.avg'), value: `${Math.floor(avg / 60)}:${String(Math.round(avg % 60)).padStart(2, '0')}` })}
-        ${statTile({ label: t('stat.cost'), value: money(cost) })}
-        ${statTile({ label: t('stat.yes'), value: `${yesPct}%`, sub: `${counts.yes || 0}/${answered} ${t('stat.yes.sub')}` })}
+        ${statTile({ label: t('stat.cost'), value: money(s.cost) })}
+        ${statTile({ label: t('stat.yes'), value: `${yesPct}%`, sub: `${fmtN(counts.yes || 0)}/${fmtN(answered)} ${t('stat.yes.sub')}` })}
       </div>
       <div class="grid" style="grid-template-columns:${twoCol()}">
-        <div class="card"><div class="card-head"><span class="card-title">${t('card.week')} <span class="count">· ${inRange} ${t('unit.calls')}</span></span><span class="badge">${range}d</span></div>${barChart(buckets)}</div>
-        <div class="card"><div class="card-head"><span class="card-title">${t('card.intent')}</span></div>${calls.length ? donut(counts, calls.length) : `<div class="page-empty">${t('empty.calls')}</div>`}</div>
+        <div class="card"><div class="card-head"><span class="card-title">${t('card.week')} <span class="count">· ${fmtN(s.inRange)} ${t('unit.calls')}</span></span><span class="badge">${range}d</span></div>${barChart(buckets)}</div>
+        <div class="card"><div class="card-head"><span class="card-title">${t('card.intent')}</span></div>${s.total ? donut(counts, s.total) : `<div class="page-empty">${t('empty.calls')}</div>`}</div>
       </div>
-      <div class="card"><div class="card-head"><span class="card-title">${t('card.recent')}</span><a class="btn secondary sm" href="#/calls">${t('see.all')}</a></div>${recentRows(calls.slice(0, 8))}</div>`;
+      <div class="card"><div class="card-head"><span class="card-title">${t('card.recent')}</span><a class="btn secondary sm" href="#/calls">${t('see.all')}</a></div>${recentRows(s.recent)}</div>`;
     return { html, mount(main) {
       main.querySelectorAll('.row[data-id]').forEach((el) => { el.onclick = () => { location.hash = `#/calls/${el.dataset.id}`; }; });
     } };
@@ -282,7 +301,6 @@ registerPage('overview', {
 // while a *new* selection (or a deep link) still jumps to the page that holds it.
 const PAGE_SIZES = [10, 25, 50];
 const pager = { page: 1, size: PAGE_SIZES.includes(Number(store.get('page_size'))) ? Number(store.get('page_size')) : 10, keep: null };
-const pageOf = (index) => Math.floor(index / pager.size) + 1;
 
 // 1 … 4 5 6 … 12  (never more than seven slots)
 function pageNumbers(page, pages) {
@@ -296,13 +314,13 @@ function pageNumbers(page, pages) {
   return out;
 }
 
-function pagerBar(total, page, pages) {
-  const from = total ? (page - 1) * pager.size + 1 : 0, to = Math.min(total, page * pager.size);
+function pagerBar(total, page, pages, size = pager.size) {
+  const from = total ? (page - 1) * size + 1 : 0, to = Math.min(total, page * size);
   const chev = (d) => `<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d === 'prev' ? 'm15 18-6-6 6-6' : 'm9 18 6-6-6-6'}"/></svg>`;
   return `<div class="pager">
     <span class="pager-info faint">${t('pager.of').replace('{a}', from).replace('{b}', to).replace('{n}', total)}</span>
     <div class="pager-nav">
-      <label class="select sm"><select id="page-size" aria-label="${t('pager.size')}">${PAGE_SIZES.map((n) => `<option value="${n}"${n === pager.size ? ' selected' : ''}>${n} ${t('pager.size')}</option>`).join('')}</select>
+      <label class="select sm"><select id="page-size" aria-label="${t('pager.size')}">${PAGE_SIZES.map((n) => `<option value="${n}"${n === size ? ' selected' : ''}>${n} ${t('pager.size')}</option>`).join('')}</select>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>
       ${pages > 1 ? `
       <button class="icon-btn" id="page-prev" type="button"${page <= 1 ? ' disabled' : ''} title="${t('pager.prev')}" aria-label="${t('pager.prev')}">${chev('prev')}</button>
@@ -314,24 +332,38 @@ function pagerBar(total, page, pages) {
 
 // Fills the list card for the current page and wires its controls. Paging
 // re-runs only this, so the detail panel beside it never blinks.
-function renderCallsList(main, calls, selectedId) {
+// Asks the server for the current page. `locate` is sent only when the selection
+// changed since the last explicit page turn, so the row is brought into view on
+// deep links but paging away from it is honoured.
+async function fetchCallsPage(selectedId) {
+  const locate = selectedId && selectedId !== pager.keep ? selectedId : '';
+  const res = await loadCalls({ page: pager.page, size: pager.size, locate, ...searchParams() });
+  pager.page = res.page;
+  if (selectedId) pager.keep = selectedId;
+  return res;
+}
+
+// Paints one page into the list card and wires its controls. Only this card is
+// redrawn on a page turn, so the conversation panel beside it never blinks.
+function renderCallsList(main, res, selectedId) {
   const box = main.querySelector('#calls-list'); if (!box) return;
-  const pages = Math.max(1, Math.ceil(calls.length / pager.size));
-  if (selectedId && selectedId !== pager.keep) {
-    const idx = calls.findIndex((c) => c.id === selectedId);
-    if (idx >= 0) pager.page = pageOf(idx);
-    pager.keep = selectedId;
-  }
-  pager.page = Math.min(Math.max(1, pager.page), pages);
-  const slice = calls.slice((pager.page - 1) * pager.size, pager.page * pager.size);
-  box.innerHTML = callsTable(slice, selectedId) + (calls.length ? pagerBar(calls.length, pager.page, pages) : '');
-  const go = (p) => { pager.page = p; pager.keep = selectedId; renderCallsList(main, calls, selectedId); };
+  box.innerHTML = callsTable(res.items, selectedId) + (res.total ? pagerBar(res.total, res.page, res.pages) : '');
+  const head = main.querySelector('#calls-count'); if (head) head.textContent = `${res.total.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US')} ${t('unit.calls')}`;
+  let busy = false;
+  const go = async (p) => {
+    if (busy) return; busy = true;
+    pager.page = p; pager.keep = selectedId;
+    box.innerHTML = sk.rows(Math.min(pager.size, 7));
+    try { renderCallsList(main, await fetchCallsPage(selectedId), selectedId); }
+    catch (e) { box.innerHTML = `<div class="page-empty">${escapeHtml(e.message)}</div>`; }
+    busy = false;
+  };
   box.querySelectorAll('tr[data-id]').forEach((tr) => { tr.onclick = () => { location.hash = '#/calls/' + tr.dataset.id; }; });
   box.querySelectorAll('#page-nums button[data-page]').forEach((b) => { b.onclick = () => go(Number(b.dataset.page)); });
   const prev = box.querySelector('#page-prev'); if (prev) prev.onclick = () => go(pager.page - 1);
   const next = box.querySelector('#page-next'); if (next) next.onclick = () => go(pager.page + 1);
   const size = box.querySelector('#page-size');
-  if (size) size.onchange = () => { pager.size = Number(size.value); store.set('page_size', size.value); pager.page = 1; pager.keep = null; renderCallsList(main, calls, selectedId); };
+  if (size) size.onchange = () => { pager.size = Number(size.value); store.set('page_size', size.value); pager.keep = null; go(1); };
 }
 
 function callsTable(calls, selectedId) {
@@ -389,17 +421,103 @@ registerPage('calls', {
   skeleton: (params) => `<div class="split">${sk.card(sk.rows(7))}${sk.card(params[0] ? `${sk.line('w50')}${sk.rows(4)}` : `<div class="page-empty">${t('detail.pick')}</div>`)}</div>`,
   async load(params) {
     const id = params[0] || null;
-    const [all, detail] = await Promise.all([loadCalls(), id ? loadDetail(id).catch((e) => ({ error: e.message })) : null]);
-    const calls = all.filter(matches);
-    const html = pageHead('page.calls', 'page.calls.sub', `<span class="badge">${calls.length} ${t('unit.calls')}</span>`) + `
+    const [res, detail] = await Promise.all([fetchCallsPage(id), id ? loadDetail(id).catch((e) => ({ error: e.message })) : null]);
+    const html = pageHead('page.calls', 'page.calls.sub', `<span class="badge" id="calls-count">${res.total.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US')} ${t('unit.calls')}</span>`) + `
       <div class="split">
         <div class="card" id="calls-list" style="padding:12px 8px 8px"></div>
         ${detail?.error ? `<div class="card"><div class="page-empty">${escapeHtml(detail.error)}</div></div>` : detailPanel(detail)}
       </div>`;
     return { html, mount(main) {
-      renderCallsList(main, calls, id);
+      renderCallsList(main, res, id);
       if (detail && !detail.endedAt) setTimeout(() => { if (location.hash === `#/calls/${id}`) render(); }, 5000);
     } };
+  },
+});
+
+// ------------------------------------------------------------------ calling list
+
+const listPager = { page: 1, size: PAGE_SIZES.includes(Number(store.get('page_size'))) ? Number(store.get('page_size')) : 10, city: '', status: '' };
+
+// +972501234567 -> 050-123-4567 ; +97236123456 -> 03-612-3456
+function fmtPhone(e164) {
+  if (!e164) return '—';
+  const m = /^\+972(\d)(\d{7,8})$/.exec(e164);
+  if (!m) return e164;
+  const [, first, rest] = m;
+  const local = '0' + first + rest;
+  return local.length === 10 ? `${local.slice(0, 3)}-${local.slice(3, 6)}-${local.slice(6)}` : `${local.slice(0, 2)}-${local.slice(2, 5)}-${local.slice(5)}`;
+}
+const STATUS_TONE = { new: '', called: 'accent', do_not_call: 'negative' };
+const fmtN = (n) => Number(n || 0).toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
+
+function leadsTable(items) {
+  if (!items.length) return `<div class="page-empty">${query || listPager.city || listPager.status ? t('empty.search') : t('empty.list')}</div>`;
+  return `<div style="overflow-x:auto"><table class="table">
+    <thead><tr><th class="faint">${t('col.pos')}</th><th>${t('col.name')}</th><th>${t('col.phone')}</th><th>${t('col.city')}</th><th>${t('col.status')}</th><th class="end">${t('col.attempts')}</th><th>${t('col.last')}</th></tr></thead>
+    <tbody>${items.map((l) => `<tr${l.lastCallId ? ` class="clickable" data-call="${escapeHtml(l.lastCallId)}"` : ''}>
+      <td class="faint mono">${fmtN(l.position)}</td>
+      <td><span dir="auto">${escapeHtml(l.name || '—')}</span></td>
+      <td class="mono"><span dir="ltr">${escapeHtml(fmtPhone(l.phone))}</span></td>
+      <td><span dir="auto">${escapeHtml(l.city || '—')}</span></td>
+      <td><span class="badge ${STATUS_TONE[l.status] ?? ''}">${t('status.' + l.status)}</span></td>
+      <td class="end mono">${l.attempts || 0}</td>
+      <td>${l.lastCallId ? `${intentBadge({ intent: l.lastOutcome })} <span class="faint" style="font-size:12px">${fmtTime(l.lastCalledAt)}</span>` : '<span class="faint">—</span>'}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function chips(id, current, options) {
+  return `<div class="tabs" id="${id}">${options.map(([value, label]) => `<button type="button" data-value="${escapeHtml(value)}"${value === current ? ' class="on"' : ''}>${label}</button>`).join('')}</div>`;
+}
+
+const fetchLeadsPage = () => cached('/api/leads?' + qs({ page: listPager.page, size: listPager.size, q: query, city: listPager.city, status: listPager.status }));
+
+function renderLeadsList(main, res) {
+  const box = main.querySelector('#leads-list'); if (!box) return;
+  listPager.page = res.page;
+  const cityOpts = [['', t('list.all')], ...res.cities.filter((c) => c.city).map((c) => [c.city, `${escapeHtml(c.city)} <span class="faint">${fmtN(c.n)}</span>`])];
+  const statusOpts = [['', t('list.any')], ['new', t('status.new')], ['called', t('status.called')], ['do_not_call', t('status.do_not_call')]];
+  box.innerHTML = `
+    <div class="card-head" style="flex-wrap:wrap;gap:10px"><span class="card-title">${t('list.card')} <span class="count">· ${fmtN(res.total)}</span></span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap">${chips('lead-city', listPager.city, cityOpts)}${chips('lead-status', listPager.status, statusOpts)}</span></div>
+    ${leadsTable(res.items)}${res.total ? pagerBar(res.total, res.page, res.pages, listPager.size) : ''}`;
+  const head = main.querySelector('#leads-count'); if (head) head.textContent = `${fmtN(res.total)} ${t('unit.numbers')}`;
+  let busy = false;
+  const go = async (patch) => {
+    if (busy) return; busy = true;
+    Object.assign(listPager, patch);
+    box.querySelector('table')?.replaceWith(Object.assign(document.createElement('div'), { innerHTML: sk.rows(Math.min(listPager.size, 7)) }));
+    try { renderLeadsList(main, await fetchLeadsPage()); }
+    catch (e) { box.innerHTML = `<div class="page-empty">${escapeHtml(e.message)}</div>`; }
+    busy = false;
+  };
+  box.querySelectorAll('#lead-city button').forEach((b) => { b.onclick = () => go({ city: b.dataset.value, page: 1 }); });
+  box.querySelectorAll('#lead-status button').forEach((b) => { b.onclick = () => go({ status: b.dataset.value, page: 1 }); });
+  box.querySelectorAll('tr[data-call]').forEach((tr) => { tr.onclick = () => { location.hash = '#/calls/' + tr.dataset.call; }; });
+  box.querySelectorAll('#page-nums button[data-page]').forEach((b) => { b.onclick = () => go({ page: Number(b.dataset.page) }); });
+  const prev = box.querySelector('#page-prev'); if (prev) prev.onclick = () => go({ page: listPager.page - 1 });
+  const next = box.querySelector('#page-next'); if (next) next.onclick = () => go({ page: listPager.page + 1 });
+  const size = box.querySelector('#page-size');
+  if (size) size.onchange = () => { store.set('page_size', size.value); go({ size: Number(size.value), page: 1 }); };
+}
+
+registerPage('list', {
+  skeleton: () => `<div class="stat-row four">${sk.stat(true)}${sk.stat()}${sk.stat()}${sk.stat()}</div>${sk.card(`${sk.line('w30')}${sk.rows(7)}`)}`,
+  async load() {
+    let res;
+    try { res = await fetchLeadsPage(); }
+    catch (e) {
+      const nodb = /database|DATABASE_URL/i.test(e.message);
+      return { html: pageHead('page.list', 'page.list.sub') + `<div class="card"><div class="page-empty">${escapeHtml(nodb ? t('list.nodb') : e.message)}</div></div>` };
+    }
+    const st = res.statuses;
+    const html = pageHead('page.list', 'page.list.sub', `<span class="badge" id="leads-count">${fmtN(res.total)} ${t('unit.numbers')}</span>`) + `
+      <div class="stat-row four">
+        ${statTile({ hero: true, label: t('list.total'), value: fmtN(st.all), sub: t('list.total.sub') })}
+        ${statTile({ label: t('list.new'), value: fmtN(st.new) })}
+        ${statTile({ label: t('list.called'), value: fmtN(st.called) })}
+        ${statTile({ label: t('list.dnc'), value: fmtN(st.do_not_call) })}
+      </div>
+      <div class="card" id="leads-list" style="padding:16px 8px 8px"></div>`;
+    return { html, mount(main) { renderLeadsList(main, res); } };
   },
 });
 
@@ -464,9 +582,9 @@ function syncAgentUi() {
 
 // Recent-calls card on the Voice Agent page.
 function refreshAgentRecent() {
-  loadCalls().then((calls) => {
+  loadCalls({ size: 6 }).then(({ items }) => {
     const el = $('agent-recent'); if (!el) return;
-    el.innerHTML = recentRows(calls.slice(0, 6));
+    el.innerHTML = recentRows(items);
     el.querySelectorAll('.row[data-id]').forEach((r) => { r.onclick = () => { location.hash = `#/calls/${r.dataset.id}`; }; });
   }).catch(() => {});
 }
@@ -582,8 +700,17 @@ registerPage('settings', {
   },
 });
 
-// Refresh re-fetches instead of using the short cache.
-$('refreshbtn').onclick = () => { invalidate(); render(); };
+// Refresh drops the short cache and first pulls anything Vapi has that we do not
+// (calls made on /demo, before the webhook existed, or a missed delivery). Without
+// a database /api/sync answers 409 and we simply re-render.
+$('refreshbtn').onclick = async () => {
+  const btn = $('refreshbtn');
+  if (btn.classList.contains('spin')) return;
+  btn.classList.add('spin');
+  try { await api('/api/sync?limit=20', { method: 'POST' }); } catch {}
+  btn.classList.remove('spin');
+  invalidate(); render();
+};
 
 // Topbar profile (agent name + initials) is shell chrome, so fill it on every page, not just Overview.
 loadConfig().catch(() => {});

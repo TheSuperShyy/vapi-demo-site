@@ -16,6 +16,7 @@ export const store = {
 
 export const I18N = {
   en: {
+    'brand.name': 'Voice of the People', 'brand.hq': 'Headquarters', 'brand.title': 'Voice of the People Headquarters · Voice Agent',
     'greeting.title': 'Welcome',
     'greeting.sub': "Here's what's happening with your agent",
     'nav.main': 'Main Menu', 'nav.overview': 'Overview', 'nav.calls': 'Calls',
@@ -34,6 +35,7 @@ export const I18N = {
     'login.wrong': 'Wrong password, try again', 'login.offline': 'Cannot reach the server',
   },
   he: {
+    'brand.name': 'קול העם', 'brand.hq': 'מטה', 'brand.title': 'מטה קול העם · סוכן קולי',
     'greeting.title': 'שלום',
     'greeting.sub': 'זה מה שקורה היום עם הסוכן',
     'nav.main': 'תפריט ראשי', 'nav.overview': 'סקירה', 'nav.calls': 'שיחות',
@@ -65,6 +67,13 @@ export function applyLang(next, rerender = true) {
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
   document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+  // The brand reads "headquarters" first in Hebrew and last in English, with the name itself in the accent colour.
+  document.querySelectorAll('.wordmark').forEach((el) => {
+    const name = document.createElement('b'); name.textContent = t('brand.name');
+    el.replaceChildren(...(lang === 'he' ? [t('brand.hq'), ' ', name] : [name, ' ', t('brand.hq')]));
+    el.lang = lang;
+  });
+  document.title = t('brand.title');
   $('langlabel').textContent = t('lang.other');
   $('login-langlabel').textContent = t('lang.other');
   if (rerender) render();

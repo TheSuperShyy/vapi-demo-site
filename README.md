@@ -1,4 +1,4 @@
-# מטה קול העם — Hebrew voice agent demo
+# Voice of the People Headquarters (מטה קול העם) — Hebrew voice agent demo
 
 A one-page site that lets anyone talk to the Hebrew voice agent from their browser.
 No phone call, no forms: click, allow the microphone, speak.

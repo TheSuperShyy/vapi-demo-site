@@ -151,6 +151,9 @@ audio { width: 100%; margin: 14px 0; }
   display: flex; flex-direction: column; gap: 6px;
 }
 .login-mark { padding: 0; margin-bottom: 18px; }
+/* The English name is long for a 232px sidebar: smaller, name on its own line. */
+:root[lang="en"] .wordmark { font-size: 16px; line-height: 1.25; }
+:root[lang="en"] .wordmark b { display: block; }
 .login-title { font-size: var(--text-xl, 20px); font-weight: 600; color: var(--text-1); margin: 0; }
 .login-sub { font-size: 13px; color: var(--text-2); margin: 0 0 18px; }
 .login .input.login-field { width: 100%; min-width: 0; padding-inline-end: 6px; }

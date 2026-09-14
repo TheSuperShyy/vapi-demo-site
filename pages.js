@@ -30,7 +30,7 @@ Object.assign(I18N.en, {
   'empty.list': 'The list is empty. Import it with: node db/leads.mjs list.csv', 'list.nodb': 'The calling list needs the database. See db/README.md.',
   'day.0': 'Sun', 'day.1': 'Mon', 'day.2': 'Tue', 'day.3': 'Wed', 'day.4': 'Thu', 'day.5': 'Fri', 'day.6': 'Sat',
   'col.status': 'Status', 'col.source': 'Source', 'col.started': 'Started', 'col.length': 'Length', 'col.intent': 'Intent', 'col.cost': 'Cost',
-  'detail.pick': 'Select a call to read the conversation', 'detail.title': 'Conversation', 'detail.empty': 'No transcript for this call',
+  'detail.pick': 'Select a call to read the conversation', 'detail.title': 'Conversation', 'detail.back': 'All calls', 'detail.empty': 'No transcript for this call',
   'detail.live': 'Call in progress…', 'detail.recording': 'Recording', 'detail.analysis': 'Analysis', 'detail.summary': 'Summary',
   'detail.reason': 'Reason', 'detail.verbatim': 'In their words', 'detail.flags': 'Flags', 'detail.ended': 'Ended because',
   'flag.optout': 'Asked to be removed', 'flag.bot': 'Asked if bot', 'flag.quality': 'Call quality issue',
@@ -74,7 +74,7 @@ Object.assign(I18N.he, {
   'empty.list': 'הרשימה ריקה. ייבוא: node db/leads.mjs list.csv', 'list.nodb': 'רשימת החיוג צריכה את מסד הנתונים. ראו db/README.md.',
   'day.0': 'א׳', 'day.1': 'ב׳', 'day.2': 'ג׳', 'day.3': 'ד׳', 'day.4': 'ה׳', 'day.5': 'ו׳', 'day.6': 'ש׳',
   'col.status': 'סטטוס', 'col.source': 'מקור', 'col.started': 'התחילה', 'col.length': 'אורך', 'col.intent': 'כוונה', 'col.cost': 'עלות',
-  'detail.pick': 'בחרו שיחה כדי לקרוא את השיחה', 'detail.title': 'השיחה', 'detail.empty': 'אין תמלול לשיחה הזאת',
+  'detail.pick': 'בחרו שיחה כדי לקרוא את השיחה', 'detail.title': 'השיחה', 'detail.back': 'כל השיחות', 'detail.empty': 'אין תמלול לשיחה הזאת',
   'detail.live': 'השיחה בעיצומה…', 'detail.recording': 'הקלטה', 'detail.analysis': 'ניתוח', 'detail.summary': 'סיכום',
   'detail.reason': 'סיבה', 'detail.verbatim': 'במילים שלהם', 'detail.flags': 'דגלים', 'detail.ended': 'הסתיימה כי',
   'flag.optout': 'ביקשו הסרה', 'flag.bot': 'שאלו אם בוט', 'flag.quality': 'בעיית איכות',
@@ -232,14 +232,16 @@ function barChart(buckets) {
   const w = 900, h = 190, pad = 22;
   const max = Math.max(1, ...buckets.map((b) => b.n));
   const n = buckets.length, slot = w / n, bw = Math.min(46, slot * 0.58);
+  // Values sit in an HTML layer over the SVG: text inside the stretched SVG would warp with the width.
+  const labels = [];
   const bars = buckets.map((b, i) => {
     const bh = b.n ? Math.max(4, (b.n / max) * (h - pad - 6)) : 3;
     const x = i * slot + (slot - bw) / 2, y = h - bh;
-    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="${b.n ? 'var(--chart-line)' : 'var(--chart-grid)'}"/>` +
-      (b.n ? `<text x="${(x + bw / 2).toFixed(1)}" y="${(y - 7).toFixed(1)}" text-anchor="middle" font-size="11" fill="var(--text-2)" font-family="var(--font-ui)">${b.n}</text>` : '');
+    if (b.n) labels.push(`<span style="left:${((x + bw / 2) / w * 100).toFixed(2)}%;top:${(y - 4).toFixed(0)}px">${b.n}</span>`);
+    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="${b.n ? 'var(--chart-line)' : 'var(--chart-grid)'}"/>`;
   }).join('');
   const grid = [0.33, 0.66].map((f) => `<line x1="0" x2="${w}" y1="${(h * f).toFixed(1)}" y2="${(h * f).toFixed(1)}" stroke="var(--chart-grid)"/>`).join('');
-  return `<svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-axis">${axisLabels(buckets)}</div>`;
+  return `<div class="chart-box"><svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-values">${labels.join('')}</div></div><div class="chart-axis">${axisLabels(buckets)}</div>`;
 }
 
 // One line per answer, the running total over the range, on the same day grid as
@@ -486,7 +488,7 @@ function renderCallsList(main, res, selectedId) {
 
 function callsTable(calls, selectedId) {
   if (!calls.length) return `<div class="page-empty">${query ? t('empty.search') : t('empty.calls')}</div>`;
-  return `<div style="overflow-x:auto"><table class="table">
+  return `<div style="overflow-x:auto"><table class="table calls-table">
     <thead><tr><th>${t('col.status')}</th><th>${t('col.source')}</th><th>${t('col.started')}</th><th>${t('col.length')}</th><th>${t('col.intent')}</th><th class="end">${t('col.cost')}</th></tr></thead>
     <tbody>${calls.map((c) => `<tr class="clickable${c.id === selectedId ? ' on' : ''}" data-id="${c.id}">
       <td><span style="display:inline-flex;align-items:center;gap:8px"><span class="dot ${dotClass(c)}"></span>${t('status.' + statusOf(c))}</span></td>
@@ -517,6 +519,7 @@ function detailPanel(d) {
     ? `<div class="convo">${turns.map((m) => bubble(m.role, m.text.trim())).join('')}</div>`
     : `<div class="page-empty">${d.endedAt ? t('detail.empty') : t('detail.live')}</div>`;
   return `<div class="card">
+    <a class="btn secondary sm only-mobile detail-back" href="#/calls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> ${t('detail.back')}</a>
     <div class="detail-head">
       <span class="card-title">${t('detail.title')} <span class="count">· ${srcHtml(d)} · ${fmtTime(d.createdAt)}</span></span>
       <span style="display:inline-flex;gap:8px;align-items:center">${intentBadge(d)}<span class="mono faint">${fmtDur(d.startedAt, d.endedAt)} · ${money(d.cost)}</span></span>
@@ -536,7 +539,7 @@ function detailPanel(d) {
 }
 
 registerPage('calls', {
-  skeleton: (params) => `<div class="split">${sk.card(sk.rows(7))}${sk.card(params[0] ? `${sk.line('w50')}${sk.rows(4)}` : `<div class="page-empty">${t('detail.pick')}</div>`)}</div>`,
+  skeleton: (params) => `<div class="split${params[0] ? ' has-detail' : ''}">${sk.card(sk.rows(7))}${sk.card(params[0] ? `${sk.line('w50')}${sk.rows(4)}` : `<div class="page-empty">${t('detail.pick')}</div>`)}</div>`,
   async load(params) {
     const id = params[0] || null;
     clearTimeout(livePoll);
@@ -544,7 +547,7 @@ registerPage('calls', {
     lastPageName = 'calls';
     const [res, detail] = await Promise.all([fetchCallsPage(id), id ? loadDetail(id).catch((e) => ({ error: e.message })) : null]);
     const html = pageHead('page.calls', 'page.calls.sub', `<span class="badge" id="calls-count">${res.total.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US')} ${t('unit.calls')}</span>`) + `
-      <div class="split">
+      <div class="split${id ? ' has-detail' : ''}">
         <div class="card" id="calls-list" style="padding:12px 8px 8px"></div>
         ${detail?.error ? `<div class="card"><div class="page-empty">${escapeHtml(detail.error)}</div></div>` : detailPanel(detail)}
       </div>`;
@@ -574,7 +577,7 @@ const fmtN = (n) => Number(n || 0).toLocaleString(lang === 'he' ? 'he-IL' : 'en-
 
 function leadsTable(items) {
   if (!items.length) return `<div class="page-empty">${query || listPager.city || listPager.status ? t('empty.search') : t('empty.list')}</div>`;
-  return `<div style="overflow-x:auto"><table class="table">
+  return `<div style="overflow-x:auto"><table class="table leads-table">
     <thead><tr><th class="faint">${t('col.pos')}</th><th>${t('col.name')}</th><th>${t('col.phone')}</th><th>${t('col.city')}</th><th>${t('col.status')}</th><th class="end">${t('col.attempts')}</th><th>${t('col.last')}</th><th></th></tr></thead>
     <tbody>${items.map((l) => `<tr${l.lastCallId ? ` class="clickable" data-call="${escapeHtml(l.lastCallId)}"` : ''}>
       <td class="faint mono">${fmtN(l.position)}</td>
@@ -600,7 +603,7 @@ function renderLeadsList(main, res) {
   const statusOpts = [['', t('list.any')], ['new', t('status.new')], ['called', t('status.called')], ['do_not_call', t('status.do_not_call')]];
   box.innerHTML = `
     <div class="card-head" style="flex-wrap:wrap;gap:10px"><span class="card-title">${t('list.card')} <span class="count">· ${fmtN(res.total)}</span></span>
-      <span style="display:flex;gap:8px;flex-wrap:wrap">${chips('lead-city', listPager.city, cityOpts)}${chips('lead-status', listPager.status, statusOpts)}</span></div>
+      <span class="filters">${chips('lead-city', listPager.city, cityOpts)}${chips('lead-status', listPager.status, statusOpts)}</span></div>
     ${leadsTable(res.items)}${res.total ? pagerBar(res.total, res.page, res.pages, listPager.size) : ''}`;
   const head = main.querySelector('#leads-count'); if (head) head.textContent = `${fmtN(res.total)} ${t('unit.numbers')}`;
   let busy = false;

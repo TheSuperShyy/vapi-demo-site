@@ -4,6 +4,72 @@
 .sidebar-foot { margin-top: auto; padding: 14px 0 0; }
 .sidebar-foot .btn { width: 100%; }
 .topbar-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.topbar-center .input { width: 360px; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabbar, .only-mobile { display: none; }
+
+/* ---------- phones and small tablets ----------
+   The sidebar gives way to a bottom tab bar, the topbar keeps only what a thumb
+   needs, tables turn into stacked cards, and a selected call replaces the list. */
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .tabbar {
+    display: flex; position: fixed; inset-inline: 0; bottom: 0; z-index: 6;
+    background: var(--bg-sidebar); border-top: 1px solid var(--border-1);
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  }
+  .tabbar .nav-item { flex: 1; flex-direction: column; justify-content: center; gap: 4px; height: 50px; padding: 0; border-radius: var(--radius-md); font-size: 10px; font-weight: 500; color: var(--text-3); }
+  .tabbar .nav-item svg { width: 22px; height: 22px; }
+  .tabbar .nav-item:hover { background: transparent; color: var(--text-1); }
+  .tabbar .nav-item.on { background: transparent; color: var(--accent); }
+  .only-mobile { display: inline-flex; }
+
+  .main { padding: 16px 16px calc(84px + env(safe-area-inset-bottom)); gap: 16px; }
+  .topbar { padding: 0 16px; gap: 10px; }
+  .topbar-center { display: flex; flex: 1; min-width: 0; }
+  .topbar-center .input { width: 100%; min-width: 0; }
+  .topbar:has(#rangetabs:not([hidden])) .topbar-center { display: none; }   /* the range tabs take the room on the Overview */
+  .topbar-right > .faint, #themeswitch { display: none; }                     /* theme lives in Settings on a phone */
+  .profile { padding: 0; }
+  .profile > div { display: none; }
+  .toast { bottom: calc(84px + env(safe-area-inset-bottom)); max-width: calc(100% - 32px); }
+  .page-empty { padding: 40px 16px; }
+
+  /* list filters: each group scrolls sideways instead of wrapping into a wall of pills */
+  .filters { flex-direction: column; width: 100%; }
+  .filters .tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; scrollbar-width: none; }
+  .filters .tabs::-webkit-scrollbar { display: none; }
+  .filters .tabs > button { flex: none; white-space: nowrap; }
+
+  /* a selected call replaces the list; the back button above the conversation returns */
+  .split.has-detail #calls-list { display: none; }
+  .split:not(.has-detail) > .card:last-child { display: none; }   /* no room for a "pick a call" placeholder */
+  .detail-back { margin-bottom: 12px; }
+
+  /* tables become stacked cards: each row a small grid, cells placed by column */
+  .table, .table tbody, .table td { display: block; }
+  .table thead { display: none; }
+  .table tr { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 12px 10px; border-bottom: 1px solid var(--border-1); }
+  .table tr:last-child { border-bottom: none; }
+  .table td { padding: 0; border: 0; min-width: 0; }
+  .table tbody tr.clickable:hover td, .table tbody tr.on td { background: transparent; }
+  .table tbody tr.clickable:hover, .table tbody tr.on { background: var(--surface-2); border-radius: var(--radius-md); }
+  /* calls: status | intent / source | length / started | cost */
+  .calls-table td:nth-child(1) { grid-column: 1; grid-row: 1; }
+  .calls-table td:nth-child(5) { grid-column: 2; grid-row: 1; justify-self: end; }
+  .calls-table td:nth-child(2) { grid-column: 1; grid-row: 2; font-weight: 500; }
+  .calls-table td:nth-child(4) { grid-column: 2; grid-row: 2; }
+  .calls-table td:nth-child(3) { grid-column: 1; grid-row: 3; font-size: 12px; }
+  .calls-table td:nth-child(6) { grid-column: 2; grid-row: 3; font-size: 12px; color: var(--text-3); }
+  /* leads: name | call / phone / city / status | outcome */
+  .leads-table td:nth-child(1), .leads-table td:nth-child(6), .leads-table td:nth-child(7) .faint { display: none; }
+  .leads-table td:nth-child(2) { grid-column: 1; grid-row: 1; font-weight: 500; }
+  .leads-table td:nth-child(8) { grid-column: 2; grid-row: 1 / span 2; }
+  .leads-table td:nth-child(3) { grid-column: 1; grid-row: 2; font-size: 12px; }
+  .leads-table td:nth-child(4) { grid-column: 1; grid-row: 3; font-size: 12px; color: var(--text-3); }
+  .leads-table td:nth-child(5) { grid-column: 1; grid-row: 4; padding-top: 4px; }
+  .leads-table td:nth-child(7) { grid-column: 2; grid-row: 3 / span 2; justify-self: end; text-align: end; }
+}
 
 .page-empty {
   color: var(--text-3); text-align: center; padding: 64px 20px; font-size: 13px;
@@ -25,6 +91,9 @@
 
 /* bar chart (SVG) — chart tokens from the system */
 .chart { width: 100%; height: 190px; display: block; }
+.chart-box { position: relative; direction: ltr; }
+.chart-values { position: absolute; inset: 0; pointer-events: none; }
+.chart-values span { position: absolute; transform: translate(-50%, -100%); font-size: 11px; color: var(--text-2); }
 .chart-axis { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--text-3); direction: ltr; }  /* time axis stays LTR under an LTR SVG, even in RTL UIs */
 
 /* answers-over-time line chart: y labels in HTML (text inside a stretched SVG would warp) */

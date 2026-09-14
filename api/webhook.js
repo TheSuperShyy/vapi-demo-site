@@ -11,6 +11,7 @@ export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
 
 async function readJson(req) {
   if (req.body && typeof req.body === 'object') return req.body;          // Vercel parsed it
+  if (typeof req.body === 'string') return req.body ? JSON.parse(req.body) : {};  // a shim left it raw
   let raw = '';
   for await (const chunk of req) raw += chunk;
   return raw ? JSON.parse(raw) : {};

@@ -6,7 +6,7 @@ import '../serve-env.mjs';
 
 const url = process.env.DATABASE_URL;
 if (!url) { console.error('DATABASE_URL is not set (put it in .env)'); process.exit(1); }
-const sql = postgres(url, { prepare: false, max: 1, ssl: 'require' });
+const sql = postgres(url, { prepare: false, max: 1, ssl: 'require', onnotice: () => {} });  // 'already exists, skipping' is expected
 try {
   await sql.unsafe(fs.readFileSync(new URL('./schema.sql', import.meta.url), 'utf8'));
   const [{ count }] = await sql`select count(*)::int as count from calls`;

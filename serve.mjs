@@ -8,6 +8,10 @@ import { pathToFileURL } from 'node:url';
 
 import './serve-env.mjs';
 
+// NO_DB=1 forces the Vapi fallback even when .env has DATABASE_URL (handy for
+// comparing the two paths side by side on different ports).
+if (process.env.NO_DB) delete process.env.DATABASE_URL;
+
 const PORT = Number(process.env.PORT ?? 3000);
 const ROOT = process.cwd();
 const TYPES = {
@@ -38,6 +42,8 @@ async function apiRoute(pathname) {
   if (parts.length === 2) candidates.push([`api/${parts[0]}/[id].js`, { id: parts[1] }]);
   for (const [file, query] of candidates) {
     if (fs.existsSync(path.join(ROOT, file))) {
+      // Route files reload on every request. Their imports (api/_vapi.js, api/_db.js)
+      // are cached by Node until the server restarts - restart after editing those.
       const mod = await import(pathToFileURL(path.join(ROOT, file)).href + `?t=${Date.now()}`);
       return { handler: mod.default, query };
     }

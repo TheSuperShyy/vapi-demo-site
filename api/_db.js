@@ -44,8 +44,8 @@ export function callToRow(c, source = 'webhook') {
     cost_usd: Number(c.cost ?? 0) || 0,
     recording_url: c.recordingUrl ?? art.recordingUrl ?? null,
     transcript: c.transcript ?? art.transcript ?? null,
-    messages: JSON.stringify(messages),
-    summary: c.analysis?.summary ?? c.summary ?? null,
+    messages,                                 // array; upsertCall wraps it with sql.json()
+    summary: c.analysis?.summary || c.summary || null,   // '' -> null, same as the Vapi path
     intent: sd.intent ?? null,
     reason_category: sd.reason_category ?? null,
     reason_verbatim: sd.reason_verbatim || null,
@@ -53,18 +53,23 @@ export function callToRow(c, source = 'webhook') {
     asked_if_bot: typeof sd.asked_if_bot === 'boolean' ? sd.asked_if_bot : null,
     call_quality_ok: typeof sd.call_quality_ok === 'boolean' ? sd.call_quality_ok : null,
     voice: voice ? `${voice.provider ?? '?'}/${voice.voiceId ?? '?'}` : null,
-    raw: JSON.stringify(c),
+    raw: c,                                   // object; upsertCall wraps it with sql.json()
     source,
   };
 }
 
 // Insert or refresh a call. A later report for the same id (e.g. analysis
 // arriving after the first webhook) overwrites the earlier, partial row.
+//
+// JSON columns go through sql.json(): postgres.js asks the server for parameter
+// types and JSON-serialises anything bound to a jsonb column, so passing a
+// pre-stringified value would store a quoted string instead of the array/object.
 export async function upsertCall(c, source) {
   const r = callToRow(c, source);
   const s = sql();
+  const row = { ...r, messages: s.json(r.messages), raw: s.json(r.raw) };
   await s`
-    insert into calls ${s(r)}
+    insert into calls ${s(row)}
     on conflict (id) do update set
       status = excluded.status, ended_reason = excluded.ended_reason,
       started_at = excluded.started_at, ended_at = excluded.ended_at,
@@ -93,7 +98,7 @@ export function rowToDetail(r) {
     recordingUrl: r.recording_url, transcript: r.transcript ?? '',
     messages: messages.map((m) => ({ role: m.role, text: m.text, secondsFromStart: m.seconds_from_start ?? 0 })),
     analysis: {
-      summary: r.summary,
+      summary: r.summary || null,
       structuredData: r.intent == null && r.reason_category == null ? null : {
         intent: r.intent, reason_category: r.reason_category, reason_verbatim: r.reason_verbatim ?? '',
         opt_out_requested: r.opt_out, asked_if_bot: r.asked_if_bot, call_quality_ok: r.call_quality_ok,

@@ -14,7 +14,7 @@ Object.assign(I18N.en, {
   'stat.completed': 'Completed', 'stat.live': 'in progress', 'stat.avg': 'Avg length',
   'stat.cost': 'Total cost', 'stat.yes': 'Said yes', 'stat.yes.sub': 'of answered',
   'card.week': 'Calls', 'card.intent': 'Intent', 'card.recent': 'Recent calls', 'see.all': 'See all',
-  'card.trend': 'Answers over time', 'card.trend.sub': 'per day',
+  'card.trend': 'Answers over time', 'card.trend.sub': 'running total',
   'intent.yes': 'Will vote', 'intent.no': 'Will not vote', 'intent.unsure': 'Unsure',
   'intent.refused': 'Refused', 'intent.not_reached': 'Not reached', 'intent.unknown': 'No analysis',
   'src.web': 'Browser', 'src.phone': 'Phone',
@@ -58,7 +58,7 @@ Object.assign(I18N.he, {
   'stat.completed': 'הסתיימו', 'stat.live': 'בשיחה', 'stat.avg': 'אורך ממוצע',
   'stat.cost': 'עלות כוללת', 'stat.yes': 'ענו כן', 'stat.yes.sub': 'מתוך שענו',
   'card.week': 'שיחות', 'card.intent': 'כוונת הצבעה', 'card.recent': 'שיחות אחרונות', 'see.all': 'הצג הכל',
-  'card.trend': 'תשובות לאורך זמן', 'card.trend.sub': 'לפי יום',
+  'card.trend': 'תשובות לאורך זמן', 'card.trend.sub': 'סכום מצטבר',
   'intent.yes': 'יצביעו', 'intent.no': 'לא יצביעו', 'intent.unsure': 'לא בטוחים',
   'intent.refused': 'סירבו', 'intent.not_reached': 'לא הושגו', 'intent.unknown': 'ללא ניתוח',
   'src.web': 'דפדפן', 'src.phone': 'טלפון',
@@ -242,14 +242,46 @@ function barChart(buckets) {
   return `<svg class="chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}${bars}</svg><div class="chart-axis">${axisLabels(buckets)}</div>`;
 }
 
-// One line per answer, per day, on the same day grid as the bars. Straight segments
-// so a quiet day reads as a dip rather than a smoothed-over bump. The SVG is
-// stretched to the card width, so every stroke is non-scaling and nothing is drawn as fill geometry.
+// One line per answer, the running total over the range, on the same day grid as
+// the bars: the gap between "will vote" and "will not vote" is the story, and totals
+// only ever climb, so the picture stays readable on quiet days. The SVG is stretched
+// to the card width, so every stroke is non-scaling and nothing is drawn as fill geometry.
 const TREND = ['yes', 'no', 'not_reached'];
+
+// Adds b.sum = { yes, no, not_reached } running totals, in place.
+function runningTotals(buckets) {
+  const acc = Object.fromEntries(TREND.map((k) => [k, 0]));
+  for (const b of buckets) { b.sum = {}; for (const k of TREND) b.sum[k] = (acc[k] += b[k]); }
+  return buckets;
+}
+
+// Monotone cubic (Fritsch-Carlson) through the points: smooth, never overshoots, so a
+// running total never appears to dip. pts are [x, y] numbers in viewBox units.
+function smoothPath(pts) {
+  const n = pts.length;
+  if (n < 2) return n ? `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}` : '';
+  const dx = [], m = [];
+  for (let i = 0; i < n - 1; i++) { dx[i] = pts[i + 1][0] - pts[i][0]; m[i] = (pts[i + 1][1] - pts[i][1]) / dx[i]; }
+  const tg = [m[0]];
+  for (let i = 1; i < n - 1; i++) tg[i] = m[i - 1] * m[i] <= 0 ? 0 : (m[i - 1] + m[i]) / 2;
+  tg[n - 1] = m[n - 2];
+  for (let i = 0; i < n - 1; i++) {
+    if (m[i] === 0) { tg[i] = 0; tg[i + 1] = 0; continue; }
+    const a = tg[i] / m[i], b = tg[i + 1] / m[i], s = a * a + b * b;
+    if (s > 9) { const k = 3 / Math.sqrt(s); tg[i] = k * a * m[i]; tg[i + 1] = k * b * m[i]; }
+  }
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < n - 1; i++) {
+    const h = dx[i] / 3;
+    d += ` C${(pts[i][0] + h).toFixed(1)} ${(pts[i][1] + tg[i] * h).toFixed(1)} ${(pts[i + 1][0] - h).toFixed(1)} ${(pts[i + 1][1] - tg[i + 1] * h).toFixed(1)} ${pts[i + 1][0].toFixed(1)} ${pts[i + 1][1].toFixed(1)}`;
+  }
+  return d;
+}
+
 function lineChart(buckets) {
   const w = 900, h = 190, top = 12, bottom = 6, n = buckets.length, slot = w / n, rows = 4;
   if (!n) return '';
-  const rawMax = Math.max(1, ...buckets.flatMap((b) => TREND.map((k) => b[k])));
+  const rawMax = Math.max(1, ...TREND.map((k) => buckets[n - 1].sum[k]));
   const step = Math.ceil(rawMax / rows), max = step * rows;                // integer labels on every grid line
   const px = (i) => i * slot + slot / 2, py = (v) => top + (1 - v / max) * (h - top - bottom);
   const dash = 'stroke="var(--chart-grid)" stroke-dasharray="3 5" vector-effect="non-scaling-stroke"';
@@ -257,11 +289,11 @@ function lineChart(buckets) {
   const k = n > 45 ? 10 : n > 14 ? 5 : 1;
   const vgrid = buckets.map((_, i) => (i % k === 0 ? `<line x1="${px(i).toFixed(1)}" x2="${px(i).toFixed(1)}" y1="${top}" y2="${(h - bottom).toFixed(1)}" ${dash}/>` : '')).join('');
   const series = TREND.map((key) => {
-    const pts = buckets.map((b, i) => [px(i).toFixed(1), py(b[key]).toFixed(1)]);
-    const line = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x} ${y}`).join(' ');
-    const area = `${line} L${pts[n - 1][0]} ${py(0).toFixed(1)} L${pts[0][0]} ${py(0).toFixed(1)} Z`;
+    const pts = buckets.map((b, i) => [px(i), py(b.sum[key])]);
+    const line = smoothPath(pts);
+    const area = `${line} L${pts[n - 1][0].toFixed(1)} ${py(0).toFixed(1)} L${pts[0][0].toFixed(1)} ${py(0).toFixed(1)} Z`;
     // Dots are zero-length round-capped strokes: a <circle> would be squashed by the horizontal stretch, a stroke width is not.
-    const dots = n > 31 ? '' : buckets.map((b, i) => (b[key] ? `<path d="M${pts[i][0]} ${pts[i][1]}h0.01" stroke="var(--surface-1)" stroke-width="11" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M${pts[i][0]} ${pts[i][1]}h0.01" stroke="${INTENT_COLOR[key]}" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` : '')).join('');
+    const dots = n > 31 ? '' : buckets.map((b, i) => (b[key] ? `<path d="M${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)}h0.01" stroke="var(--surface-1)" stroke-width="11" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M${pts[i][0].toFixed(1)} ${pts[i][1].toFixed(1)}h0.01" stroke="${INTENT_COLOR[key]}" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` : '')).join('');
     return `<path d="${area}" fill="url(#trend-${key})"/><path d="${line}" fill="none" stroke="${INTENT_COLOR[key]}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>${dots}`;
   }).join('');
   const defs = `<defs>${TREND.map((key) => `<linearGradient id="trend-${key}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:${INTENT_COLOR[key]};stop-opacity:.22"/><stop offset="1" style="stop-color:${INTENT_COLOR[key]};stop-opacity:0"/></linearGradient>`).join('')}</defs>`;
@@ -272,7 +304,7 @@ function lineChart(buckets) {
       <div class="linechart-guide" hidden></div><div class="linechart-tip" hidden></div></div></div>`;
 }
 
-const trendLegend = (buckets) => `<div class="legend">${TREND.map((key) => `<span class="legend-item"><span class="dot" style="background:${INTENT_COLOR[key]}"></span>${t('intent.' + key)} <b>${buckets.reduce((a, b) => a + b[key], 0)}</b></span>`).join('')}</div>`;
+const trendLegend = (buckets) => `<div class="legend">${TREND.map((key) => `<span class="legend-item"><span class="dot" style="background:${INTENT_COLOR[key]}"></span>${t('intent.' + key)} <b>${buckets.length ? buckets[buckets.length - 1].sum[key] : 0}</b></span>`).join('')}</div>`;
 
 // Hover: a dashed guide on the nearest day and a tooltip with that day's three counts.
 function bindLineChart(root, buckets) {
@@ -286,7 +318,7 @@ function bindLineChart(root, buckets) {
     const b = buckets[i], x = (i + 0.5) / n * r.width;
     guide.style.left = `${x}px`; guide.hidden = false;
     tip.innerHTML = `<b>${b.date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })}</b>` +
-      TREND.map((key) => `<span class="tip-row"><span class="dot" style="background:${INTENT_COLOR[key]}"></span><span>${t('intent.' + key)}</span><b>${b[key]}</b></span>`).join('');
+      TREND.map((key) => `<span class="tip-row"><span class="dot" style="background:${INTENT_COLOR[key]}"></span><span>${t('intent.' + key)}</span><b>${b.sum[key]}</b></span>`).join('');
     tip.hidden = false;
     const flip = x + 14 + tip.offsetWidth > r.width;
     tip.style.left = `${Math.max(0, Math.min(r.width - tip.offsetWidth, flip ? x - 14 - tip.offsetWidth : x + 14))}px`;
@@ -343,7 +375,7 @@ registerPage('overview', {
     const answered = (counts.yes || 0) + (counts.no || 0) + (counts.unsure || 0);
     const yesPct = answered ? Math.round((counts.yes || 0) / answered * 100) : 0;
     const avg = s.avgSeconds;
-    const buckets = toBuckets(s.perDay);
+    const buckets = runningTotals(toBuckets(s.perDay));
     const fmtN = (n) => n.toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
     const html = pageHead('page.overview', 'page.overview.sub') + `
       <div class="stat-row">

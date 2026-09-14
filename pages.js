@@ -78,11 +78,11 @@ Object.assign(I18N.he, {
 
 // ------------------------------------------------------------------ data
 
-export async function api(path) {
-  const headers = {};
+export async function api(path, init = {}) {
+  const headers = { ...(init.headers ?? {}) };
   const pw = store.get('dash_pw', '');
   if (pw) headers.Authorization = `Bearer ${pw}`;
-  const res = await fetch(path, { headers });
+  const res = await fetch(path, { ...init, headers });
   if (res.status === 401) {
     // Discard only the password this request was sent with, so a stale 401 cannot
     // wipe one the user has just typed on the login screen.
@@ -367,7 +367,7 @@ async function getVapi() {
   dlog('SDK loaded');
   const v = new Vapi(PUBLIC_KEY);
   v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.feedHtml = ''; syncAgentUi(); });
-  v.on('call-end', () => { dlog('event: call-end'); agent.live = false; agent.partial = null; syncAgentUi(); invalidate(); toast(t('agent.saved')); });
+  v.on('call-end', () => { dlog('event: call-end'); agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
   v.on('speech-start', () => $('orb')?.classList.add('speaking'));
   v.on('speech-end', () => $('orb')?.classList.remove('speaking'));
   v.on('volume-level', (lvl) => { const r = $('ring'); if (r) r.style.transform = `scale(${1 + Math.min(lvl, 1) * 0.22})`; });
@@ -402,6 +402,29 @@ function syncAgentUi() {
   const feed = $('feed'); if (feed) feed.innerHTML = agent.feedHtml;
 }
 
+// Recent-calls card on the Voice Agent page.
+function refreshAgentRecent() {
+  loadCalls().then((calls) => {
+    const el = $('agent-recent'); if (!el) return;
+    el.innerHTML = recentRows(calls.slice(0, 6));
+    el.querySelectorAll('.row[data-id]').forEach((r) => { r.onclick = () => { location.hash = `#/calls/${r.dataset.id}`; }; });
+  }).catch(() => {});
+}
+
+// After a browser call ends, copy the newest calls from Vapi into our database
+// right away, so the call shows up without waiting for the webhook (which can
+// take half a minute, and cannot reach a laptop at all). The webhook still
+// arrives later and fills in the analysis. A short delay lets Vapi mark the
+// call as ended first. With no database, /api/sync answers 409 and we just
+// refresh; the list then comes straight from Vapi anyway.
+function pullFinishedCall() {
+  setTimeout(async () => {
+    try { await api('/api/sync?limit=5', { method: 'POST' }); } catch (e) { dlog('sync after call: ' + e.message); }
+    invalidate();
+    refreshAgentRecent();
+  }, 3000);
+}
+
 registerPage('agent', {
   skeleton: () => sk.card(`<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px 0"><div class="skeleton" style="width:132px;height:132px;border-radius:50%"></div>${sk.line('w30')}</div>`),
   async load() {
@@ -432,7 +455,7 @@ registerPage('agent', {
     return { html, async mount(main) {
       if (location.search.includes('debug')) { $('diag').style.display = 'block'; $('diag').textContent = agent.log.join('\n'); }
       syncAgentUi();
-      loadCalls().then((calls) => { const el = $('agent-recent'); if (el) { el.innerHTML = recentRows(calls.slice(0, 6)); el.querySelectorAll('.row[data-id]').forEach((r) => { r.onclick = () => { location.hash = `#/calls/${r.dataset.id}`; }; }); } }).catch(() => {});
+      refreshAgentRecent();
       $('voice').onchange = () => store.set('voice', $('voice').value);
       $('speed').oninput = () => { $('speedval').textContent = Number($('speed').value).toFixed(2); store.set('speed', $('speed').value); };
       $('mic').onclick = async () => {

@@ -1,5 +1,5 @@
 // Dashboard pages: Overview, Calls, Voice Agent, Settings.
-import { registerPage, render, t, I18N, lang, escapeHtml, pageHead, toast, sk, store, applyLang, applyTheme, currentTheme, toggleTheme } from './app.js';
+import { registerPage, render, t, I18N, lang, escapeHtml, pageHead, toast, sk, store, applyLang, applyTheme, currentTheme, toggleTheme, authRequired, showLogin, signOut } from './app.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -20,7 +20,7 @@ Object.assign(I18N.en, {
   'status.live': 'Live', 'status.ended': 'Ended', 'status.failed': 'Failed', 'status.queued': 'Queued',
   'empty.calls': 'No calls yet. Open the Voice Agent page and press the button.',
   'empty.search': 'Nothing matches your search.',
-  'unit.calls': 'calls', 'auth.prompt': 'Dashboard password',
+  'unit.calls': 'calls',
   'day.0': 'Sun', 'day.1': 'Mon', 'day.2': 'Tue', 'day.3': 'Wed', 'day.4': 'Thu', 'day.5': 'Fri', 'day.6': 'Sat',
   'col.status': 'Status', 'col.source': 'Source', 'col.started': 'Started', 'col.length': 'Length', 'col.intent': 'Intent', 'col.cost': 'Cost',
   'detail.pick': 'Select a call to read the conversation', 'detail.title': 'Conversation', 'detail.empty': 'No transcript for this call',
@@ -40,7 +40,7 @@ Object.assign(I18N.en, {
   'agent.saved': 'Call saved. It will appear in Calls in a moment.',
   'set.appearance': 'Appearance', 'set.theme': 'Light theme', 'set.theme.sub': 'Dark is the default', 'set.lang': 'Language', 'set.lang.sub': 'English or Hebrew, layout flips with it',
   'set.assistant': 'Assistant', 'set.name': 'Name', 'set.transcriber': 'Transcriber', 'set.voice': 'Voice', 'set.model': 'Model', 'set.first': 'First message', 'set.updated': 'Last updated',
-  'set.password': 'Dashboard password', 'set.password.sub': 'Stored in this browser only', 'set.forget': 'Forget',
+  'set.password': 'Dashboard password', 'set.password.sub': 'Signed in on this browser', 'set.signout': 'Sign out',
 });
 Object.assign(I18N.he, {
   'stat.total': 'סך שיחות', 'stat.total.sub': 'מאז ומתמיד',
@@ -53,7 +53,7 @@ Object.assign(I18N.he, {
   'status.live': 'פעילה', 'status.ended': 'הסתיימה', 'status.failed': 'נכשלה', 'status.queued': 'בתור',
   'empty.calls': 'עדיין אין שיחות. פתחו את עמוד הסוכן הקולי ולחצו על הכפתור.',
   'empty.search': 'אין תוצאות לחיפוש.',
-  'unit.calls': 'שיחות', 'auth.prompt': 'סיסמת הדשבורד',
+  'unit.calls': 'שיחות',
   'day.0': 'א׳', 'day.1': 'ב׳', 'day.2': 'ג׳', 'day.3': 'ד׳', 'day.4': 'ה׳', 'day.5': 'ו׳', 'day.6': 'ש׳',
   'col.status': 'סטטוס', 'col.source': 'מקור', 'col.started': 'התחילה', 'col.length': 'אורך', 'col.intent': 'כוונה', 'col.cost': 'עלות',
   'detail.pick': 'בחרו שיחה כדי לקרוא את השיחה', 'detail.title': 'השיחה', 'detail.empty': 'אין תמלול לשיחה הזאת',
@@ -73,7 +73,7 @@ Object.assign(I18N.he, {
   'agent.saved': 'השיחה נשמרה. היא תופיע בעמוד השיחות בעוד רגע.',
   'set.appearance': 'מראה', 'set.theme': 'ערכת נושא בהירה', 'set.theme.sub': 'כהה היא ברירת המחדל', 'set.lang': 'שפה', 'set.lang.sub': 'אנגלית או עברית, הפריסה מתהפכת בהתאם',
   'set.assistant': 'הסוכנת', 'set.name': 'שם', 'set.transcriber': 'תמלול', 'set.voice': 'קול', 'set.model': 'מודל', 'set.first': 'משפט פתיחה', 'set.updated': 'עודכן לאחרונה',
-  'set.password': 'סיסמת דשבורד', 'set.password.sub': 'נשמרת בדפדפן הזה בלבד', 'set.forget': 'שכח',
+  'set.password': 'סיסמת דשבורד', 'set.password.sub': 'מחוברים בדפדפן הזה', 'set.signout': 'התנתקות',
 });
 
 // ------------------------------------------------------------------ data
@@ -84,10 +84,11 @@ export async function api(path) {
   if (pw) headers.Authorization = `Bearer ${pw}`;
   const res = await fetch(path, { headers });
   if (res.status === 401) {
-    const entered = prompt(t('auth.prompt'));
-    if (!entered) throw new Error('unauthorized');
-    store.set('dash_pw', entered);
-    return api(path);
+    // Discard only the password this request was sent with, so a stale 401 cannot
+    // wipe one the user has just typed on the login screen.
+    if (store.get('dash_pw', '') === pw) store.del('dash_pw');
+    showLogin();
+    throw new Error('unauthorized');
   }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || res.statusText);
@@ -477,7 +478,7 @@ registerPage('settings', {
         <div class="card"><div class="card-head"><span class="card-title">${t('set.appearance')}</span></div>
           ${row(t('set.theme'), `<span class="switch${currentTheme() === 'light' ? ' on' : ''}" id="set-theme" data-theme-switch role="switch" tabindex="0"><span></span></span>`, t('set.theme.sub'))}
           ${row(t('set.lang'), `<div class="tabs"><button id="set-en"${lang === 'en' ? ' class="on"' : ''}>English</button><button id="set-he"${lang === 'he' ? ' class="on"' : ''}>עברית</button></div>`, t('set.lang.sub'))}
-          ${store.get('dash_pw', '') ? row(t('set.password'), `<button class="btn secondary sm" id="set-forget">${t('set.forget')}</button>`, t('set.password.sub')) : ''}
+          ${authRequired ? row(t('set.password'), `<button class="btn secondary sm" id="set-signout">${t('set.signout')}</button>`, t('set.password.sub')) : ''}
         </div>
         <div class="card"><div class="card-head"><span class="card-title">${t('set.assistant')}</span></div>
           ${cfg.error ? `<div class="page-empty">${escapeHtml(cfg.error)}</div>` : `
@@ -493,7 +494,7 @@ registerPage('settings', {
       $('set-theme').onclick = toggleTheme;
       $('set-en').onclick = () => applyLang('en');
       $('set-he').onclick = () => applyLang('he');
-      const f = $('set-forget'); if (f) f.onclick = () => { store.del('dash_pw'); render(); };
+      const f = $('set-signout'); if (f) f.onclick = signOut;
     } };
   },
 });

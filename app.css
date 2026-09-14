@@ -138,3 +138,39 @@ audio { width: 100%; margin: 14px 0; }
 .setting:last-child { border-bottom: none; }
 .setting-k { font-size: 13px; color: var(--text-1); }
 .setting-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+/* ---------------------------------------------------------------- login */
+/* Opaque full-screen overlay: the shell skeleton behind it never shows through. */
+.login {
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center; padding: 24px;
+  background: var(--bg-0);
+}
+.login-card {
+  width: min(380px, 100%); padding: 28px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.login-mark { padding: 0; margin-bottom: 18px; }
+.login-title { font-size: var(--text-xl, 20px); font-weight: 600; color: var(--text-1); margin: 0; }
+.login-sub { font-size: 13px; color: var(--text-2); margin: 0 0 18px; }
+.login .input.login-field { width: 100%; min-width: 0; padding-inline-end: 6px; }
+.login .input.login-field > input { flex: 1; min-width: 0; }
+.pw-toggle {
+  flex: none; width: 30px; height: 30px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-inline-start: auto; background: transparent; border: 0; color: var(--text-2); cursor: pointer;
+}
+.pw-toggle:hover { background: var(--surface-2); color: var(--text-1); }
+.pw-toggle:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.pw-toggle svg { width: 16px; height: 16px; }
+.pw-toggle .eye-off { display: none; }
+.pw-toggle.showing .eye { display: none; }
+.pw-toggle.showing .eye-off { display: block; }
+.login-err { color: var(--negative); font-size: 12px; min-height: 16px; margin-top: 4px; }
+.login-submit { width: 100%; margin-top: 6px; }
+.login-lang { align-self: center; margin-top: 10px; }
+.login-card.shake { animation: shake 300ms ease; }
+@keyframes shake {
+  20% { transform: translateX(-6px); } 40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); } 80% { transform: translateX(4px); }
+}

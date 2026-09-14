@@ -37,6 +37,14 @@ place phone calls, or spend outside that. The private key is never in this repo.
 Live transcripts arrive on the `message` event and render as a conversation, with
 partial results shown faded until they finalize.
 
+## Sign-in
+
+Set `DASHBOARD_PASSWORD` (Vercel → Settings → Environment Variables) and the
+dashboard shows a sign-in screen before any call data. The password is checked by
+`api/auth.js`, remembered in the browser until you sign out (sidebar or Settings),
+and every `api/` route refuses requests that do not carry it. Leave it unset and
+there is no login at all. `/demo` is always open: it only uses the public key.
+
 ## Database
 
 Calls are stored in your own Supabase Postgres, filled by a Vapi webhook and read

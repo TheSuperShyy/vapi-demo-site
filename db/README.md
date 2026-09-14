@@ -41,7 +41,7 @@ Variables (and in local `.env`):
 | `VAPI_PRIVATE_KEY` | from dashboard.vapi.ai → Settings → API Keys |
 | `DATABASE_URL` | the pooler URI from step 2 |
 | `VAPI_WEBHOOK_SECRET` | the string from step 4 |
-| `DASHBOARD_PASSWORD` | optional |
+| `DASHBOARD_PASSWORD` | the sign-in password for the dashboard (leave unset for no login) |
 
 Redeploy after adding them (Vercel → Deployments → ⋯ → Redeploy).
 

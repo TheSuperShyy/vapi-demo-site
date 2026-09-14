@@ -3,6 +3,8 @@
 // The Vapi PRIVATE key lives only here, read from the environment. On Vercel set
 // VAPI_PRIVATE_KEY in the project settings; locally put it in .env (gitignored).
 
+import { timingSafeEqual } from 'node:crypto';
+
 const API = 'https://api.vapi.ai';
 
 export function requireEnv() {
@@ -17,9 +19,15 @@ export function requireAuth(req, res) {
   const want = process.env.DASHBOARD_PASSWORD;
   if (!want) return true;
   const got = (req.headers.authorization || '').replace(/^Bearer\s+/i, '');
-  if (got === want) return true;
+  if (sameSecret(got, want)) return true;
   res.status(401).json({ error: 'unauthorized' });
   return false;
+}
+
+// Constant-time compare so response timing does not leak how many characters match.
+function sameSecret(a, b) {
+  const x = Buffer.from(String(a)), y = Buffer.from(String(b));
+  return x.length === y.length && timingSafeEqual(x, y);
 }
 
 export async function vapi(path) {

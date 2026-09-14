@@ -39,6 +39,36 @@ Object.assign(I18N.en, {
   'reason.no_suitable_option': 'No suitable option', 'reason.deliberate_protest': 'Deliberate protest', 'reason.abroad_or_away': 'Abroad or away',
   'reason.health_or_mobility': 'Health or mobility', 'reason.logistics_polling_station': 'Polling station logistics', 'reason.work_or_schedule': 'Work or schedule',
   'reason.declined_to_say': 'Declined to say', 'reason.other': 'Other', 'reason.not_applicable': '—',
+  // analysis page
+  'an.range': 'Last {n} days', 'an.export': 'Export to Excel', 'an.exporting': 'Preparing…', 'an.exported': 'Report downloaded', 'an.nodb': 'The analysis needs the database (DATABASE_URL).',
+  'an.reached': 'Reached a person', 'an.reached.sub': '{a} of {b} calls', 'an.yes': 'Will vote', 'an.no': 'Will not vote', 'an.ofAnswered': '{a} of {b} answered',
+  'an.early': 'Hung up early', 'an.early.sub': 'in the first 12 seconds', 'an.optout': 'Asked to be removed', 'an.optout.sub': 'marked Do not call',
+  'an.findings': 'Key findings', 'an.reasons': 'Why they will not vote', 'an.reasons.sub': 'people who said no or unsure', 'an.reasons.empty': 'No "no" or "unsure" answers in this range yet.',
+  'an.quotes': 'In their words', 'an.quotes.empty': 'No quotes recorded in this range yet.',
+  'an.wrong': 'What went wrong', 'an.wrong.sub': 'calls that ended without an answer', 'an.wrong.empty': 'Every call in this range ended with an answer.',
+  'an.flag.early': 'Hung up in 12 s', 'an.flag.bot': 'Asked if a bot', 'an.flag.audio': 'Bad audio',
+  'an.approach': 'How the agent handled it', 'an.approach.sub': 'detected from her lines in the transcripts',
+  'an.ap.askedReason': 'Asked for the reason', 'an.ap.closingDelivered': 'Delivered the closing appeal', 'an.ap.appealJewishState': 'Closing: "Jewish state"', 'an.ap.appealHighCourt': 'Closing: "High Court"',
+  'an.ap.thankedYes': 'Thanked a "yes" with the script line', 'an.ap.politeExit': 'Ended politely on request', 'an.ap.askedQuestion': 'Person asked her a question',
+  'an.ap.of.noUnsure': 'of no/unsure', 'an.ap.of.closing': 'of closings', 'an.ap.of.yes': 'of yes', 'an.ap.of.reached': 'of reached', 'an.ap.of.conv': 'of conversations',
+  'an.ap.turns': 'On calls with a conversation she spoke {a} times and the person {b} times on average.',
+  'an.cities': 'By city', 'an.cities.empty': 'No calls to numbers from the list in this range yet.', 'an.daily': 'Day by day', 'an.daily.sub': 'days with calls, newest first',
+  'an.col.city': 'City', 'an.col.calls': 'Calls', 'an.col.reached': 'Reached', 'an.col.yes': 'Will vote', 'an.col.no': 'Will not', 'an.col.unsure': 'Unsure', 'an.col.refused': 'Refused',
+  'an.col.nr': 'Not reached', 'an.col.rate': 'Yes rate', 'an.col.day': 'Day', 'an.col.optout': 'Opt-outs', 'an.col.cost': 'Cost',
+  'ended.hungUp': 'Person hung up', 'ended.silence': 'Silence, nobody spoke', 'ended.voicemail': 'Voicemail', 'ended.noAnswer': 'No answer', 'ended.busy': 'Busy',
+  'ended.agentEnded': 'Agent ended the call', 'ended.tooLong': 'Call too long', 'ended.noMic': 'No microphone', 'ended.technical': 'Technical error', 'ended.other': 'Other',
+  'f.none': 'No calls in this range yet.',
+  'f.reach': '{a} of {b} calls reached a person ({p}%).',
+  'f.yes': '{a} of {b} people who answered will vote ({p}%).',
+  'f.topReason': 'The most common reason for not voting is "{r}": {a} of {b} ({p}%).',
+  'f.early': '{a} people hung up in the first 12 seconds, so the opening line is where those calls were lost.',
+  'f.silence': '{a} calls ended in silence: nobody spoke after the greeting.',
+  'f.technical': '{a} calls failed for technical reasons (voice or audio errors).',
+  'f.bot': '{a} people asked whether they were talking to a bot.',
+  'f.optout': '{a} asked not to be called again and are marked Do not call.',
+  'f.askedReason': 'The agent asked for the reason in {a} of {b} "no" or "unsure" calls.',
+  'f.appeal': 'Closing appeal used: "Jewish state" {a}, "High Court" {b}.',
+  'f.noAnalysis': '{a} calls have no analysis yet (very short or failed).',
   'agent.talk': 'Talk to me', 'agent.end': 'End', 'agent.ready': 'Ready. Microphone permission needed.', 'agent.connecting': 'Connecting…',
   'agent.connected': 'Connected', 'agent.connected.sub': 'speak or type', 'agent.ended': 'Call ended. Start again whenever.',
   'agent.mic.blocked': 'The browser blocked the microphone. Allow access and try again.', 'agent.start.failed': 'Could not start the call. Try refreshing.',
@@ -83,6 +113,36 @@ Object.assign(I18N.he, {
   'reason.no_suitable_option': 'אין למי להצביע', 'reason.deliberate_protest': 'מחאה מכוונת', 'reason.abroad_or_away': 'בחו״ל או לא בעיר',
   'reason.health_or_mobility': 'בריאות או ניידות', 'reason.logistics_polling_station': 'קלפי רחוקה או לא נגישה', 'reason.work_or_schedule': 'עבודה או לוח זמנים',
   'reason.declined_to_say': 'לא רצו לומר', 'reason.other': 'אחר', 'reason.not_applicable': '—',
+  // analysis page
+  'an.range': '{n} הימים האחרונים', 'an.export': 'ייצוא לאקסל', 'an.exporting': 'מכין…', 'an.exported': 'הדוח ירד', 'an.nodb': 'הניתוח דורש מסד נתונים (DATABASE_URL).',
+  'an.reached': 'הגיעו לאדם', 'an.reached.sub': '{a} מתוך {b} שיחות', 'an.yes': 'יצביעו', 'an.no': 'לא יצביעו', 'an.ofAnswered': '{a} מתוך {b} שענו',
+  'an.early': 'ניתקו מהר', 'an.early.sub': 'ב-12 השניות הראשונות', 'an.optout': 'ביקשו הסרה', 'an.optout.sub': 'סומנו לא להתקשר',
+  'an.findings': 'ממצאים עיקריים', 'an.reasons': 'למה לא יצביעו', 'an.reasons.sub': 'מי שענו לא או לא בטוחים', 'an.reasons.empty': 'עדיין אין תשובות "לא" או "לא בטוח" בטווח הזה.',
+  'an.quotes': 'במילים שלהם', 'an.quotes.empty': 'עדיין אין ציטוטים בטווח הזה.',
+  'an.wrong': 'מה השתבש', 'an.wrong.sub': 'שיחות שהסתיימו בלי תשובה', 'an.wrong.empty': 'כל השיחות בטווח הזה הסתיימו בתשובה.',
+  'an.flag.early': 'ניתקו תוך 12 שנ׳', 'an.flag.bot': 'שאלו אם בוט', 'an.flag.audio': 'שמע גרוע',
+  'an.approach': 'איך הסוכנת התמודדה', 'an.approach.sub': 'לפי המשפטים שלה בתמלולים',
+  'an.ap.askedReason': 'שאלה לסיבה', 'an.ap.closingDelivered': 'אמרה את משפט הסיום', 'an.ap.appealJewishState': 'סיום: "המדינה היהודית"', 'an.ap.appealHighCourt': 'סיום: "בג״ץ"',
+  'an.ap.thankedYes': 'הודתה על "כן" לפי התסריט', 'an.ap.politeExit': 'סיימה בנימוס לפי בקשה', 'an.ap.askedQuestion': 'האדם שאל אותה שאלה',
+  'an.ap.of.noUnsure': 'מתוך לא/לא בטוח', 'an.ap.of.closing': 'מתוך סיומים', 'an.ap.of.yes': 'מתוך כן', 'an.ap.of.reached': 'מתוך מי שהושגו', 'an.ap.of.conv': 'מתוך שיחות',
+  'an.ap.turns': 'בשיחות עם דיאלוג היא דיברה בממוצע {a} פעמים והאדם {b} פעמים.',
+  'an.cities': 'לפי עיר', 'an.cities.empty': 'עדיין אין שיחות למספרים מהרשימה בטווח הזה.', 'an.daily': 'יום אחר יום', 'an.daily.sub': 'ימים עם שיחות, מהחדש לישן',
+  'an.col.city': 'עיר', 'an.col.calls': 'שיחות', 'an.col.reached': 'הושגו', 'an.col.yes': 'יצביעו', 'an.col.no': 'לא יצביעו', 'an.col.unsure': 'לא בטוחים', 'an.col.refused': 'סירבו',
+  'an.col.nr': 'לא הושגו', 'an.col.rate': 'אחוז כן', 'an.col.day': 'יום', 'an.col.optout': 'הסרות', 'an.col.cost': 'עלות',
+  'ended.hungUp': 'האדם ניתק', 'ended.silence': 'שקט, אף אחד לא דיבר', 'ended.voicemail': 'תא קולי', 'ended.noAnswer': 'אין מענה', 'ended.busy': 'תפוס',
+  'ended.agentEnded': 'הסוכנת סיימה', 'ended.tooLong': 'שיחה ארוכה מדי', 'ended.noMic': 'אין מיקרופון', 'ended.technical': 'תקלה טכנית', 'ended.other': 'אחר',
+  'f.none': 'עדיין אין שיחות בטווח הזה.',
+  'f.reach': '{a} מתוך {b} שיחות הגיעו לאדם ({p}%).',
+  'f.yes': '{a} מתוך {b} שענו יצביעו ({p}%).',
+  'f.topReason': 'הסיבה הנפוצה ביותר לא להצביע: "{r}", {a} מתוך {b} ({p}%).',
+  'f.early': '{a} אנשים ניתקו ב-12 השניות הראשונות, כלומר השיחות האלה אבדו במשפט הפתיחה.',
+  'f.silence': '{a} שיחות הסתיימו בשקט: אף אחד לא דיבר אחרי הברכה.',
+  'f.technical': '{a} שיחות נכשלו מסיבות טכניות (שגיאות קול או שמע).',
+  'f.bot': '{a} אנשים שאלו אם הם מדברים עם בוט.',
+  'f.optout': '{a} ביקשו שלא להתקשר שוב וסומנו לא להתקשר.',
+  'f.askedReason': 'הסוכנת שאלה לסיבה ב-{a} מתוך {b} שיחות "לא" או "לא בטוח".',
+  'f.appeal': 'משפט הסיום שנאמר: "המדינה היהודית" {a}, "בג״ץ" {b}.',
+  'f.noAnalysis': '{a} שיחות עדיין ללא ניתוח (קצרות מאוד או שנכשלו).',
   'agent.talk': 'דבר איתי', 'agent.end': 'סיים', 'agent.ready': 'מוכן. צריך אישור למיקרופון.', 'agent.connecting': 'מתחבר…',
   'agent.connected': 'מחובר', 'agent.connected.sub': 'דבר או כתוב', 'agent.ended': 'השיחה הסתיימה. אפשר להתחיל שוב.',
   'agent.mic.blocked': 'הדפדפן חסם את המיקרופון. אשרו גישה ונסו שוב.', 'agent.start.failed': 'לא הצלחנו להתחיל את השיחה. נסו לרענן.',
@@ -398,6 +458,141 @@ registerPage('overview', {
     return { html, mount(main) {
       main.querySelectorAll('.row[data-id]').forEach((el) => { el.onclick = () => { location.hash = `#/calls/${el.dataset.id}`; }; });
       bindLineChart(main, buckets);
+    } };
+  },
+});
+
+// ------------------------------------------------------------------ analysis
+
+// Numbers from /api/analysis (all computed by the database from stored calls). The
+// findings are plain rules over those numbers, not a model: every sentence can be
+// traced back to a count on this page or in the export.
+const tf = (key, vars) => t(key).replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+const pctOf = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
+const ENDED_TONE = { technical: 'neg', noMic: 'neg', hungUp: 'warn', silence: '', voicemail: '', noAnswer: '', busy: '', agentEnded: '', tooLong: 'warn', other: '' };
+
+function findings(a) {
+  const f = a.funnel, ap = a.approach, out = [];
+  const add = (tone, key, vars = {}) => out.push({ tone, text: tf(key, vars) });
+  if (!f.total) { add('', 'f.none'); return out; }
+  add(pctOf(f.reached, f.total) < 40 ? 'warn' : 'good', 'f.reach', { a: f.reached, b: f.total, p: pctOf(f.reached, f.total) });
+  if (f.answered) add(pctOf(f.yes, f.answered) >= 50 ? 'good' : 'warn', 'f.yes', { a: f.yes, b: f.answered, p: pctOf(f.yes, f.answered) });
+  const noUnsure = f.no + f.unsure;
+  if (a.reasons.length && noUnsure) add('', 'f.topReason', { r: t('reason.' + a.reasons[0].key), a: a.reasons[0].n, b: noUnsure, p: pctOf(a.reasons[0].n, noUnsure) });
+  if (f.hungUpEarly) add('warn', 'f.early', { a: f.hungUpEarly });
+  const g = Object.fromEntries(a.endedReasons.map((e) => [e.key, e.n]));
+  if (g.silence) add('', 'f.silence', { a: g.silence });
+  if (g.technical || g.noMic) add('bad', 'f.technical', { a: (g.technical || 0) + (g.noMic || 0) });
+  if (f.askedIfBot) add('', 'f.bot', { a: f.askedIfBot });
+  if (f.optOut) add('bad', 'f.optout', { a: f.optOut });
+  if (noUnsure && ap.askedReason < noUnsure) add('warn', 'f.askedReason', { a: ap.askedReason, b: noUnsure });
+  if (ap.appealJewishState || ap.appealHighCourt) add('', 'f.appeal', { a: ap.appealJewishState, b: ap.appealHighCourt });
+  if (f.noAnalysis) add('', 'f.noAnalysis', { a: f.noAnalysis });
+  return out;
+}
+
+// label / value on one line, a bar under it; share is of `base`
+const barList = (items, base) => `<div class="bars">${items.map((it) => `
+  <div class="bar-row"><span class="bar-label">${it.label}</span><span class="bar-val"><b>${it.n}</b> · ${pctOf(it.n, it.base ?? base)}%${it.of ? ` ${it.of}` : ''}</span>
+    <div class="bar-track"><div class="bar-fill ${it.tone ?? ''}" style="width:${it.n ? Math.max(1, Math.min(100, pctOf(it.n, it.base ?? base))) : 0}%"></div></div></div>`).join('')}</div>`;
+
+async function exportReport(btn) {
+  if (btn.disabled) return;
+  const label = btn.innerHTML;
+  btn.disabled = true; btn.textContent = t('an.exporting');
+  try {
+    const pw = store.get('dash_pw', '');
+    const res = await fetch(`/api/export?days=${range}&lang=${lang}`, { headers: pw ? { Authorization: `Bearer ${pw}` } : {} });
+    if (res.status === 401) { showLogin(); throw new Error('unauthorized'); }
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || res.statusText);
+    const blob = await res.blob();
+    const name = (res.headers.get('Content-Disposition') || '').match(/filename="([^"]+)"/)?.[1] || `voice-report-${range}d.xlsx`;
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), { href: url, download: name });
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    toast(t('an.exported'));
+  } catch (e) { toast(e.message, true); } finally { btn.disabled = false; btn.innerHTML = label; }
+}
+
+registerPage('analysis', {
+  skeleton: () => `
+    <div class="stat-row">${sk.stat(true)}${sk.stat()}${sk.stat()}${sk.stat()}${sk.stat()}</div>
+    ${sk.card(`${sk.line('w30')}${sk.line('w70')}${sk.line('w50')}${sk.line('w70')}`)}
+    <div class="grid halves">${sk.card(`${sk.line('w30')}${sk.rows(4)}`)}${sk.card(`${sk.line('w30')}${sk.rows(4)}`)}</div>`,
+  async load() {
+    let a;
+    try { a = await cached('/api/analysis?days=' + range); } catch (e) {
+      const nodb = /needs_database/.test(e.message);
+      return { html: pageHead('page.analysis', 'page.analysis.sub') + `<div class="card"><div class="page-empty">${escapeHtml(nodb ? t('an.nodb') : e.message)}</div></div>` };
+    }
+    const f = a.funnel, ap = a.approach, fmtN = (n) => Number(n).toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
+    const noUnsure = f.no + f.unsure;
+    const head = pageHead('page.analysis', 'page.analysis.sub', `<span style="display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span class="badge">${tf('an.range', { n: a.days })}</span>
+      <button class="btn secondary sm" id="an-export" type="button">${DOWNLOAD_ICON} ${t('an.export')}</button></span>`);
+
+    const tiles = `<div class="stat-row">
+      ${statTile({ hero: true, label: t('an.reached'), value: `${pctOf(f.reached, f.total)}%`, sub: tf('an.reached.sub', { a: fmtN(f.reached), b: fmtN(f.total) }) })}
+      ${statTile({ label: t('an.yes'), value: `${pctOf(f.yes, f.answered)}%`, sub: tf('an.ofAnswered', { a: f.yes, b: f.answered }) })}
+      ${statTile({ label: t('an.no'), value: `${pctOf(f.no, f.answered)}%`, sub: tf('an.ofAnswered', { a: f.no, b: f.answered }) })}
+      ${statTile({ label: t('an.early'), value: fmtN(f.hungUpEarly), sub: t('an.early.sub') })}
+      ${statTile({ label: t('an.optout'), value: fmtN(f.optOut), sub: t('an.optout.sub') })}
+    </div>`;
+
+    const findingsCard = `<div class="card"><div class="card-head"><span class="card-title">${t('an.findings')}</span></div>
+      <ul class="findings">${findings(a).map((x) => `<li class="${x.tone}"><span class="dot"></span><span>${escapeHtml(x.text)}</span></li>`).join('')}</ul></div>`;
+
+    const reasonsCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('an.reasons')} <span class="count">· ${t('an.reasons.sub')}</span></span></div>
+      ${a.reasons.length ? barList(a.reasons.map((r) => ({ label: escapeHtml(t('reason.' + r.key)), n: r.n, tone: 'neg' })), a.reasons.reduce((s, r) => s + r.n, 0)) : `<div class="page-empty">${t('an.reasons.empty')}</div>`}</div>`;
+
+    const quotesCard = `<div class="card"><div class="card-head"><span class="card-title">${t('an.quotes')}</span></div>
+      ${a.quotes.length ? `<div class="quotes">${a.quotes.map((q) => `<div class="quote" data-id="${escapeHtml(q.callId)}">
+        <div class="verbatim" dir="auto">${escapeHtml(q.text)}</div>
+        <div class="quote-meta">${intentBadge({ intent: q.intent })}${q.category && q.category !== 'not_applicable' ? `<span class="badge">${escapeHtml(t('reason.' + q.category))}</span>` : ''}${q.city ? `<span dir="auto">${escapeHtml(q.city)}</span>` : ''}<span>${fmtTime(q.createdAt)}</span></div></div>`).join('')}</div>` : `<div class="page-empty">${t('an.quotes.empty')}</div>`}</div>`;
+
+    const wrongTotal = a.endedReasons.reduce((s, e) => s + e.n, 0);
+    const wrongCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('an.wrong')} <span class="count">· ${t('an.wrong.sub')}</span></span></div>
+      ${wrongTotal ? barList(a.endedReasons.map((e) => ({ label: t('ended.' + e.key), n: e.n, tone: ENDED_TONE[e.key] ?? '' })), wrongTotal) : `<div class="page-empty">${t('an.wrong.empty')}</div>`}
+      <div class="mini-stats">
+        <div class="stat"><div class="stat-label">${t('an.flag.early')}</div><div class="stat-value">${fmtN(f.hungUpEarly)}</div></div>
+        <div class="stat"><div class="stat-label">${t('an.flag.bot')}</div><div class="stat-value">${fmtN(f.askedIfBot)}</div></div>
+        <div class="stat"><div class="stat-label">${t('an.flag.audio')}</div><div class="stat-value">${fmtN(f.qualityBad)}</div></div>
+      </div></div>`;
+
+    const closings = ap.closingDelivered || (ap.appealJewishState + ap.appealHighCourt);
+    const approachItems = [
+      { label: t('an.ap.askedReason'), n: ap.askedReason, base: noUnsure, of: t('an.ap.of.noUnsure') },
+      { label: t('an.ap.closingDelivered'), n: ap.closingDelivered, base: noUnsure, of: t('an.ap.of.noUnsure') },
+      { label: t('an.ap.appealJewishState'), n: ap.appealJewishState, base: closings, of: t('an.ap.of.closing') },
+      { label: t('an.ap.appealHighCourt'), n: ap.appealHighCourt, base: closings, of: t('an.ap.of.closing') },
+      { label: t('an.ap.thankedYes'), n: ap.thankedYes, base: f.yes, of: t('an.ap.of.yes'), tone: 'good' },
+      { label: t('an.ap.politeExit'), n: ap.politeExit, base: f.reached, of: t('an.ap.of.reached') },
+      { label: t('an.ap.askedQuestion'), n: ap.askedQuestion, base: ap.conversations, of: t('an.ap.of.conv') },
+    ];
+    const approachCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('an.approach')} <span class="count">· ${t('an.approach.sub')}</span></span></div>
+      ${barList(approachItems, 1)}
+      ${ap.conversations ? `<p class="page-sub" style="margin-top:14px">${tf('an.ap.turns', { a: ap.avgAgentTurns.toFixed(1), b: ap.avgUserTurns.toFixed(1) })}</p>` : ''}</div>`;
+
+    const citiesCard = `<div class="card"><div class="card-head"><span class="card-title">${t('an.cities')}</span></div>
+      ${a.cities.length ? `<div style="overflow-x:auto"><table class="table nowrap">
+        <thead><tr><th>${t('an.col.city')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.nr')}</th><th class="end">${t('an.col.rate')}</th></tr></thead>
+        <tbody>${a.cities.map((c) => `<tr><td dir="auto">${escapeHtml(c.city)}</td><td class="end mono">${c.total}</td><td class="end mono">${c.yes}</td><td class="end mono">${c.no}</td><td class="end mono">${c.notReached}</td><td class="end mono">${pctOf(c.yes, c.yes + c.no + c.unsure)}%</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('an.cities.empty')}</div>`}</div>`;
+
+    const days = a.daily.filter((d) => d.total).reverse();
+    const dailyCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('an.daily')} <span class="count">· ${t('an.daily.sub')}</span></span></div>
+      ${days.length ? `<div style="overflow-x:auto"><table class="table nowrap">
+        <thead><tr><th>${t('an.col.day')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.reached')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.unsure')}</th><th class="end">${t('an.col.refused')}</th><th class="end">${t('an.col.nr')}</th><th class="end">${t('an.col.optout')}</th><th class="end">${t('an.col.cost')}</th></tr></thead>
+        <tbody>${days.map((d) => `<tr><td class="mono">${d.day}</td><td class="end mono">${d.total}</td><td class="end mono">${d.reached}</td><td class="end mono">${d.yes}</td><td class="end mono">${d.no}</td><td class="end mono">${d.unsure}</td><td class="end mono">${d.refused}</td><td class="end mono">${d.notReached}</td><td class="end mono">${d.optOut}</td><td class="end mono">${money(d.cost)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('f.none')}</div>`}</div>`;
+
+    const html = head + tiles + findingsCard
+      + `<div class="grid halves">${reasonsCard}${quotesCard}</div>`
+      + `<div class="grid halves">${wrongCard}${approachCard}</div>`
+      + `<div class="grid halves wide-end">${citiesCard}${dailyCard}</div>`;
+    return { html, mount(main) {
+      main.querySelector('#an-export').onclick = (e) => exportReport(e.currentTarget);
+      main.querySelectorAll('.quote[data-id]').forEach((el) => { el.onclick = () => { location.hash = `#/calls/${el.dataset.id}`; }; });
     } };
   },
 });

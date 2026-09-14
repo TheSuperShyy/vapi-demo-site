@@ -234,6 +234,34 @@ audio { width: 100%; margin: 14px 0; }
 .lead-actions .btn svg, .lead-call svg { margin-inline-end: 6px; }
 .page-sub a { color: var(--accent); text-decoration: none; }
 
+/* ---------- analysis page ---------- */
+.grid.halves { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+.grid.halves.wide-end { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+@media (max-width: 1100px) { .grid.halves, .grid.halves.wide-end { grid-template-columns: minmax(0, 1fr); } }
+.table.nowrap th, .table.nowrap td { white-space: nowrap; }
+.findings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.findings li { display: flex; align-items: baseline; gap: 10px; font-size: 13.5px; line-height: 1.55; color: var(--text-1); }
+.findings li .dot { transform: translateY(-1px); }
+.findings li.good .dot { background: var(--positive); }
+.findings li.warn .dot { background: var(--accent); }
+.findings li.bad .dot { background: var(--negative); }
+.bars { display: flex; flex-direction: column; gap: 14px; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: baseline; font-size: 13px; }
+.bar-label { color: var(--text-1); min-width: 0; }
+.bar-val { color: var(--text-3); font-size: 12px; white-space: nowrap; }
+.bar-val b { color: var(--text-1); font-weight: 600; }
+.bar-track { grid-column: 1 / -1; height: 8px; border-radius: var(--radius-pill); background: var(--chart-grid); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: inherit; background: var(--text-3); }
+.bar-fill.neg { background: var(--negative); }
+.bar-fill.warn { background: var(--accent); }
+.bar-fill.good { background: var(--positive); }
+.quotes { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; }
+.quote { cursor: pointer; }
+.quote:hover .verbatim { border-color: var(--border-2); }
+.quote-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 11px; color: var(--text-3); }
+.mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+.mini-stats .stat-value { font-size: 18px; }
+
 /* ---------- phones and small tablets ----------
    The sidebar gives way to a bottom tab bar, the topbar keeps only what a thumb
    needs, tables turn into stacked cards, and a selected call replaces the list. */
@@ -244,7 +272,7 @@ audio { width: 100%; margin: 14px 0; }
     background: var(--bg-sidebar); border-top: 1px solid var(--border-1);
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
   }
-  .tabbar .nav-item { flex: 1; flex-direction: column; justify-content: center; gap: 4px; height: 50px; padding: 0; border-radius: var(--radius-md); font-size: 10px; font-weight: 500; color: var(--text-3); }
+  .tabbar .nav-item { flex: 1 1 0; min-width: 0; flex-direction: column; justify-content: center; gap: 4px; height: 50px; padding: 0; border-radius: var(--radius-md); font-size: 10px; font-weight: 500; color: var(--text-3); }
   .tabbar .nav-item svg { width: 22px; height: 22px; }
   .tabbar .nav-item span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tabbar .nav-item:hover { background: transparent; color: var(--text-1); }

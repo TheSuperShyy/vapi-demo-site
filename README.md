@@ -48,28 +48,45 @@ becomes a bottom tab bar and tables become stacked cards.
 
 ## Analysis and the Excel report
 
-`/api/analysis?days=7|30|90` returns, for the range: the funnel (reached, answered,
-yes/no/unsure, refused, not reached, opt-outs, early hang-ups), reasons for not
-voting, how unanswered calls ended (Vapi's `endedReason` folded into groups), what
-the agent did (detected from her own transcript lines; the phrases are
-`SCRIPT_MARKERS` in `api/_analysis.js`, update them when the script changes), per
-city (joined to the calling list by phone), per day, and the latest quotes. The
-page's "Key findings" are plain rules over those numbers, no AI model.
+The page is three questions, in order, and each number appears in exactly one of
+them with its denominator spelled out beside it:
+
+1. **Did we reach people?** The share of calls that reached a person, then every
+   call that did not, grouped by how it ended (Vapi's `endedReason` folded into
+   groups) and shown as a share of that group.
+2. **What did they say?** Only the people who answered: will vote / will not /
+   unsure, the reasons behind a "no", and their own words. While the sample is
+   under 30 answers the page says so, in place of implying a result.
+3. **What to fix.** The problems ranked by how many calls each one costs, each
+   with the count and one sentence on what it means. These are plain rules over
+   the counts (`fixes()` in `pages.js`), not a model.
+
+Under a quiet "Detail" divider: how the agent handled the calls (detected from her
+own transcript lines; the phrases are `SCRIPT_MARKERS` in `api/_analysis.js`, update
+them when the script changes), per city (joined to the calling list by phone) and
+per day.
+
+`/api/analysis?days=7|30|90` returns everything those sections need: the funnel
+(reached, answered, yes/no/unsure, refused, not reached, opt-outs, early hang-ups),
+reasons for not voting, how unanswered calls ended, what the agent did, by city, by
+day, and the latest quotes.
 
 ## The AI read of the numbers
 
-The Analysis page opens with a short write-up ("What this means"): a headline, a few
-findings, why people will not vote, what went wrong, and what to change. Gemini writes
-it through OpenRouter (`OPENROUTER_API_KEY`, model in `OPENROUTER_MODEL`, default
-`google/gemini-3.8-flash`). The model never touches the database: `api/_insights.js`
-hands it only the counts from `/api/analysis` and the recorded quotes, and the prompt
-forbids inventing anything, so every sentence traces back to a number on the page.
+Gemini writes the reading of those numbers through OpenRouter (`OPENROUTER_API_KEY`,
+model in `OPENROUTER_MODEL`, default `google/gemini-3.8-flash`). Its headline opens
+the page and its three lists are painted into the section each one is about, tagged
+"AI", so the counted and the written never sit in two competing cards saying the same
+thing. The model never touches the database: `api/_insights.js` hands it only the
+counts from `/api/analysis` and the recorded quotes, the prompt forbids inventing
+anything and tells it not to repeat a count the page already shows, so every sentence
+traces back to a number beside it.
 
 Each write-up is stored in the `insights` table, so opening the page costs nothing:
 `/api/analysis?insight=1&days=N&lang=en|he` reads the stored one, and a `POST` to the
 same route writes a new one. The page rewrites it by itself once more calls have landed
 than it was written from, and "Write again" forces a fresh one. A run costs about
-$0.002. Without the key the page still works and shows the counted findings only.
+$0.002. Without the key the page still works and shows the counted sections only.
 
 `/api/export?days=N&lang=en|he` downloads the same data as an `.xlsx` workbook
 (Summary, Daily, Calls, Reasons, Cities, Quotes) written by `api/_xlsx.js`, with

@@ -44,9 +44,8 @@ export function brief(a, days) {
 
 const SHAPE = `{
   "headline": "one sentence, the single most important thing in this range",
-  "findings": [{ "text": "a sentence with the numbers behind it", "tone": "good|warn|bad" }],
+  "what_went_wrong": ["what the calls that ended without an answer point to"],
   "why_not_voting": ["what the quotes and reason counts say, in their own words where useful"],
-  "what_went_wrong": ["calls that ended without an answer, and what it points to"],
   "advice": ["a concrete change to the script or the campaign, and the number that justifies it"]
 }`;
 
@@ -54,16 +53,19 @@ function prompt(data, lang) {
   const language = lang === 'he' ? 'Hebrew' : 'English';
   return `You are a political campaign analyst reading the results of an automated pre-election phone survey in Israel. A voice agent named Shir asks people whether they intend to vote, and asks those who say no or unsure for the reason.
 
-Write a short, honest read of the data below.
+Write a short, honest read of the data below. The page already shows every count
+beside your text, so your job is what the counts mean, not repeating them.
 
 Hard rules:
 - Use ONLY the numbers in the data. Never invent a number, a reason, a city or a quote.
 - Quote a person only from "quotes". Keep their words as they are; they are in Hebrew.
-- Every claim must carry the number behind it, e.g. "7 of 25 calls".
+- Cite a number only when the point needs it, and never the same number twice.
 - If the sample is too small to conclude anything, say so plainly instead of stretching it.
-- Do not repeat the same number in every bullet. Say what it means for the campaign.
+- Each list goes under the counts it is about, so start from what they imply, not from what they are.
+- The page groups every call that got no answer by how it ended (how_calls_ended_without_an_answer, which adds up to all of them). Use that grouping when you write about those calls; not_reached and no_analysis_yet overlap with it and mixing the two contradicts the page.
+- "advice" must be things someone can act on this week, in the order you would do them.
 - Write in ${language}. Natural, plain ${language}, no marketing tone, no markdown, no emojis.
-- 2 to 5 items in each list. One or two sentences each.
+- 2 to 4 items in each list. One or two sentences each.
 
 Answer with JSON only, in this shape:
 ${SHAPE}
@@ -114,15 +116,11 @@ export async function askModel(brief, lang, { signal } = {}) {
 
 // Keep only the shape the page renders, and cap the sizes so one odd answer
 // cannot stretch the layout.
-const TONES = ['good', 'warn', 'bad'];
 const line = (s) => String(s ?? '').replace(/\s+/g, ' ').trim().slice(0, 400);
 function clean(d) {
-  const list = (v) => (Array.isArray(v) ? v : []).map(line).filter(Boolean).slice(0, 5);
+  const list = (v) => (Array.isArray(v) ? v : []).map(line).filter(Boolean).slice(0, 4);
   return {
     headline: line(d?.headline),
-    findings: (Array.isArray(d?.findings) ? d.findings : []).slice(0, 5)
-      .map((f) => ({ text: line(typeof f === 'string' ? f : f?.text), tone: TONES.includes(f?.tone) ? f.tone : '' }))
-      .filter((f) => f.text),
     why_not_voting: list(d?.why_not_voting),
     what_went_wrong: list(d?.what_went_wrong),
     advice: list(d?.advice),

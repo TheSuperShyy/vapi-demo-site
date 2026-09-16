@@ -169,7 +169,7 @@ audio { width: 100%; margin: 14px 0; }
 .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; font-size: 13px; }
 @media (max-width: 700px) { .analysis-grid { grid-template-columns: 1fr; } }
 .analysis-grid .k { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: var(--tracking-wide); margin-bottom: 3px; }
-.verbatim { font-size: 13.5px; color: var(--text-1); padding: 10px 12px; background: var(--surface-1); border-radius: var(--radius-sm); border: 1px solid var(--border-1); }
+.verbatim { max-width: 70ch; font-size: 13.5px; color: var(--text-1); padding: 10px 12px; background: var(--surface-1); border-radius: var(--radius-sm); border: 1px solid var(--border-1); }
 .summary { font-size: 13px; color: var(--text-2); line-height: 1.6; }
 .count { font-size: 12px; color: var(--text-3); font-weight: 400; }
 
@@ -272,81 +272,79 @@ audio { width: 100%; margin: 14px 0; }
 .findings li.good .dot { background: var(--positive); }
 .findings li.warn .dot { background: var(--accent); }
 .findings li.bad .dot { background: var(--negative); }
-.bars { display: flex; flex-direction: column; gap: 14px; }
-.bar-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: baseline; font-size: 13px; }
-.bar-label { color: var(--text-1); min-width: 0; }
-.bar-val { color: var(--text-3); font-size: 12px; white-space: nowrap; }
-.bar-val b { color: var(--text-1); font-weight: 600; }
-.bar-track { grid-column: 1 / -1; height: 8px; border-radius: var(--radius-pill); background: var(--chart-grid); overflow: hidden; }
-.bar-fill { height: 100%; border-radius: inherit; background: var(--text-3); }
-.bar-fill.neg { background: var(--negative); }
-.bar-fill.warn { background: var(--accent); }
-.bar-fill.good { background: var(--positive); }
 .quotes { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; }
 .quote { cursor: pointer; }
 .quote:hover .verbatim { border-color: var(--border-2); }
 .quote-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 11px; color: var(--text-3); }
-/* ---------- the analysis story ----------
-   Three numbered questions down the page, each with one card that answers it. The
-   AI's prose is painted into a slot inside the matching section, never into a card
-   of its own, so a number is stated once and then read once. */
-.sec-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 12px; margin: 34px 0 14px; }
-.sec-head:first-of-type { margin-top: 26px; }
-.sec-n { grid-row: 1 / span 2; width: 26px; height: 26px; border-radius: 50%; align-self: center;
-  display: grid; place-items: center; background: var(--accent-soft); color: var(--accent);
-  font-size: var(--text-xs); font-weight: 700; font-variant-numeric: tabular-nums; }
-.sec-title { margin: 0; font-size: var(--text-lg); font-weight: 600; color: var(--text-1); line-height: var(--leading-tight); }
-.sec-sub { grid-column: 2; font-size: var(--text-xs); color: var(--text-2); }
-.sec-head.quiet { grid-template-columns: minmax(0, 1fr); }
-.sec-head.quiet .sec-title { font-size: var(--text-md); color: var(--text-2); }
-.sec-head.quiet .sec-sub { grid-column: 1; }
+/* ---------- analysis, in plain words ----------
+   Four cards a campaign manager can read straight through: what happened, why the
+   rest of the calls failed, what the people who answered said, what to do next.
+   Whole numbers and sentences; the charts and the breakdowns live under a fold. */
 
-/* 1 — did we reach people */
-.reach-card { position: relative; overflow: hidden; }
-.reach-card > .stat-rings { inset: 0 0 auto; height: 132px; opacity: .55; }
-.reach { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 14px; }
-.reach-pct { font-size: 40px; font-weight: 600; line-height: var(--leading-tight); color: var(--text-1); font-variant-numeric: tabular-nums; }
-.reach-head { font-size: var(--text-md); color: var(--text-2); }
-.reach-bar { grid-column: 1 / -1; height: 10px; margin-top: 14px; border-radius: var(--radius-pill); background: var(--chart-grid); overflow: hidden; }
-.reach-fill { height: 100%; border-radius: inherit; background: var(--accent); }
-.sub-head { font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--text-3); margin: 26px 0 14px; }
-.notes { list-style: none; margin: 16px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: var(--text-xs); color: var(--text-2); line-height: 1.5; }
+/* what happened: one sentence, then three numbers with arrows between them */
+.top-card { position: relative; overflow: hidden; }
+.top-card > .stat-rings { inset: 0 0 auto; height: 150px; opacity: .5; }
+.top-line { position: relative; margin: 0 0 22px; font-size: var(--text-lg); font-weight: 600; color: var(--text-1); line-height: var(--leading-tight); }
+.steps { position: relative; display: flex; align-items: start; gap: 22px; flex-wrap: wrap; }
+.step { min-width: 0; }
+.step > b { display: block; font-size: 38px; font-weight: 600; line-height: var(--leading-tight); color: var(--text-1); font-variant-numeric: tabular-nums; }
+.step > span { display: block; margin-top: 2px; font-size: var(--text-sm); color: var(--text-2); }
+.step-arrow { flex: none; margin-top: 12px; font-size: 20px; line-height: 1; color: var(--text-3); }
+[dir="rtl"] .step-arrow { display: inline-block; transform: scaleX(-1); }
 
-/* 2 — what they said */
+/* the one thing that matters while barely anyone has answered */
+.warn-note { position: relative; margin: 22px 0 0; padding: 14px 16px; border-radius: var(--radius-md); font-size: 13.5px; line-height: 1.55;
+  color: var(--text-1); background: var(--accent-soft); border: 1px solid var(--border-1); }
+
+/* why the rest failed: a count and a phrase, nothing to decode */
+.tally { list-style: none; margin: 0; padding: 0; }
+.tally li { display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: baseline; gap: 16px; padding: 13px 0; border-top: 1px solid var(--border-1); }
+.tally li:first-child { border-top: 0; padding-top: 0; }
+.tally b { font-size: 24px; font-weight: 600; color: var(--text-1); text-align: end; font-variant-numeric: tabular-nums; }
+.tally span { font-size: var(--text-md); color: var(--text-2); }
+.after-note { margin: 18px 0 0; max-width: 74ch; font-size: 13px; line-height: 1.55; color: var(--text-2); }
+.after-note.strong { font-size: 14px; color: var(--text-1); }
+
+/* what they said */
 .answer-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .answer { display: flex; flex-direction: column; gap: 2px; }
 .answer-n { font-size: 30px; font-weight: 600; line-height: var(--leading-tight); color: var(--text-1); font-variant-numeric: tabular-nums; }
 .answer-n.good { color: var(--positive); }
 .answer-n.bad { color: var(--negative); }
-.answer > span { font-size: var(--text-xs); color: var(--text-3); }
-.answer-of { margin: 12px 0 0; font-size: var(--text-xs); color: var(--text-2); }
-.note-warn { margin: 14px 0 0; padding: 10px 12px; border-radius: var(--radius-sm); font-size: var(--text-xs); line-height: 1.5;
-  color: var(--text-2); background: var(--accent-soft); border: 1px solid var(--border-1); }
+.answer > span { font-size: var(--text-sm); color: var(--text-2); }
+.quotes-label { margin: 22px 0 10px; font-size: var(--text-xs); color: var(--text-3); }
 
-/* 3 — what to fix */
-.fixes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; counter-reset: fix; }
-.fixes li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; align-items: start; }
-.fix-n { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; margin-top: 1px;
-  background: var(--surface-3); color: var(--text-2); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.fixes li.warn .fix-n { background: var(--accent-soft); color: var(--accent); }
-.fixes li.bad .fix-n { background: var(--negative-soft); color: var(--negative); }
-.fix-body > b { display: block; max-width: 74ch; font-size: 13.5px; font-weight: 600; color: var(--text-1); line-height: 1.45; }
-.fix-body > p { margin: 4px 0 0; max-width: 74ch; font-size: var(--text-xs); color: var(--text-2); line-height: 1.55; }
+/* what to do next */
+.todos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.todos li { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: start; }
+.todo-n { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; margin-top: 1px;
+  background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.todo-body > b { display: block; max-width: 70ch; font-size: var(--text-md); font-weight: 600; color: var(--text-1); line-height: 1.45; }
+.todo-body > p { margin: 5px 0 0; max-width: 74ch; font-size: 13px; color: var(--text-2); line-height: 1.55; }
 
-/* the AI's own words, wherever they appear */
-.ai-lead { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 12px 16px;
-  padding: 18px 20px; border-radius: var(--radius-lg); background: var(--surface-2); border: 1px solid var(--border-1); }
-.ai-headline { max-width: 80ch; font-size: 15px; line-height: 1.5; color: var(--text-1); margin: 0; text-wrap: pretty; }
-.ai-by { margin: 10px 0 0; font-size: 11px; line-height: 1.6; color: var(--text-3); }   /* inline, so the icon never lands on a line of its own */
-.ai-by svg { vertical-align: -2px; margin-inline-end: 5px; color: var(--accent); }
-.ai-by .badge { margin-inline-start: 8px; }
-.ai-slot:empty { display: none; }
-.ai-note { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-1); }
-.ai-tag { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 10px; color: var(--accent);
-  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: var(--tracking-wide); }
-.ai-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 1.55; color: var(--text-2); }
-.ai-points li { padding-inline-start: 12px; max-width: 86ch; position: relative; }
+/* the AI's two contributions, both labelled */
+.ai-say { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-1); position: relative; }
+.ai-say-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.ai-text { margin: 0; max-width: 80ch; font-size: 14px; line-height: 1.6; color: var(--text-1); text-wrap: pretty; }
+.ai-by { margin: 8px 0 0; font-size: 11px; color: var(--text-3); }
+.ai-more { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border-1); }
+.ai-tag { display: inline-flex; align-items: center; gap: 6px; color: var(--accent);
+  font-size: 11px; font-weight: 600; letter-spacing: var(--tracking-wide); }
+.ai-more > .ai-tag { margin-bottom: 10px; }
+.ai-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; font-size: 13px; line-height: 1.55; color: var(--text-2); }
+.ai-points li { padding-inline-start: 13px; max-width: 80ch; position: relative; }
 .ai-points li::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; width: 4px; height: 4px; border-radius: 50%; background: var(--border-2); }
+
+/* everything an analyst would still want, folded away */
+.more { margin-top: 26px; }
+.more > summary { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 0 16px; height: var(--control-md); border-radius: var(--radius-pill);
+  background: var(--surface-2); border: 1px solid var(--border-1); color: var(--text-2); font-size: var(--text-sm); }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::after { content: ""; width: 6px; height: 6px; border-inline-end: 1.5px solid currentColor; border-block-end: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.more[open] > summary::after { transform: translateY(1px) rotate(225deg); }
+.more > summary:hover { border-color: var(--border-2); color: var(--text-1); }
+.more-body { margin-top: 16px; display: flex; flex-direction: column; gap: 16px; }
 
 /* ---------- phones and tablets: the tab-bar layout ----------
    The sidebar gives way to a bottom tab bar and a slim translucent app bar, controls
@@ -485,17 +483,22 @@ audio { width: 100%; margin: 14px 0; }
   .quote { flex: 0 0 min(86%, 360px); scroll-snap-align: start; display: flex; flex-direction: column; }
   .quote:only-child { flex-basis: 100%; }
   .quote .verbatim { flex: 1; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }   /* the whole answer is one tap away */
-  .sec-head { margin: 26px 0 12px; column-gap: 10px; }
-  .sec-n { width: 24px; height: 24px; }
-  .ai-lead { padding: 16px; border-radius: var(--radius-md); }
-  .ai-lead > .btn { grid-column: 1; grid-row: 2; justify-self: start; }
-  .ai-headline { font-size: var(--text-md); }
+  /* the three steps stack into a row of three: the arrows would only wrap */
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: start; }
+  .step-arrow { display: none; }
+  .step > b { font-size: var(--text-2xl); }
+  .step > span { font-size: var(--text-xs); }
   /* the crowd sits behind a short banner here, so keep it to the far end */
-  .reach-card > .stat-rings { height: 96px; opacity: .5; -webkit-mask-image: linear-gradient(90deg, transparent, #000 55%); mask-image: linear-gradient(90deg, transparent, #000 55%); }
-  .reach-pct { font-size: 32px; }
-  .reach-head { font-size: var(--text-sm); }
+  .top-card > .stat-rings { height: 110px; opacity: .45; -webkit-mask-image: linear-gradient(90deg, transparent, #000 55%); mask-image: linear-gradient(90deg, transparent, #000 55%); }
+  .top-line { font-size: var(--text-md); margin-bottom: 18px; }
   .answer-n { font-size: var(--text-2xl); }
-  .fixes { gap: 14px; }
+  .answer > span { font-size: var(--text-xs); }
+  .tally li { grid-template-columns: 42px minmax(0, 1fr); gap: 12px; }
+  .tally b { font-size: var(--text-xl); }
+  .tally span { font-size: var(--text-sm); }
+  .todos { gap: 16px; }
+  .todo-body > b { font-size: var(--text-sm); }
+  .more > summary { width: 100%; justify-content: center; }
   /* wide tables scroll sideways: the first column stays put, a shade marks more columns at the end */
   .table.nowrap { border-collapse: separate; border-spacing: 0; }
   .table.nowrap th, .table.nowrap td { padding: 10px; }
@@ -662,7 +665,6 @@ audio { width: 100%; margin: 14px 0; }
   .page-head:has(#an-export) .page-sub { grid-column: 1 / -1; grid-row: 2; }
   .page-head > span:has(> #an-export) { grid-column: 2; grid-row: 1; }
   .page-head > span:has(> #an-export) > .badge { display: none; }
-  .bar-val { text-align: end; }
 
   /* running-total legend as a three-up strip under the title */
   .card-head.wrap > .legend { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-size: var(--text-xs); }

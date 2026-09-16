@@ -48,45 +48,52 @@ becomes a bottom tab bar and tables become stacked cards.
 
 ## Analysis and the Excel report
 
-The page is three questions, in order, and each number appears in exactly one of
-them with its denominator spelled out beside it:
+The page is written for the person running the campaign, not for an analyst. It is
+four cards of whole numbers and plain sentences, in reading order:
 
-1. **Did we reach people?** The share of calls that reached a person, then every
-   call that did not, grouped by how it ended (Vapi's `endedReason` folded into
-   groups) and shown as a share of that group.
-2. **What did they say?** Only the people who answered: will vote / will not /
-   unsure, the reasons behind a "no", and their own words. While the sample is
-   under 30 answers the page says so, in place of implying a result.
-3. **What to fix.** The problems ranked by how many calls each one costs, each
-   with the count and one sentence on what it means. These are plain rules over
-   the counts (`fixes()` in `pages.js`), not a model.
+1. **What happened.** One sentence, then three numbers with arrows between them:
+   people called, people who answered, people who said they will vote. While fewer
+   than 30 have answered, a note under them says plainly that this is far too few
+   to conclude anything from.
+2. **Why the other N calls did not work.** A count and an everyday phrase for each
+   ("picked up, then hung up", "nobody said a word", "the call broke"). They add up
+   to the number in the card's title.
+3. **What the N people said.** Will vote / will not vote / not sure, one sentence
+   naming the reason behind a "no", and their own words.
+4. **What to do next.** Up to five instructions, worst first, each with the count
+   that justifies it. These are plain rules over the numbers (`todos()` in
+   `pages.js`), so the list is the same with or without the AI.
 
-Under a quiet "Detail" divider: how the agent handled the calls (detected from her
-own transcript lines; the phrases are `SCRIPT_MARKERS` in `api/_analysis.js`, update
-them when the script changes), per city (joined to the calling list by phone) and
-per day.
+There are no percentages and no charts on the page: "4 of 25" needs no decoding,
+"16%" does. Everything an analyst would still want — how Shir handled the calls,
+by city, day by day — is counted the same way and folded under **All the numbers**
+at the bottom, along with the Excel export.
 
-`/api/analysis?days=7|30|90` returns everything those sections need: the funnel
+`/api/analysis?days=7|30|90` returns everything those cards need: the funnel
 (reached, answered, yes/no/unsure, refused, not reached, opt-outs, early hang-ups),
-reasons for not voting, how unanswered calls ended, what the agent did, by city, by
-day, and the latest quotes.
+reasons for not voting, how unanswered calls ended, what Shir did, by city, by day,
+and the latest quotes.
 
 ## The AI read of the numbers
 
-Gemini writes the reading of those numbers through OpenRouter (`OPENROUTER_API_KEY`,
-model in `OPENROUTER_MODEL`, default `google/gemini-3.8-flash`). Its headline opens
-the page and its three lists are painted into the section each one is about, tagged
-"AI", so the counted and the written never sit in two competing cards saying the same
-thing. The model never touches the database: `api/_insights.js` hands it only the
-counts from `/api/analysis` and the recorded quotes, the prompt forbids inventing
-anything and tells it not to repeat a count the page already shows, so every sentence
-traces back to a number beside it.
+Gemini writes two things and no more, through OpenRouter (`OPENROUTER_API_KEY`, model
+in `OPENROUTER_MODEL`, default `google/gemini-3.8-flash`): the short paragraph under
+the three numbers at the top, and any suggestions the counted to-do list missed. Both
+are labelled, so nobody has to wonder which parts were counted and which were written.
+
+The prompt is what keeps it readable: write for someone who is not technical, never use
+a percentage, never list the counts back (the reader can see them), never repeat the
+warning about too few answers or any action the page already worked out, and never
+write as if a handful of answers were a verdict. An empty suggestion list is an
+accepted answer, and the block disappears when it is empty. The model never touches
+the database: `api/_insights.js` hands it only the counts from `/api/analysis` and the
+recorded quotes.
 
 Each write-up is stored in the `insights` table, so opening the page costs nothing:
 `/api/analysis?insight=1&days=N&lang=en|he` reads the stored one, and a `POST` to the
 same route writes a new one. The page rewrites it by itself once more calls have landed
 than it was written from, and "Write again" forces a fresh one. A run costs about
-$0.002. Without the key the page still works and shows the counted sections only.
+$0.002. Without the key the page still works and shows the counted cards only.
 
 `/api/export?days=N&lang=en|he` downloads the same data as an `.xlsx` workbook
 (Summary, Daily, Calls, Reasons, Cities, Quotes) written by `api/_xlsx.js`, with

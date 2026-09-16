@@ -29,12 +29,10 @@ export function brief(a, days) {
     },
     reasons_for_no_or_unsure: a.reasons.map((r) => ({ reason: label(LABELS.en.reason, r.key), people: r.n })),
     how_calls_ended_without_an_answer: a.endedReasons.map((e) => ({ ended: label(LABELS.en.ended, e.key), calls: e.n })),
-    what_the_agent_did: {
-      asked_for_the_reason: a.approach.askedReason, delivered_the_closing_line: a.approach.closingDelivered,
-      closing_jewish_state: a.approach.appealJewishState, closing_high_court: a.approach.appealHighCourt,
-      thanked_a_yes: a.approach.thankedYes, ended_politely_on_request: a.approach.politeExit,
-      person_asked_a_question: a.approach.askedQuestion, conversations: a.approach.conversations,
-      avg_agent_turns: a.approach.avgAgentTurns, avg_person_turns: a.approach.avgUserTurns,
+    what_shir_did: {
+      asked_why_when_someone_said_no: a.approach.askedReason, said_the_closing_line: a.approach.closingDelivered,
+      thanked_a_yes: a.approach.thankedYes, person_asked_her_a_question: a.approach.askedQuestion,
+      real_conversations: a.approach.conversations,
     },
     by_city: a.cities.map((c) => ({ city: c.city, calls: c.total, will_vote: c.yes, will_not_vote: c.no, not_reached: c.notReached })),
     by_day: a.daily.filter((d) => d.total).map((d) => ({ day: d.day, calls: d.total, reached: d.reached, will_vote: d.yes, will_not_vote: d.no })),
@@ -43,29 +41,43 @@ export function brief(a, days) {
 }
 
 const SHAPE = `{
-  "headline": "one sentence, the single most important thing in this range",
-  "what_went_wrong": ["what the calls that ended without an answer point to"],
-  "why_not_voting": ["what the quotes and reason counts say, in their own words where useful"],
-  "advice": ["a concrete change to the script or the campaign, and the number that justifies it"]
+  "summary": "two or three short sentences: what happened on these calls and what it means",
+  "advice": ["one thing to do, in plain words, with the number behind it"]
 }`;
 
 function prompt(data, lang) {
   const language = lang === 'he' ? 'Hebrew' : 'English';
   return `You are a political campaign analyst reading the results of an automated pre-election phone survey in Israel. A voice agent named Shir asks people whether they intend to vote, and asks those who say no or unsure for the reason.
 
-Write a short, honest read of the data below. The page already shows every count
-beside your text, so your job is what the counts mean, not repeating them.
+You are writing for the person running the campaign. They are not technical and
+they are not an analyst. Write the way you would explain it to them out loud.
 
 Hard rules:
 - Use ONLY the numbers in the data. Never invent a number, a reason, a city or a quote.
-- Quote a person only from "quotes". Keep their words as they are; they are in Hebrew.
-- Cite a number only when the point needs it, and never the same number twice.
-- If the sample is too small to conclude anything, say so plainly instead of stretching it.
-- Each list goes under the counts it is about, so start from what they imply, not from what they are.
-- The page groups every call that got no answer by how it ended (how_calls_ended_without_an_answer, which adds up to all of them). Use that grouping when you write about those calls; not_reached and no_analysis_yet overlap with it and mixing the two contradicts the page.
-- "advice" must be things someone can act on this week, in the order you would do them.
-- Write in ${language}. Natural, plain ${language}, no marketing tone, no markdown, no emojis.
-- 2 to 4 items in each list. One or two sentences each.
+- Everyday words and short sentences. Never use: engagement, disengage, metrics, sample,
+  dataset, data set, statistically, infrastructure, optimise, optimize, leverage, funnel,
+  conversion rate, respondents, attrition, KPI.
+- Never write a percentage. Write "7 of 25 calls", never "28%".
+- Say "people", not "contacts", "leads", "records" or "users". Shir is the person calling.
+- The reader can see every count beside your text. Do NOT list them back. Say what they add
+  up to and what it means for the campaign. Two numbers in the summary at most.
+- A note under your text already warns when too few people have answered, so do not repeat
+  that warning. But never write as if a handful of answers were a verdict: say "the 2 people
+  who said no", never "people", "voters", "the public" or "the room".
+- The page has already worked out these actions from the numbers, and shows any that apply:
+  call many more people; check the phone system; change Shir's opening line; look at the calls
+  that broke; try the numbers that did not pick up again; say up front that Shir is a computer;
+  check the sound quality; ask more people why they said no. Your "advice" must NOT repeat any
+  of them, however differently worded. Only add something they miss, for example about what
+  people actually said, the wording of a specific answer, who to call next, or when to call.
+  If you have nothing to add, return an empty list.
+- The page groups every call that got no answer by how it ended (how_calls_ended_without_an_answer,
+  which covers all of them). Use that grouping; not_reached and no_analysis_yet overlap with it
+  and mixing them contradicts what the reader sees.
+- "advice": 0 to 3 things the page has not already said, most important first, each one or two
+  sentences. Start each with a verb. An empty list is a fine answer.
+- "summary": two or three sentences. No bullet points, no headings.
+- Write in ${language}. Plain spoken ${language}, no marketing tone, no markdown, no emojis.
 
 Answer with JSON only, in this shape:
 ${SHAPE}
@@ -116,13 +128,11 @@ export async function askModel(brief, lang, { signal } = {}) {
 
 // Keep only the shape the page renders, and cap the sizes so one odd answer
 // cannot stretch the layout.
-const line = (s) => String(s ?? '').replace(/\s+/g, ' ').trim().slice(0, 400);
+const line = (s) => String(s ?? '').replace(/\s+/g, ' ').trim().slice(0, 500);
 function clean(d) {
   const list = (v) => (Array.isArray(v) ? v : []).map(line).filter(Boolean).slice(0, 4);
   return {
-    headline: line(d?.headline),
-    why_not_voting: list(d?.why_not_voting),
-    what_went_wrong: list(d?.what_went_wrong),
+    summary: line(d?.summary || d?.headline),   // older prompts answered with a headline
     advice: list(d?.advice),
   };
 }

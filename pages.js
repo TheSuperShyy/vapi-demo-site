@@ -39,64 +39,54 @@ Object.assign(I18N.en, {
   'reason.no_suitable_option': 'No suitable option', 'reason.deliberate_protest': 'Deliberate protest', 'reason.abroad_or_away': 'Abroad or away',
   'reason.health_or_mobility': 'Health or mobility', 'reason.logistics_polling_station': 'Polling station logistics', 'reason.work_or_schedule': 'Work or schedule',
   'reason.declined_to_say': 'Declined to say', 'reason.other': 'Other', 'reason.not_applicable': '—',
-  // analysis page — three questions, in order
-  'an.range': 'Last {n} days', 'an.export': 'Export to Excel', 'an.exporting': 'Preparing…', 'an.exported': 'Report downloaded', 'an.nodb': 'The analysis needs the database (DATABASE_URL).',
-  'sec.1': 'Did we reach people?', 'sec.1.sub': 'every call in the range',
-  'an.reach.head': '{a} of {b} calls reached a person',
-  'an.reach.rest': 'The other {n} ended without anyone answering',
-  'an.reach.allok': 'Every call in this range reached a person.',
-  'an.reach.early': '{a} of them hung up inside the first 12 seconds.',
-  'an.reach.noanalysis': '{a} have no analysis recorded: they ended before anyone spoke.',
-  'sec.2': 'What did they say?', 'sec.2.sub': 'only the people who actually answered',
-  'an.ans.of': 'of the {n} people who answered',
-  'an.ans.small': '{n} answers is too small a sample to conclude anything from. Read what follows as an early signal, not a result.',
-  'an.ans.none': 'Nobody has answered the question in this range yet.',
-  'an.ans.refused': '{n} picked up but refused to answer',
-  'an.ans.why': 'Why they said no or were unsure', 'an.ans.why.empty': 'No reason recorded yet.',
-  'an.quotes': 'In their words', 'an.quotes.empty': 'No quotes recorded in this range yet.',
-  'sec.3': 'What to fix', 'sec.3.sub': 'worst first, by how many calls it costs',
-  'an.fix.none': 'Nothing in these calls needs fixing.',
-  'fix.silence': '{a} calls ended in silence', 'fix.silence.note': 'Nobody spoke after the greeting. Check the dialer and how quickly Shir starts talking.',
-  'fix.early': '{a} people hung up in the first 12 seconds', 'fix.early.note': 'The opening line is where those calls were lost, so it is the first thing worth rewriting.',
-  'fix.technical': '{a} calls failed for technical reasons', 'fix.technical.note': 'Voice or audio errors. This is money spent with nothing to show for it.',
-  'fix.voicemail': '{a} calls reached voicemail', 'fix.voicemail.note': 'Worth trying these numbers again at a different hour.',
-  'fix.noAnswer': '{a} calls got no answer', 'fix.noAnswer.note': 'Worth a second attempt at a different time of day.',
-  'fix.bot': '{a} people asked whether they were talking to a bot', 'fix.bot.note': 'They noticed. Saying it plainly in the opening usually costs less than being caught out.',
-  'fix.audio': '{a} calls had bad audio', 'fix.audio.note': 'The person may not have heard the question properly.',
-  'fix.optout': '{a} asked not to be called again', 'fix.optout.note': 'They are marked Do not call and will not be dialled again.',
-  'fix.askedReason': 'The reason was never asked in {a} of {b} "no" or "unsure" calls', 'fix.askedReason.note': 'Those answers carry no explanation, which is the most useful part of the survey.',
-  'fix.silence.one': 'One call ended in silence', 'fix.early.one': 'One person hung up in the first 12 seconds',
-  'fix.technical.one': 'One call failed for technical reasons', 'fix.voicemail.one': 'One call reached voicemail',
-  'fix.noAnswer.one': 'One call got no answer', 'fix.bot.one': 'One person asked whether they were talking to a bot',
-  'fix.audio.one': 'One call had bad audio', 'fix.optout.one': 'One person asked not to be called again',
-  'an.reach.rest.one': 'The remaining call ended without anyone answering',
-  'an.reach.early.one': 'One of them hung up inside the first 12 seconds.',
-  'an.reach.noanalysis.one': 'One has no analysis recorded: it ended before anyone spoke.',
-  'an.ans.of.one': 'of the one person who answered',
-  'an.ans.small.one': 'One answer is too small a sample to conclude anything from. Read what follows as an early signal, not a result.',
-  'ah.closing.one': 'She delivered the closing appeal once.', 'ah.politeExit.one': 'She ended politely on request once.',
-  'ah.askedQuestion.one': 'One person asked her a question back.',
-  'sec.detail': 'Detail', 'sec.detail.sub': 'the same calls, broken down',
-  'ah.title': 'How the agent handled it', 'ah.sub': 'read from her own lines in the transcripts',
-  'ah.askedReason': 'She asked for the reason in {a} of the {b} calls where someone said no or was unsure.',
-  'ah.noClosing': 'No call has reached the closing appeal yet.',
-  'ah.closing': 'She delivered the closing appeal {a} times.',
-  'ah.appeal': 'The closing used "the Jewish state" {a} times and "the High Court" {b} times.',
-  'ah.thankedYes': 'She used the script thank-you with {a} of the {b} who said they will vote.',
-  'ah.politeExit': 'She ended politely on request {a} times.',
-  'ah.askedQuestion': '{a} people asked her a question back.',
-  'ah.turns': 'On calls with a real conversation she spoke {a} times and the person {b} times, on average.',
-  'ah.empty': 'No conversation long enough to read yet.',
-  'an.cities': 'By city', 'an.cities.empty': 'No calls to numbers from the list in this range yet.', 'an.daily': 'Day by day', 'an.daily.sub': 'days with calls, newest first',
-  'an.col.city': 'City', 'an.col.calls': 'Calls', 'an.col.reached': 'Reached', 'an.col.yes': 'Will vote', 'an.col.no': 'Will not', 'an.col.unsure': 'Unsure', 'an.col.refused': 'Refused',
-  'an.col.nr': 'Not reached', 'an.col.rate': 'Yes rate', 'an.col.day': 'Day', 'an.col.optout': 'Opt-outs', 'an.col.cost': 'Cost',
-  'ended.hungUp': 'Person hung up', 'ended.silence': 'Silence, nobody spoke', 'ended.voicemail': 'Voicemail', 'ended.noAnswer': 'No answer', 'ended.busy': 'Busy',
-  'ended.agentEnded': 'Agent ended the call', 'ended.tooLong': 'Call too long', 'ended.noMic': 'No microphone', 'ended.technical': 'Technical error', 'ended.other': 'Other',
-  'ai.tag': 'AI', 'ai.lead.by': 'Written by {m} from the numbers on this page, {t}',
+  // analysis page - plain words, whole numbers, no percentages
+  'an.range': 'Last {n} days', 'an.export': 'Export to Excel', 'an.exporting': 'Preparing…', 'an.exported': 'Report downloaded',
+  'an.nodb': 'The analysis needs the database (DATABASE_URL).', 'an.nocalls': 'No calls have been made in this period yet.',
+  'an.called': 'We called {n} people in the last {d} days.', 'an.called.one': 'We called one person in the last {d} days.',
+  'an.step.called': 'we called', 'an.step.answered': 'answered the question', 'an.step.yes': 'said they will vote',
+  'an.small': 'Only {n} people answered. That is far too few to tell you what the public thinks. Calling many more people is the one thing that changes it.',
+  'an.small.one': 'Only one person answered. That is far too few to tell you what the public thinks. Calling many more people is the one thing that changes it.',
+  'an.why': 'Why the other {n} calls did not work', 'an.why.one': 'Why the other call did not work',
+  'an.why.early': '{a} of them hung up in the first 12 seconds, before Shir could ask anything.',
+  'an.why.early.one': 'One of them hung up in the first 12 seconds, before Shir could ask anything.',
+  'end.hungUp': 'picked up, then hung up', 'end.silence': 'nobody said a word', 'end.voicemail': 'went to voicemail',
+  'end.noAnswer': 'nobody picked up', 'end.busy': 'the line was busy', 'end.technical': 'the call broke',
+  'end.noMic': 'no microphone', 'end.agentEnded': 'Shir ended the call', 'end.tooLong': 'the call ran too long', 'end.other': 'something else',
+  'an.said': 'What the {n} people said', 'an.said.one': 'What the one person said', 'an.said.title.none': 'What people said',
+  'an.said.yes': 'will vote', 'an.said.no': 'will not vote', 'an.said.unsure': 'not sure',
+  'an.said.none': 'Nobody has answered the question in this period yet.',
+  'an.said.same': 'The {n} people who said no or were not sure all gave the same reason: {r}.',
+  'an.said.same.one': 'The one person who said no gave this reason: {r}.',
+  'an.said.mixed': 'The reasons they gave: {list}.', 'an.said.noreason': 'Nobody has given a reason yet.',
+  'an.said.refused': '{n} picked up but would not answer.',
+  'an.said.optout': '{n} people asked us not to call again. They will not be called.',
+  'an.said.optout.one': 'One person asked us not to call again. They will not be called.',
+  'an.todo': 'What to do next', 'an.todo.none': 'Nothing in these calls needs fixing.',
+  'do.more': 'Call many more people', 'do.more.note': '{n} answers cannot tell you what a city thinks. Until that number is in the hundreds, everything else here is a hint, not a result.',
+  'do.silence': 'Check the phone system', 'do.silence.note': 'On {n} calls nobody said a word. That usually means the call connected but no sound came through.',
+  'do.early': 'Change the first thing Shir says', 'do.early.note': '{n} people hung up in the first 12 seconds, before she could ask anything.',
+  'do.technical': 'Look at the calls that broke', 'do.technical.note': '{n} calls stopped because something went wrong, not because the person left. That is money spent for nothing.',
+  'do.retry': 'Try the numbers that did not pick up again', 'do.retry.note': '{n} calls rang out, went to voicemail or found the line busy. A second try at a different hour often works.',
+  'do.bot': 'Say up front that Shir is a computer', 'do.bot.note': '{n} people asked if they were talking to a machine. Saying it first usually costs less than being caught out.',
+  'do.audio': 'Check the sound quality', 'do.audio.note': 'The sound was poor on {n} calls, so the person may not have heard the question properly.',
+  'do.reason': 'Ask more people why', 'do.reason.note': 'In {n} of the calls where someone said no or was not sure, Shir never asked why. That answer is the most useful thing the survey can get.',
+  'an.more': 'All the numbers',
+  'ah.title': 'How Shir handled the calls',
+  'ah.askedWhy': 'She asked why in {a} of the {b} calls where someone said no or was not sure.',
+  'ah.noClosing': 'No call has got as far as the closing line yet.',
+  'ah.closing': 'She said the closing line {a} times.', 'ah.closing.one': 'She said the closing line once.',
+  'ah.thanked': 'She said the thank-you line to {a} of the {b} people who said they will vote.',
+  'ah.askedBack': '{a} people asked her a question back.', 'ah.askedBack.one': 'One person asked her a question back.',
+  'ah.turns': 'In a real conversation she speaks about {a} times and the person about {b} times.',
+  'an.cities': 'By city', 'an.daily': 'Day by day',
+  'an.col.city': 'City', 'an.col.calls': 'Calls', 'an.col.answered': 'Answered', 'an.col.yes': 'Will vote', 'an.col.no': 'Will not',
+  'an.col.nr': 'No answer', 'an.col.day': 'Day', 'an.col.cost': 'Cost',
+  'an.quotes': 'In their own words',
+  'ai.tag': 'Written by AI', 'ai.also': 'The AI also suggests',
+  'ai.by': 'From the numbers above, {t}.',
   'ai.writing': 'Reading the calls…', 'ai.refresh': 'Write again', 'ai.stale': 'New calls since this was written',
-  'ai.none': 'No AI read of this range yet.',
-  'ai.nokey': 'Set OPENROUTER_API_KEY to turn the AI read on.', 'ai.failed': 'Could not write the AI read. {e}',
-  'f.none': 'No calls in this range yet.',
+  'ai.none': 'No AI summary for this period yet.',
+  'ai.nokey': 'Set OPENROUTER_API_KEY to turn the AI summary on.', 'ai.failed': 'Could not write the summary. {e}',
   'agent.talk': 'Talk to me', 'agent.end': 'End', 'agent.ready': 'Ready. Microphone permission needed.', 'agent.connecting': 'Connecting…',
   'agent.connected': 'Connected', 'agent.connected.sub': 'speak or type', 'agent.ended': 'Call ended. Start again whenever.',
   'agent.mic.blocked': 'The browser blocked the microphone. Allow access and try again.', 'agent.start.failed': 'Could not start the call. Try refreshing.',
@@ -141,64 +131,54 @@ Object.assign(I18N.he, {
   'reason.no_suitable_option': 'אין למי להצביע', 'reason.deliberate_protest': 'מחאה מכוונת', 'reason.abroad_or_away': 'בחו״ל או לא בעיר',
   'reason.health_or_mobility': 'בריאות או ניידות', 'reason.logistics_polling_station': 'קלפי רחוקה או לא נגישה', 'reason.work_or_schedule': 'עבודה או לוח זמנים',
   'reason.declined_to_say': 'לא רצו לומר', 'reason.other': 'אחר', 'reason.not_applicable': '—',
-  // analysis page — three questions, in order
-  'an.range': '{n} הימים האחרונים', 'an.export': 'ייצוא לאקסל', 'an.exporting': 'מכין…', 'an.exported': 'הדוח ירד', 'an.nodb': 'הניתוח דורש מסד נתונים (DATABASE_URL).',
-  'sec.1': 'הגענו לאנשים?', 'sec.1.sub': 'כל השיחות בטווח',
-  'an.reach.head': '{a} מתוך {b} שיחות הגיעו לאדם',
-  'an.reach.rest': 'שאר {n} השיחות הסתיימו בלי שאיש ענה',
-  'an.reach.allok': 'כל השיחות בטווח הזה הגיעו לאדם.',
-  'an.reach.early': '{a} מהן ניתקו ב-12 השניות הראשונות.',
-  'an.reach.noanalysis': 'ל-{a} מהן אין ניתוח: הן הסתיימו לפני שמישהו דיבר.',
-  'sec.2': 'מה הם אמרו?', 'sec.2.sub': 'רק האנשים שבאמת ענו',
-  'an.ans.of': 'מתוך {n} האנשים שענו',
-  'an.ans.small': '{n} תשובות הן מדגם קטן מדי כדי להסיק ממנו. קראו את מה שלמטה כסימן מוקדם, לא כתוצאה.',
-  'an.ans.none': 'עדיין אף אחד לא ענה על השאלה בטווח הזה.',
-  'an.ans.refused': '{n} ענו לטלפון אך סירבו להשיב',
-  'an.ans.why': 'למה הם אמרו לא או לא בטוחים', 'an.ans.why.empty': 'עדיין לא נרשמה סיבה.',
-  'an.quotes': 'במילים שלהם', 'an.quotes.empty': 'עדיין אין ציטוטים בטווח הזה.',
-  'sec.3': 'מה לתקן', 'sec.3.sub': 'מהחמור לקל, לפי כמות השיחות שזה עולה',
-  'an.fix.none': 'אין מה לתקן בשיחות האלה.',
-  'fix.silence': '{a} שיחות הסתיימו בשקט', 'fix.silence.note': 'אף אחד לא דיבר אחרי הברכה. בדקו את החייגן וכמה מהר שיר מתחילה לדבר.',
-  'fix.early': '{a} אנשים ניתקו ב-12 השניות הראשונות', 'fix.early.note': 'משפט הפתיחה הוא המקום שבו השיחות האלה אבדו, ולכן כדאי לשכתב אותו ראשון.',
-  'fix.technical': '{a} שיחות נכשלו מסיבות טכניות', 'fix.technical.note': 'שגיאות קול או שמע. זה כסף שיוצא בלי שום תמורה.',
-  'fix.voicemail': '{a} שיחות הגיעו לתא קולי', 'fix.voicemail.note': 'כדאי לנסות את המספרים האלה שוב בשעה אחרת.',
-  'fix.noAnswer': '{a} שיחות לא נענו', 'fix.noAnswer.note': 'כדאי ניסיון שני בשעה אחרת ביום.',
-  'fix.bot': '{a} אנשים שאלו אם הם מדברים עם בוט', 'fix.bot.note': 'הם שמו לב. לומר את זה בפתיחה בדרך כלל עולה פחות מלהיתפס.',
-  'fix.audio': '{a} שיחות עם שמע גרוע', 'fix.audio.note': 'ייתכן שהאדם לא שמע את השאלה כמו שצריך.',
-  'fix.optout': '{a} ביקשו שלא להתקשר שוב', 'fix.optout.note': 'הם סומנו לא להתקשר ולא יחויגו שוב.',
-  'fix.askedReason': 'לא נשאלה הסיבה ב-{a} מתוך {b} שיחות "לא" או "לא בטוח"', 'fix.askedReason.note': 'לתשובות האלה אין הסבר, וזה החלק הכי שימושי בסקר.',
-  'fix.silence.one': 'שיחה אחת הסתיימה בשקט', 'fix.early.one': 'אדם אחד ניתק ב-12 השניות הראשונות',
-  'fix.technical.one': 'שיחה אחת נכשלה מסיבות טכניות', 'fix.voicemail.one': 'שיחה אחת הגיעה לתא קולי',
-  'fix.noAnswer.one': 'שיחה אחת לא נענתה', 'fix.bot.one': 'אדם אחד שאל אם הוא מדבר עם בוט',
-  'fix.audio.one': 'שיחה אחת עם שמע גרוע', 'fix.optout.one': 'אדם אחד ביקש שלא להתקשר שוב',
-  'an.reach.rest.one': 'השיחה הנותרת הסתיימה בלי שאיש ענה',
-  'an.reach.early.one': 'אחת מהן ניתקה ב-12 השניות הראשונות.',
-  'an.reach.noanalysis.one': 'לאחת מהן אין ניתוח: היא הסתיימה לפני שמישהו דיבר.',
-  'an.ans.of.one': 'מתוך האדם היחיד שענה',
-  'an.ans.small.one': 'תשובה אחת היא מדגם קטן מדי כדי להסיק ממנו. קראו את מה שלמטה כסימן מוקדם, לא כתוצאה.',
-  'ah.closing.one': 'היא אמרה את משפט הסיום פעם אחת.', 'ah.politeExit.one': 'היא סיימה בנימוס לפי בקשה פעם אחת.',
-  'ah.askedQuestion.one': 'אדם אחד שאל אותה שאלה בחזרה.',
-  'sec.detail': 'פירוט', 'sec.detail.sub': 'אותן שיחות, בפילוח',
-  'ah.title': 'איך הסוכנת התמודדה', 'ah.sub': 'נקרא מהמשפטים שלה בתמלולים',
-  'ah.askedReason': 'היא שאלה לסיבה ב-{a} מתוך {b} השיחות שבהן מישהו אמר לא או לא בטוח.',
-  'ah.noClosing': 'עדיין אף שיחה לא הגיעה למשפט הסיום.',
-  'ah.closing': 'היא אמרה את משפט הסיום {a} פעמים.',
-  'ah.appeal': 'משפט הסיום השתמש ב"המדינה היהודית" {a} פעמים וב"בג״ץ" {b} פעמים.',
-  'ah.thankedYes': 'היא אמרה את משפט התודה שבתסריט ל-{a} מתוך {b} שאמרו שיצביעו.',
-  'ah.politeExit': 'היא סיימה בנימוס לפי בקשה {a} פעמים.',
-  'ah.askedQuestion': '{a} אנשים שאלו אותה שאלה בחזרה.',
-  'ah.turns': 'בשיחות עם דיאלוג אמיתי היא דיברה בממוצע {a} פעמים והאדם {b} פעמים.',
-  'ah.empty': 'עדיין אין שיחה ארוכה מספיק לקריאה.',
-  'an.cities': 'לפי עיר', 'an.cities.empty': 'עדיין אין שיחות למספרים מהרשימה בטווח הזה.', 'an.daily': 'יום אחר יום', 'an.daily.sub': 'ימים עם שיחות, מהחדש לישן',
-  'an.col.city': 'עיר', 'an.col.calls': 'שיחות', 'an.col.reached': 'הושגו', 'an.col.yes': 'יצביעו', 'an.col.no': 'לא יצביעו', 'an.col.unsure': 'לא בטוחים', 'an.col.refused': 'סירבו',
-  'an.col.nr': 'לא הושגו', 'an.col.rate': 'אחוז כן', 'an.col.day': 'יום', 'an.col.optout': 'הסרות', 'an.col.cost': 'עלות',
-  'ended.hungUp': 'האדם ניתק', 'ended.silence': 'שקט, אף אחד לא דיבר', 'ended.voicemail': 'תא קולי', 'ended.noAnswer': 'אין מענה', 'ended.busy': 'תפוס',
-  'ended.agentEnded': 'הסוכנת סיימה', 'ended.tooLong': 'שיחה ארוכה מדי', 'ended.noMic': 'אין מיקרופון', 'ended.technical': 'תקלה טכנית', 'ended.other': 'אחר',
-  'ai.tag': 'בינה מלאכותית', 'ai.lead.by': 'נכתב על ידי {m} מהנתונים שבעמוד, {t}',
+  // analysis page - plain words, whole numbers, no percentages
+  'an.range': '{n} הימים האחרונים', 'an.export': 'ייצוא לאקסל', 'an.exporting': 'מכין…', 'an.exported': 'הדוח ירד',
+  'an.nodb': 'הניתוח דורש מסד נתונים (DATABASE_URL).', 'an.nocalls': 'עדיין לא בוצעו שיחות בתקופה הזו.',
+  'an.called': 'התקשרנו ל-{n} אנשים ב-{d} הימים האחרונים.', 'an.called.one': 'התקשרנו לאדם אחד ב-{d} הימים האחרונים.',
+  'an.step.called': 'התקשרנו', 'an.step.answered': 'ענו על השאלה', 'an.step.yes': 'אמרו שיצביעו',
+  'an.small': 'רק {n} אנשים ענו. זה מעט מדי מכדי לדעת מה הציבור חושב. הדבר היחיד שישנה את זה הוא להתקשר להרבה יותר אנשים.',
+  'an.small.one': 'רק אדם אחד ענה. זה מעט מדי מכדי לדעת מה הציבור חושב. הדבר היחיד שישנה את זה הוא להתקשר להרבה יותר אנשים.',
+  'an.why': 'למה {n} השיחות האחרות לא עבדו', 'an.why.one': 'למה השיחה האחרת לא עבדה',
+  'an.why.early': '{a} מהם ניתקו ב-12 השניות הראשונות, עוד לפני ששיר הספיקה לשאול.',
+  'an.why.early.one': 'אחד מהם ניתק ב-12 השניות הראשונות, עוד לפני ששיר הספיקה לשאול.',
+  'end.hungUp': 'ענו ואז ניתקו', 'end.silence': 'אף אחד לא אמר מילה', 'end.voicemail': 'הגיעו לתא קולי',
+  'end.noAnswer': 'אף אחד לא ענה', 'end.busy': 'הקו היה תפוס', 'end.technical': 'השיחה נקטעה',
+  'end.noMic': 'אין מיקרופון', 'end.agentEnded': 'שיר סיימה את השיחה', 'end.tooLong': 'השיחה נמשכה יותר מדי', 'end.other': 'משהו אחר',
+  'an.said': 'מה אמרו {n} האנשים', 'an.said.one': 'מה אמר האדם האחד', 'an.said.title.none': 'מה אנשים אמרו',
+  'an.said.yes': 'יצביעו', 'an.said.no': 'לא יצביעו', 'an.said.unsure': 'לא בטוחים',
+  'an.said.none': 'עדיין אף אחד לא ענה על השאלה בתקופה הזו.',
+  'an.said.same': '{n} האנשים שאמרו לא או לא בטוחים נתנו כולם את אותה סיבה: {r}.',
+  'an.said.same.one': 'האדם היחיד שאמר לא נתן את הסיבה הזו: {r}.',
+  'an.said.mixed': 'הסיבות שהם נתנו: {list}.', 'an.said.noreason': 'עדיין אף אחד לא נתן סיבה.',
+  'an.said.refused': '{n} ענו לטלפון אך לא רצו להשיב.',
+  'an.said.optout': '{n} אנשים ביקשו שלא נתקשר שוב. לא נתקשר אליהם.',
+  'an.said.optout.one': 'אדם אחד ביקש שלא נתקשר שוב. לא נתקשר אליו.',
+  'an.todo': 'מה לעשות עכשיו', 'an.todo.none': 'אין מה לתקן בשיחות האלה.',
+  'do.more': 'להתקשר להרבה יותר אנשים', 'do.more.note': '{n} תשובות לא יכולות לומר לכם מה עיר שלמה חושבת. עד שהמספר הזה יהיה במאות, כל השאר כאן הוא רמז ולא תוצאה.',
+  'do.silence': 'לבדוק את מערכת הטלפון', 'do.silence.note': 'ב-{n} שיחות אף אחד לא אמר מילה. בדרך כלל זה אומר שהשיחה התחברה אבל לא עבר קול.',
+  'do.early': 'לשנות את המשפט הראשון של שיר', 'do.early.note': '{n} אנשים ניתקו ב-12 השניות הראשונות, עוד לפני שהספיקה לשאול.',
+  'do.technical': 'לבדוק את השיחות שנקטעו', 'do.technical.note': '{n} שיחות נעצרו כי משהו השתבש, לא כי האדם עזב. זה כסף שיוצא בלי שום תמורה.',
+  'do.retry': 'לנסות שוב את המספרים שלא ענו', 'do.retry.note': '{n} שיחות צלצלו בלי מענה, הגיעו לתא קולי או מצאו קו תפוס. ניסיון שני בשעה אחרת לרוב עובד.',
+  'do.bot': 'לומר מראש ששיר היא מחשב', 'do.bot.note': '{n} אנשים שאלו אם הם מדברים עם מכונה. לומר את זה קודם בדרך כלל עולה פחות מלהיתפס.',
+  'do.audio': 'לבדוק את איכות הקול', 'do.audio.note': 'הקול היה גרוע ב-{n} שיחות, ויכול להיות שהאדם לא שמע את השאלה כמו שצריך.',
+  'do.reason': 'לשאול יותר אנשים למה', 'do.reason.note': 'ב-{n} מהשיחות שבהן מישהו אמר לא או לא בטוח, שיר לא שאלה למה. התשובה הזו היא הדבר הכי שימושי שהסקר יכול להשיג.',
+  'an.more': 'כל המספרים',
+  'ah.title': 'איך שיר ניהלה את השיחות',
+  'ah.askedWhy': 'היא שאלה למה ב-{a} מתוך {b} השיחות שבהן מישהו אמר לא או לא בטוח.',
+  'ah.noClosing': 'עדיין אף שיחה לא הגיעה עד משפט הסיום.',
+  'ah.closing': 'היא אמרה את משפט הסיום {a} פעמים.', 'ah.closing.one': 'היא אמרה את משפט הסיום פעם אחת.',
+  'ah.thanked': 'היא אמרה את משפט התודה ל-{a} מתוך {b} האנשים שאמרו שיצביעו.',
+  'ah.askedBack': '{a} אנשים שאלו אותה שאלה בחזרה.', 'ah.askedBack.one': 'אדם אחד שאל אותה שאלה בחזרה.',
+  'ah.turns': 'בשיחה אמיתית היא מדברת בערך {a} פעמים והאדם בערך {b} פעמים.',
+  'an.cities': 'לפי עיר', 'an.daily': 'יום אחר יום',
+  'an.col.city': 'עיר', 'an.col.calls': 'שיחות', 'an.col.answered': 'ענו', 'an.col.yes': 'יצביעו', 'an.col.no': 'לא יצביעו',
+  'an.col.nr': 'אין מענה', 'an.col.day': 'יום', 'an.col.cost': 'עלות',
+  'an.quotes': 'במילים שלהם',
+  'ai.tag': 'נכתב על ידי בינה מלאכותית', 'ai.also': 'הבינה המלאכותית גם מציעה',
+  'ai.by': 'מהמספרים שלמעלה, {t}.',
   'ai.writing': 'קורא את השיחות…', 'ai.refresh': 'כתוב שוב', 'ai.stale': 'היו שיחות חדשות מאז הכתיבה',
-  'ai.none': 'עדיין אין קריאת בינה מלאכותית לטווח הזה.',
-  'ai.nokey': 'הגדירו OPENROUTER_API_KEY כדי להפעיל את קריאת הבינה המלאכותית.', 'ai.failed': 'לא הצלחנו לכתוב את קריאת הבינה המלאכותית. {e}',
-  'f.none': 'עדיין אין שיחות בטווח הזה.',
+  'ai.none': 'עדיין אין סיכום בינה מלאכותית לתקופה הזו.',
+  'ai.nokey': 'הגדירו OPENROUTER_API_KEY כדי להפעיל את הסיכום.', 'ai.failed': 'לא הצלחנו לכתוב את הסיכום. {e}',
   'agent.talk': 'דבר איתי', 'agent.end': 'סיים', 'agent.ready': 'מוכן. צריך אישור למיקרופון.', 'agent.connecting': 'מתחבר…',
   'agent.connected': 'מחובר', 'agent.connected.sub': 'דבר או כתוב', 'agent.ended': 'השיחה הסתיימה. אפשר להתחיל שוב.',
   'agent.mic.blocked': 'הדפדפן חסם את המיקרופון. אשרו גישה ונסו שוב.', 'agent.start.failed': 'לא הצלחנו להתחיל את השיחה. נסו לרענן.',
@@ -553,66 +533,60 @@ registerPage('overview', {
 
 // ------------------------------------------------------------------ analysis
 
-// The page answers three questions in order: did we reach people, what did the
-// people we reached say, and what should change. Each number appears once, in the
-// section it answers, with its denominator spelled out beside it. The AI writes
-// prose about those same numbers and its paragraphs are painted into the matching
-// section rather than into a card of their own, so nothing is stated twice.
+// Written for someone running a campaign, not for an analyst. Four plain cards:
+// what happened, why most calls did not work, what the people who answered said,
+// and what to do next. Whole numbers and sentences, no bars and no percentages -
+// "4 of 25" is understood by everyone, "16%" has to be turned back into people.
+// Everything an analyst would still want is counted the same way and kept under
+// "All the numbers" at the bottom.
 const tf = (key, vars) => t(key).replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
-const pctOf = (a, b) => (b ? Math.round((a / b) * 100) : 0);
 const tn = (key, n, vars) => tf(n === 1 && (I18N[lang][key + '.one'] ?? I18N.en[key + '.one']) ? key + '.one' : key, vars);
-const SMALL_SAMPLE = 30;   // below this many answers the page says so instead of implying a result
+const pctOf = (a, b) => (b ? Math.round((a / b) * 100) : 0);
+const SMALL_SAMPLE = 30;   // below this many answers nothing on the page is worth trusting, and it says so
 const DOWNLOAD_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>';
-const ENDED_TONE = { technical: 'neg', noMic: 'neg', hungUp: 'warn', silence: '', voicemail: '', noAnswer: '', busy: '', agentEnded: '', tooLong: 'warn', other: '' };
 
-// A numbered question across the page, so the reader always knows which of the
-// three they are in. Without a number it is a quiet divider (the detail tables).
-const secHead = (n, title, sub) => `<div class="sec-head${n ? '' : ' quiet'}">
-  ${n ? `<span class="sec-n">${n}</span>` : ''}<h2 class="sec-title">${title}</h2><span class="sec-sub">${sub}</span></div>`;
-
-// What to fix, ranked by how many calls the problem costs, so the top of the list
-// is where the money goes. Every line is a count from the database and a plain
-// sentence about what that count means; nothing here is a guess.
-function fixes(a) {
+// What to do next, worst first, each one an instruction rather than a statistic.
+// Counted by plain rules, so the list is the same with or without the AI.
+function todos(a) {
   const f = a.funnel, ap = a.approach;
   const g = Object.fromEntries(a.endedReasons.map((e) => [e.key, e.n]));
   const out = [];
-  const add = (n, tone, key, vars) => { if (n > 0) out.push({ n, tone, title: tn('fix.' + key, n, vars ?? { a: n }), note: t(`fix.${key}.note`) }); };
-  add(g.silence, 'bad', 'silence');
-  add(f.hungUpEarly, 'warn', 'early');
-  add((g.technical || 0) + (g.noMic || 0), 'bad', 'technical');
-  add(g.voicemail, '', 'voicemail');
-  add(g.noAnswer, '', 'noAnswer');
-  add(f.askedIfBot, 'warn', 'bot');
-  add(f.qualityBad, 'bad', 'audio');
-  add(f.optOut, '', 'optout');
-  const missed = f.no + f.unsure - ap.askedReason;
-  add(missed, 'warn', 'askedReason', { a: missed, b: f.no + f.unsure });
-  return out.sort((x, y) => y.n - x.n).slice(0, 6);
+  const add = (n, key, vars) => { if (n > 0) out.push({ n, title: t('do.' + key), note: tf(`do.${key}.note`, vars ?? { n }) }); };
+  add(g.silence, 'silence');
+  add(f.hungUpEarly, 'early');
+  add((g.technical || 0) + (g.noMic || 0), 'technical');
+  add((g.voicemail || 0) + (g.noAnswer || 0) + (g.busy || 0), 'retry');
+  add(f.askedIfBot, 'bot');
+  add(f.qualityBad, 'audio');
+  add(f.no + f.unsure - ap.askedReason, 'reason');
+  out.sort((x, y) => y.n - x.n);
+  // while barely anyone has answered, everything else is noise: that goes first,
+  // whatever the other counts say.
+  if (f.answered < SMALL_SAMPLE) out.unshift({ n: Infinity, title: t('do.more'), note: tf('do.more.note', { n: f.answered }) });
+  return out.slice(0, 5);
 }
 
-// The agent's own conduct, as sentences. These counts have five different
-// denominators between them, which is unreadable as a row of bars: each one now
-// carries its own "of what" in words.
-function approachLines(a) {
+// One sentence about why people said no, instead of a chart of one bar.
+function reasonSentence(a) {
+  const noUnsure = a.funnel.no + a.funnel.unsure;
+  if (!noUnsure || !a.reasons.length) return t('an.said.noreason');
+  if (a.reasons.length === 1) return tn('an.said.same', a.reasons[0].n, { n: a.reasons[0].n, r: t('reason.' + a.reasons[0].key) });
+  return tf('an.said.mixed', { list: a.reasons.map((r) => `${t('reason.' + r.key)} (${r.n})`).join(', ') });
+}
+
+// What Shir herself did, as sentences. Kept under "All the numbers" because it is
+// about the script rather than about the people.
+function agentLines(a) {
   const ap = a.approach, f = a.funnel, out = [];
   const noUnsure = f.no + f.unsure;
-  if (noUnsure) out.push(tf('ah.askedReason', { a: ap.askedReason, b: noUnsure }));
-  if (ap.closingDelivered) {
-    out.push(tn('ah.closing', ap.closingDelivered, { a: ap.closingDelivered }));
-    if (ap.appealJewishState || ap.appealHighCourt) out.push(tf('ah.appeal', { a: ap.appealJewishState, b: ap.appealHighCourt }));
-  } else if (f.reached) out.push(t('ah.noClosing'));
-  if (f.yes) out.push(tf('ah.thankedYes', { a: ap.thankedYes, b: f.yes }));
-  if (ap.politeExit) out.push(tn('ah.politeExit', ap.politeExit, { a: ap.politeExit }));
-  if (ap.askedQuestion) out.push(tn('ah.askedQuestion', ap.askedQuestion, { a: ap.askedQuestion }));
-  if (ap.conversations) out.push(tf('ah.turns', { a: ap.avgAgentTurns.toFixed(1), b: ap.avgUserTurns.toFixed(1) }));
+  if (noUnsure) out.push(tf('ah.askedWhy', { a: ap.askedReason, b: noUnsure }));
+  if (ap.closingDelivered) out.push(tn('ah.closing', ap.closingDelivered, { a: ap.closingDelivered }));
+  else if (f.reached) out.push(t('ah.noClosing'));
+  if (f.yes) out.push(tf('ah.thanked', { a: ap.thankedYes, b: f.yes }));
+  if (ap.askedQuestion) out.push(tn('ah.askedBack', ap.askedQuestion, { a: ap.askedQuestion }));
+  if (ap.conversations) out.push(tf('ah.turns', { a: Math.round(ap.avgAgentTurns), b: Math.round(ap.avgUserTurns) }));
   return out;
 }
-
-// label / value on one line, a bar under it; share is of `base`
-const barList = (items, base) => `<div class="bars">${items.map((it) => `
-  <div class="bar-row"><span class="bar-label">${it.label}</span><span class="bar-val"><b>${it.n}</b> · ${pctOf(it.n, it.base ?? base)}%</span>
-    <div class="bar-track"><div class="bar-fill ${it.tone ?? ''}" style="width:${it.n ? Math.max(1, Math.min(100, pctOf(it.n, it.base ?? base))) : 0}%"></div></div></div>`).join('')}</div>`;
 
 async function exportReport(btn) {
   if (btn.disabled) return;
@@ -633,36 +607,39 @@ async function exportReport(btn) {
   } catch (e) { toast(e.message, true); } finally { btn.disabled = false; btn.innerHTML = label; }
 }
 
-// The AI write-up (Gemini through OpenRouter). The numbers come from /api/analysis
-// and the model only reads them; /api/analysis?insight=1 keeps the last one, so a
-// page view is free. Its headline opens the page and its three lists fill the slot
-// inside the section each one is about, always tagged so the reader can tell what
-// was counted from what was written.
+// The AI (Gemini through OpenRouter) writes two things and no more: the paragraph
+// under the three numbers at the top, and extra suggestions at the end of the
+// to-do list. Both are stored, so opening the page costs nothing, and both are
+// labelled, so nobody has to wonder which parts were counted and which written.
 const SPARK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="12" height="12"><path d="M12 3v4"/><path d="M12 17v4"/><path d="M3 12h4"/><path d="M17 12h4"/><path d="m5.6 5.6 2.8 2.8"/><path d="m15.6 15.6 2.8 2.8"/><path d="m18.4 5.6-2.8 2.8"/><path d="m8.4 15.6-2.8 2.8"/></svg>';
-const aiSlot = (id) => `<div class="ai-slot" id="${id}"></div>`;
-const aiNote = (items) => (items?.length ? `<div class="ai-note"><span class="ai-tag">${SPARK_ICON}${t('ai.tag')}</span>
-  <ul class="ai-points">${items.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : '');
 
-const aiLead = () => `<div class="ai-lead">
-  <div class="ai-lead-body" id="ai-lead">${sk.line('w70')}${sk.line('w50')}</div>
-  <button class="btn secondary sm" id="ai-again" type="button" disabled>${t('ai.writing')}</button></div>`;
+const aiSummaryBlock = () => `<div class="ai-say" id="ai-say">
+  <div class="ai-say-head"><span class="ai-tag">${SPARK_ICON}${t('ai.tag')}</span>
+    <button class="btn secondary sm" id="ai-again" type="button" disabled>${t('ai.writing')}</button></div>
+  <div id="ai-body">${sk.line('w70')}${sk.line('w50')}</div></div>`;
 
 function paintInsight(main, ins, note) {
-  const set = (id, html) => { const el = main.querySelector('#' + id); if (el) el.innerHTML = html; };
   const d = ins?.data ?? {};
-  set('ai-lead', d.headline
-    ? `<p class="ai-headline">${escapeHtml(d.headline)}</p>
-       <p class="ai-by">${SPARK_ICON}<span>${tf('ai.lead.by', { m: escapeHtml((ins.model || '').split('/').pop()), t: fmtTime(ins.generatedAt) })}</span>${ins.stale ? `<span class="badge accent">${t('ai.stale')}</span>` : ''}</p>`
-    : `<p class="ai-by">${SPARK_ICON}<span>${escapeHtml(note || t('ai.none'))}</span></p>`);
-  set('ai-wrong', aiNote(d.what_went_wrong));
-  set('ai-why', aiNote(d.why_not_voting));
-  set('ai-advice', aiNote(d.advice));
+  const body = main.querySelector('#ai-body');
+  const said = d.summary || d.headline;                        // older saved rows kept a headline
+  if (body) {
+    body.innerHTML = said
+      ? `<p class="ai-text">${escapeHtml(said)}</p><p class="ai-by">${tf('ai.by', { t: fmtTime(ins.generatedAt) })}${ins.stale ? ` <span class="badge accent">${t('ai.stale')}</span>` : ''}</p>`
+      : `<p class="ai-by">${escapeHtml(note || t('ai.none'))}</p>`;
+  }
+  const more = main.querySelector('#ai-todo');
+  if (more) {
+    more.innerHTML = d.advice?.length
+      ? `<div class="ai-more"><span class="ai-tag">${SPARK_ICON}${t('ai.also')}</span>
+         <ul class="ai-points">${d.advice.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>`
+      : '';
+  }
 }
 
 // One write at a time per range+language, so a re-render cannot start a second one.
 const aiBusy = new Set();
 async function loadInsight(main, { write } = {}) {
-  if (!main.querySelector('#ai-lead')) return;
+  if (!main.querySelector('#ai-body')) return;
   const key = `${range}/${lang}`;
   const button = () => main.querySelector('#ai-again');
   const idle = (hasKey = true) => { const b = button(); if (b) { b.disabled = false; b.hidden = !hasKey; b.textContent = t('ai.refresh'); } };
@@ -687,9 +664,9 @@ async function loadInsight(main, { write } = {}) {
 
 registerPage('analysis', {
   skeleton: () => `
-    ${sk.card(`${sk.line('w70')}${sk.line('w50')}`)}
     ${sk.card(`${sk.line('w30')}<div class="skeleton skel-block" style="margin-top:16px"></div>`)}
-    <div class="grid halves">${sk.card(`${sk.line('w30')}${sk.rows(3)}`)}${sk.card(`${sk.line('w30')}${sk.rows(3)}`)}</div>`,
+    ${sk.card(`${sk.line('w30')}${sk.rows(3)}`)}
+    ${sk.card(`${sk.line('w30')}${sk.rows(3)}`)}`,
   async load() {
     let a;
     try { a = await cached('/api/analysis?days=' + range); } catch (e) {
@@ -697,74 +674,66 @@ registerPage('analysis', {
       return { html: pageHead('page.analysis', 'page.analysis.sub') + `<div class="card"><div class="page-empty">${escapeHtml(nodb ? t('an.nodb') : e.message)}</div></div>` };
     }
     const f = a.funnel, fmtN = (n) => Number(n).toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
-    const noUnsure = f.no + f.unsure;
     const head = pageHead('page.analysis', 'page.analysis.sub', `<span style="display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap">
       <span class="badge">${tf('an.range', { n: a.days })}</span>
       <button class="btn secondary sm" id="an-export" type="button">${DOWNLOAD_ICON} ${t('an.export')}</button></span>`);
-    if (!f.total) return { html: head + `<div class="card"><div class="page-empty">${t('f.none')}</div></div>` };
+    if (!f.total) return { html: head + `<div class="card"><div class="page-empty">${t('an.nocalls')}</div></div>` };
 
-    // 1 — did we reach people. One percentage, one bar, then the calls that ended
-    // without anyone answering, every share of that group and labelled as such.
-    const wrongTotal = a.endedReasons.reduce((s, e) => s + e.n, 0);
-    const reachCard = `<div class="card reach-card">${rings()}
-      <div class="reach">
-        <span class="reach-pct">${pctOf(f.reached, f.total)}%</span>
-        <span class="reach-head">${tf('an.reach.head', { a: fmtN(f.reached), b: fmtN(f.total) })}</span>
-        <div class="reach-bar"><div class="reach-fill" style="width:${f.reached ? Math.max(2, pctOf(f.reached, f.total)) : 0}%"></div></div></div>
-      ${wrongTotal ? `<div class="sub-head">${tn('an.reach.rest', wrongTotal, { n: fmtN(wrongTotal) })}</div>
-        ${barList(a.endedReasons.map((e) => ({ label: t('ended.' + e.key), n: e.n, tone: ENDED_TONE[e.key] ?? '' })), wrongTotal)}
-        ${f.hungUpEarly || f.noAnalysis ? `<ul class="notes">
-          ${f.hungUpEarly ? `<li>${tn('an.reach.early', f.hungUpEarly, { a: fmtN(f.hungUpEarly) })}</li>` : ''}
-          ${f.noAnalysis ? `<li>${tn('an.reach.noanalysis', f.noAnalysis, { a: fmtN(f.noAnalysis) })}</li>` : ''}</ul>` : ''}`
-        : `<div class="page-empty">${t('an.reach.allok')}</div>`}
-      ${aiSlot('ai-wrong')}</div>`;
+    // What happened: the whole campaign in three numbers and one sentence.
+    const step = (n, label) => `<div class="step"><b>${fmtN(n)}</b><span>${label}</span></div>`;
+    const arrow = '<span class="step-arrow" aria-hidden="true">&rarr;</span>';
+    const topCard = `<div class="card top-card">${rings()}
+      <p class="top-line">${tn('an.called', f.total, { n: fmtN(f.total), d: a.days })}</p>
+      <div class="steps">${step(f.total, t('an.step.called'))}${arrow}${step(f.answered, t('an.step.answered'))}${arrow}${step(f.yes, t('an.step.yes'))}</div>
+      ${f.answered < SMALL_SAMPLE ? `<p class="warn-note">${tn('an.small', f.answered, { n: fmtN(f.answered) })}</p>` : ''}
+      ${aiSummaryBlock()}</div>`;
 
-    // 2 — what the people who answered said. Three counts of one group, the size of
-    // that group stated once underneath, and a plain warning while it is tiny.
-    const answersCard = `<div class="card">${f.answered ? `
+    // Why the rest did not work: a count and a plain phrase, nothing to decode.
+    const failed = a.endedReasons.reduce((s, e) => s + e.n, 0);
+    const whyCard = !failed ? '' : `<div class="card">
+      <div class="card-head"><span class="card-title">${tn('an.why', failed, { n: fmtN(failed) })}</span></div>
+      <ul class="tally">${a.endedReasons.map((e) => `<li><b>${fmtN(e.n)}</b><span>${t('end.' + e.key)}</span></li>`).join('')}</ul>
+      ${f.hungUpEarly ? `<p class="after-note">${tn('an.why.early', f.hungUpEarly, { a: fmtN(f.hungUpEarly) })}</p>` : ''}</div>`;
+
+    // What they said: three numbers, one sentence about the reason, their words.
+    const saidCard = `<div class="card">
+      <div class="card-head"><span class="card-title">${f.answered ? tn('an.said', f.answered, { n: fmtN(f.answered) }) : t('an.said.title.none')}</span></div>
+      ${f.answered ? `
       <div class="answer-row">
-        <div class="answer"><b class="answer-n good">${fmtN(f.yes)}</b><span>${t('intent.yes')}</span></div>
-        <div class="answer"><b class="answer-n bad">${fmtN(f.no)}</b><span>${t('intent.no')}</span></div>
-        <div class="answer"><b class="answer-n">${fmtN(f.unsure)}</b><span>${t('intent.unsure')}</span></div></div>
-      <p class="answer-of">${tn('an.ans.of', f.answered, { n: fmtN(f.answered) })}${f.refused ? ` · ${tf('an.ans.refused', { n: fmtN(f.refused) })}` : ''}</p>
-      ${f.answered < SMALL_SAMPLE ? `<p class="note-warn">${tn('an.ans.small', f.answered, { n: fmtN(f.answered) })}</p>` : ''}
-      <div class="sub-head">${t('an.ans.why')}</div>
-      ${a.reasons.length ? barList(a.reasons.map((r) => ({ label: escapeHtml(t('reason.' + r.key)), n: r.n, tone: 'neg' })), noUnsure || a.reasons.reduce((s, r) => s + r.n, 0)) : `<div class="page-empty">${t('an.ans.why.empty')}</div>`}
-      ${aiSlot('ai-why')}` : `<div class="page-empty">${t('an.ans.none')}</div>`}</div>`;
-
-    const quotesCard = `<div class="card"><div class="card-head"><span class="card-title">${t('an.quotes')}</span></div>
-      ${a.quotes.length ? `<div class="quotes">${a.quotes.map((q) => `<div class="quote" data-id="${escapeHtml(q.callId)}">
+        <div class="answer"><b class="answer-n good">${fmtN(f.yes)}</b><span>${t('an.said.yes')}</span></div>
+        <div class="answer"><b class="answer-n bad">${fmtN(f.no)}</b><span>${t('an.said.no')}</span></div>
+        <div class="answer"><b class="answer-n">${fmtN(f.unsure)}</b><span>${t('an.said.unsure')}</span></div></div>
+      <p class="after-note strong">${escapeHtml(reasonSentence(a))}</p>
+      ${a.quotes.length ? `<p class="quotes-label">${t('an.quotes')}</p><div class="quotes">${a.quotes.map((q) => `<div class="quote" data-id="${escapeHtml(q.callId)}">
         <div class="verbatim" dir="auto">${escapeHtml(q.text)}</div>
-        <div class="quote-meta">${intentBadge({ intent: q.intent })}${q.category && q.category !== 'not_applicable' ? `<span class="badge">${escapeHtml(t('reason.' + q.category))}</span>` : ''}${q.city ? `<span dir="auto">${escapeHtml(q.city)}</span>` : ''}<span>${fmtTime(q.createdAt)}</span></div></div>`).join('')}</div>` : `<div class="page-empty">${t('an.quotes.empty')}</div>`}</div>`;
+        <div class="quote-meta">${intentBadge({ intent: q.intent })}${q.city ? `<span dir="auto">${escapeHtml(q.city)}</span>` : ''}<span>${fmtTime(q.createdAt)}</span></div></div>`).join('')}</div>` : ''}
+      ${f.refused || f.optOut ? `<p class="after-note">${[f.refused ? tf('an.said.refused', { n: fmtN(f.refused) }) : '', f.optOut ? tn('an.said.optout', f.optOut, { n: fmtN(f.optOut) }) : ''].filter(Boolean).join(' ')}</p>` : ''}`
+      : `<div class="page-empty">${t('an.said.none')}</div>`}</div>`;
 
-    // 3 — what to fix, worst first.
-    const fixList = fixes(a);
-    const fixCard = `<div class="card">
-      ${fixList.length ? `<ol class="fixes">${fixList.map((x, i) => `<li class="${x.tone}"><span class="fix-n">${i + 1}</span>
-        <div class="fix-body"><b>${escapeHtml(x.title)}</b><p>${escapeHtml(x.note)}</p></div></li>`).join('')}</ol>` : `<div class="page-empty">${t('an.fix.none')}</div>`}
-      ${aiSlot('ai-advice')}</div>`;
+    // What to do next: instructions, numbered, worst first.
+    const list = todos(a);
+    const todoCard = `<div class="card">
+      <div class="card-head"><span class="card-title">${t('an.todo')}</span></div>
+      ${list.length ? `<ol class="todos">${list.map((x, i) => `<li><span class="todo-n">${i + 1}</span>
+        <div class="todo-body"><b>${escapeHtml(x.title)}</b><p>${escapeHtml(x.note)}</p></div></li>`).join('')}</ol>` : `<div class="page-empty">${t('an.todo.none')}</div>`}
+      <div id="ai-todo"></div></div>`;
 
-    const approach = approachLines(a);
-    const approachCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('ah.title')} <span class="count">· ${t('ah.sub')}</span></span></div>
-      ${approach.length ? `<ul class="findings">${approach.map((s) => `<li><span class="dot"></span><span>${escapeHtml(s)}</span></li>`).join('')}</ul>` : `<div class="page-empty">${t('ah.empty')}</div>`}</div>`;
+    // Everything an analyst would still want, folded away.
+    const agent = agentLines(a);
+    const detail = `<details class="more"><summary>${t('an.more')}</summary><div class="more-body">
+      ${agent.length ? `<div class="card"><div class="card-head"><span class="card-title">${t('ah.title')}</span></div>
+        <ul class="findings">${agent.map((s) => `<li><span class="dot"></span><span>${escapeHtml(s)}</span></li>`).join('')}</ul></div>` : ''}
+      ${a.cities.length ? `<div class="card"><div class="card-head"><span class="card-title">${t('an.cities')}</span></div>
+        <div style="overflow-x:auto"><table class="table nowrap">
+        <thead><tr><th>${t('an.col.city')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.nr')}</th></tr></thead>
+        <tbody>${a.cities.map((c) => `<tr><td><bdi>${escapeHtml(c.city)}</bdi></td><td class="end mono">${c.total}</td><td class="end mono">${c.yes}</td><td class="end mono">${c.no}</td><td class="end mono">${c.notReached}</td></tr>`).join('')}</tbody></table></div></div>` : ''}
+      ${(() => { const days = a.daily.filter((d) => d.total).reverse(); return days.length ? `<div class="card"><div class="card-head"><span class="card-title">${t('an.daily')}</span></div>
+        <div style="overflow-x:auto"><table class="table nowrap">
+        <thead><tr><th>${t('an.col.day')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.answered')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.cost')}</th></tr></thead>
+        <tbody>${days.map((d) => `<tr><td class="mono">${d.day}</td><td class="end mono">${d.total}</td><td class="end mono">${d.yes + d.no + d.unsure}</td><td class="end mono">${d.yes}</td><td class="end mono">${d.no}</td><td class="end mono">${money(d.cost)}</td></tr>`).join('')}</tbody></table></div></div>` : ''; })()}
+    </div></details>`;
 
-    const citiesCard = `<div class="card"><div class="card-head"><span class="card-title">${t('an.cities')}</span></div>
-      ${a.cities.length ? `<div style="overflow-x:auto"><table class="table nowrap">
-        <thead><tr><th>${t('an.col.city')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.nr')}</th><th class="end">${t('an.col.rate')}</th></tr></thead>
-        <tbody>${a.cities.map((c) => `<tr><td><bdi>${escapeHtml(c.city)}</bdi></td><td class="end mono">${c.total}</td><td class="end mono">${c.yes}</td><td class="end mono">${c.no}</td><td class="end mono">${c.notReached}</td><td class="end mono">${pctOf(c.yes, c.yes + c.no + c.unsure)}%</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('an.cities.empty')}</div>`}</div>`;
-
-    const days = a.daily.filter((d) => d.total).reverse();
-    const dailyCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('an.daily')} <span class="count">· ${t('an.daily.sub')}</span></span></div>
-      ${days.length ? `<div style="overflow-x:auto"><table class="table nowrap">
-        <thead><tr><th>${t('an.col.day')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.reached')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.unsure')}</th><th class="end">${t('an.col.refused')}</th><th class="end">${t('an.col.nr')}</th><th class="end">${t('an.col.optout')}</th><th class="end">${t('an.col.cost')}</th></tr></thead>
-        <tbody>${days.map((d) => `<tr><td class="mono">${d.day}</td><td class="end mono">${d.total}</td><td class="end mono">${d.reached}</td><td class="end mono">${d.yes}</td><td class="end mono">${d.no}</td><td class="end mono">${d.unsure}</td><td class="end mono">${d.refused}</td><td class="end mono">${d.notReached}</td><td class="end mono">${d.optOut}</td><td class="end mono">${money(d.cost)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('f.none')}</div>`}</div>`;
-
-    const html = head + aiLead()
-      + secHead(1, t('sec.1'), t('sec.1.sub')) + reachCard
-      + secHead(2, t('sec.2'), t('sec.2.sub')) + `<div class="grid halves">${answersCard}${quotesCard}</div>`
-      + secHead(3, t('sec.3'), t('sec.3.sub')) + fixCard
-      + secHead(0, t('sec.detail'), t('sec.detail.sub')) + approachCard
-      + `<div class="grid halves wide-end">${citiesCard}${dailyCard}</div>`;
+    const html = head + topCard + whyCard + saidCard + todoCard + detail;
     return { html, mount(main) {
       main.querySelector('#an-export').onclick = (e) => exportReport(e.currentTarget);
       main.querySelector('#ai-again').onclick = () => loadInsight(main, { write: true });

@@ -83,3 +83,22 @@ create index if not exists leads_status_idx   on leads (status);
 drop trigger if exists leads_touch on leads;
 create trigger leads_touch before update on leads for each row execute function touch_updated_at();
 alter table leads enable row level security;
+
+-- ---------------------------------------------------------------- AI analysis
+-- One row per generated write-up (range + language). The newest row for a key is
+-- what the Analysis page shows; older rows stay as a history of what was said.
+-- Written by api/insights.js through OpenRouter; every number it cites comes from
+-- api/_analysis.js, so nothing here is invented.
+create table if not exists insights (
+  id             bigserial primary key,
+  days           int  not null,                  -- 7 | 30 | 90
+  lang           text not null,                  -- en | he
+  model          text not null,
+  data           jsonb not null,                 -- { headline, findings[], reasons[], wrong[], advice[] }
+  calls_in_range int  not null,                  -- what it was written from, so the page can say "out of date"
+  latest_call_at timestamptz,
+  cost_usd       numeric(10,6) not null default 0,
+  created_at     timestamptz not null default now()
+);
+create index if not exists insights_key_idx on insights (days, lang, created_at desc);
+alter table insights enable row level security;

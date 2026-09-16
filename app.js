@@ -20,8 +20,8 @@ export const I18N = {
     'greeting.title': 'Welcome',
     'greeting.sub': "Here's what's happening with your agent",
     'nav.main': 'Main Menu', 'nav.overview': 'Overview', 'nav.calls': 'Calls',
-    'nav.agent': 'Voice Agent', 'nav.system': 'System', 'nav.settings': 'Settings', 'nav.list': 'List', 'nav.analysis': 'Analysis',
-    'search.placeholder': 'Search calls', 'topbar.light': 'Light', 'topbar.refresh': 'Refresh',
+    'nav.agent': 'Voice Agent', 'nav.system': 'System', 'nav.settings': 'Settings', 'nav.list': 'List', 'nav.analysis': 'Analysis', 'nav.agent.short': 'Agent',
+    'search.placeholder': 'Search calls', 'search.placeholder.list': 'Search the list', 'topbar.light': 'Light', 'topbar.refresh': 'Refresh',
     'profile.sub': 'Voice agent', 'loading': 'Loading…', 'lang.other': 'עברית',
     'page.overview': 'Overview', 'page.overview.sub': 'This is what happened with the agent',
     'page.calls': 'Calls', 'page.calls.sub': 'Every conversation, with the full transcript',
@@ -40,8 +40,8 @@ export const I18N = {
     'greeting.title': 'שלום',
     'greeting.sub': 'זה מה שקורה היום עם הסוכן',
     'nav.main': 'תפריט ראשי', 'nav.overview': 'סקירה', 'nav.calls': 'שיחות',
-    'nav.agent': 'סוכן קולי', 'nav.system': 'מערכת', 'nav.settings': 'הגדרות', 'nav.list': 'רשימה', 'nav.analysis': 'ניתוח',
-    'search.placeholder': 'חיפוש שיחות', 'topbar.light': 'בהיר', 'topbar.refresh': 'רענון',
+    'nav.agent': 'סוכן קולי', 'nav.system': 'מערכת', 'nav.settings': 'הגדרות', 'nav.list': 'רשימה', 'nav.analysis': 'ניתוח', 'nav.agent.short': 'סוכן',
+    'search.placeholder': 'חיפוש שיחות', 'search.placeholder.list': 'חיפוש ברשימה', 'topbar.light': 'בהיר', 'topbar.refresh': 'רענון',
     'profile.sub': 'סוכנת קולית', 'loading': 'טוען…', 'lang.other': 'English',
     'page.overview': 'סקירה', 'page.overview.sub': 'זה מה שקרה עם הסוכן',
     'page.calls': 'שיחות', 'page.calls.sub': 'כל שיחה, עם התמלול המלא',
@@ -92,6 +92,8 @@ export function applyTheme(theme) {
     sw.classList.toggle('on', theme === 'light');
     sw.setAttribute('aria-checked', String(theme === 'light'));
   });
+  // Phone browsers tint their address bar with this; follow the chrome colour of the theme.
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg-sidebar').trim());
 }
 export const currentTheme = () => (document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
 export const toggleTheme = () => applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
@@ -191,8 +193,17 @@ export async function render() {
   const my = ++gen;
   const { name, params } = route();
   const page = PAGES[name];
-  document.querySelectorAll('.nav-item').forEach((a) => a.classList.toggle('on', a.dataset.route === name));
+  document.querySelectorAll('.nav-item').forEach((a) => {
+    const on = a.dataset.route === name;
+    a.classList.toggle('on', on);
+    if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
   $('rangetabs').hidden = !['overview', 'analysis'].includes(name);
+  // CSS keys the phone topbar off the page (search only where it searches); the List searches numbers, not calls.
+  document.documentElement.dataset.page = name;
+  const search = $('search');
+  search.dataset.i18nPlaceholder = name === 'list' ? 'search.placeholder.list' : 'search.placeholder';
+  search.placeholder = t(search.dataset.i18nPlaceholder);
   const main = $('main');
 
   // Skeleton first, so navigation feels instant even when the API takes a second.
@@ -223,12 +234,13 @@ export function escapeHtml(s) {
   return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
 export function pageHead(titleKey, subKey, extra = '') {
-  return `<div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+  return `<div class="page-head">
     <div><h1 class="page-title">${t(titleKey)}</h1><p class="page-sub">${t(subKey)}</p></div>${extra}</div>`;
 }
 export function toast(msg, isErr) {
   const el = document.createElement('div');
   el.className = 'toast' + (isErr ? ' err' : '');
+  el.setAttribute('role', isErr ? 'alert' : 'status');
   el.textContent = msg;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 4200);
@@ -261,6 +273,11 @@ $('pw-toggle').onclick = togglePassword;
 $('login-lang').onclick = () => applyLang(lang === 'he' ? 'en' : 'he', false);
 $('login-form').onanimationend = () => $('login-form').classList.remove('shake');
 window.addEventListener('hashchange', render);
+// Phones: flag an open on-screen keyboard (the visual viewport shrinks), so CSS can move the tab bar out of the way
+// only while typing. Focus alone is not enough: Android can close the keyboard without blurring the field.
+window.visualViewport?.addEventListener('resize', () => {
+  document.documentElement.classList.toggle('kb-open', innerHeight - visualViewport.height > 150);
+});
 
 applyTheme(store.get('theme', 'dark'));
 applyLang(lang, false);

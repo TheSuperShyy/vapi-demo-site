@@ -22,5 +22,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/insights.js": {
+      "maxDuration": 60
+    }
+  }
 }

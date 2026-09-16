@@ -56,6 +56,20 @@ the agent did (detected from her own transcript lines; the phrases are
 city (joined to the calling list by phone), per day, and the latest quotes. The
 page's "Key findings" are plain rules over those numbers, no AI model.
 
+## The AI read of the numbers
+
+The Analysis page opens with a short write-up ("What this means"): a headline, a few
+findings, why people will not vote, what went wrong, and what to change. Gemini writes
+it through OpenRouter (`OPENROUTER_API_KEY`, model in `OPENROUTER_MODEL`, default
+`google/gemini-3.8-flash`). The model never touches the database: `api/_insights.js`
+hands it only the counts from `/api/analysis` and the recorded quotes, and the prompt
+forbids inventing anything, so every sentence traces back to a number on the page.
+
+Each write-up is stored in the `insights` table, so opening the page costs nothing. The
+page rewrites it by itself once more calls have landed than it was written from, and
+"Write again" forces a fresh one. A run costs about $0.002. Without the key the page
+still works and shows the counted findings only.
+
 `/api/export?days=N&lang=en|he` downloads the same data as an `.xlsx` workbook
 (Summary, Daily, Calls, Reasons, Cities, Quotes) written by `api/_xlsx.js`, with
 no spreadsheet dependency. Both routes need `DATABASE_URL`.

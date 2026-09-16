@@ -6,13 +6,14 @@
 .topbar-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .topbar-center .input { width: 360px; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.tabbar, .only-mobile { display: none; }
+.tabbar, .only-mobile, .topbar-brand { display: none; }
 
 .page-empty {
   color: var(--text-3); text-align: center; padding: 64px 20px; font-size: 13px;
 }
 .page-title { font-size: var(--text-xl); font-weight: 600; color: var(--text-1); margin: 0; }
 .page-sub   { font-size: 12px; color: var(--text-3); margin: 4px 0 0; }
+.page-head  { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 /* stat row — 5 tiles like the reference "My Portfolio" strip */
 .stat-row { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 12px; }
@@ -49,6 +50,15 @@
 .legend-item { display: inline-flex; align-items: center; gap: 8px; }
 .legend-item b { color: var(--text-1); font-weight: 600; }
 
+/* intent donut with its legend */
+.donut { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.donut-svg { flex: none; }
+.donut-legend { flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 8px; }
+.donut-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.donut-label { flex: 1; color: var(--text-2); }
+.donut-row > b { font-weight: 600; }
+.donut-pct { min-width: 34px; text-align: end; }
+
 /* recent / watchlist style rows */
 .rows { display: flex; flex-direction: column; }
 .row {
@@ -84,6 +94,9 @@ audio { width: 100%; margin: 14px 0; }
 .bubble.partial { opacity: .55; }
 .who { font-size: 10px; letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--text-3); margin-bottom: 2px; }
 .say { white-space: pre-wrap; word-break: break-word; }
+/* the speaker label follows the direction of its own message (Hebrew transcript in the English UI and back) */
+.bubble:has(> .say:dir(rtl)) > .who { direction: rtl; }
+.bubble:has(> .say:dir(ltr)) > .who { direction: ltr; }
 
 /* voice agent page */
 .orb { position: relative; width: 132px; height: 132px; display: grid; place-items: center; margin: 0 auto; }
@@ -113,7 +126,11 @@ audio { width: 100%; margin: 14px 0; }
 .feed { max-height: 320px; overflow-y: auto; margin-top: 16px; }
 .feed:empty { display: none; }
 .chatbar { display: flex; gap: 8px; margin-top: 14px; }
+.agent-stage { padding: 28px 24px; }
 .chatbar .input { flex: 1; min-width: 0; }
+.chatbar .input > input { text-overflow: ellipsis; }
+.chatbar .input > input:placeholder-shown { direction: inherit; }   /* dir=auto on an empty field would pick LTR for a Hebrew placeholder */
+.chat-hint { display: none; }
 .controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 16px; font-size: 12px; color: var(--text-3); }
 .controls input[type=range] { width: 110px; accent-color: var(--accent); }
 
@@ -143,6 +160,8 @@ audio { width: 100%; margin: 14px 0; }
 .skel-row:last-child { border-bottom: none; }
 .skel-pill { width: 72px; height: 22px; border-radius: var(--radius-pill); }
 .skel-dot { width: 8px; height: 8px; border-radius: 50%; }
+.stat .skeleton { background: var(--surface-3); }   /* a tile is already surface-2 */
+.stat .skeleton::after { background: linear-gradient(90deg, transparent, var(--border-2), transparent); }
 
 /* ---------- calls page ---------- */
 .detail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
@@ -159,6 +178,7 @@ audio { width: 100%; margin: 14px 0; }
 .setting:last-child { border-bottom: none; }
 .setting-k { font-size: 13px; color: var(--text-1); }
 .setting-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.setting:has(#set-theme) { cursor: pointer; }
 
 /* ---------------------------------------------------------------- login */
 /* Opaque full-screen overlay: the shell skeleton behind it never shows through. */
@@ -212,6 +232,7 @@ audio { width: 100%; margin: 14px 0; }
 .pager .tabs { gap: 6px; }
 .pager .tabs > button { min-width: var(--control-sm); padding: 0 10px; }
 .pager-gap { color: var(--text-3); font-size: 12px; padding: 0 2px; }
+.pager-page { display: none; }   /* "page / pages": the phone pager only */
 [dir="rtl"] .pager .chev { transform: scaleX(-1); }
 
 /* topbar refresh while it pulls from Vapi */
@@ -235,6 +256,12 @@ audio { width: 100%; margin: 14px 0; }
 .page-sub a { color: var(--accent); text-decoration: none; }
 
 /* ---------- analysis page ---------- */
+/* page grids live in CSS, so resizing or rotating re-flows them without a re-render */
+.grid.overview-pair { grid-template-columns: minmax(0, 1fr) 380px; }
+.grid.agent-grid { grid-template-columns: minmax(0, 1fr) 380px; }
+.grid.settings-grid { grid-template-columns: 1fr 1fr; }
+@media (max-width: 1099px) { .grid.overview-pair, .grid.agent-grid { grid-template-columns: minmax(0, 1fr); } }
+
 .grid.halves { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 .grid.halves.wide-end { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
 @media (max-width: 1100px) { .grid.halves, .grid.halves.wide-end { grid-template-columns: minmax(0, 1fr); } }
@@ -259,53 +286,255 @@ audio { width: 100%; margin: 14px 0; }
 .quote { cursor: pointer; }
 .quote:hover .verbatim { border-color: var(--border-2); }
 .quote-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 11px; color: var(--text-3); }
+/* AI write-up card */
+.ai-card .card-title svg { vertical-align: -2px; margin-inline-end: 4px; color: var(--accent); }
+.ai-headline { font-size: 15px; line-height: 1.5; color: var(--text-1); margin: 0 0 14px; }
+.ai-findings { margin-bottom: 18px; }
+.ai-blocks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.ai-block-title { font-size: 11px; text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--text-3); margin-bottom: 8px; }
+.ai-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 1.55; color: var(--text-2); }
+.ai-points li { padding-inline-start: 12px; position: relative; }
+.ai-points li::before { content: ""; position: absolute; inset-inline-start: 0; top: 8px; width: 4px; height: 4px; border-radius: 50%; background: var(--border-2); }
+.ai-foot { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-1); font-size: 11px; }
+@media (max-width: 1100px) { .ai-blocks { grid-template-columns: minmax(0, 1fr); gap: 16px; } }
+
 .mini-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
 .mini-stats .stat-value { font-size: 18px; }
 
-/* ---------- phones and small tablets ----------
-   The sidebar gives way to a bottom tab bar, the topbar keeps only what a thumb
-   needs, tables turn into stacked cards, and a selected call replaces the list. */
+/* ---------- phones and tablets: the tab-bar layout ----------
+   The sidebar gives way to a bottom tab bar and a slim translucent app bar, controls
+   grow to thumb size, and a selected call replaces the list. Narrower blocks follow:
+   720-900 two columns and real tables, up to 719 stacked cards, up to 600 phone-only
+   details. Everything stays in this order at the end of the file. */
 @media (max-width: 900px) {
-  .sidebar { display: none; }
-  .tabbar {
-    display: flex; position: fixed; inset-inline: 0; bottom: 0; z-index: 6;
-    background: var(--bg-sidebar); border-top: 1px solid var(--border-1);
-    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+  :root { --topbar-h: 56px; --tabbar-h: 60px; --control-sm: 36px; --control-md: 42px; --control-lg: 48px; }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-padding-top: calc(var(--topbar-h) + env(safe-area-inset-top) + 8px);
+    scroll-padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 8px);
   }
-  .tabbar .nav-item { flex: 1 1 0; min-width: 0; flex-direction: column; justify-content: center; gap: 4px; height: 50px; padding: 0; border-radius: var(--radius-md); font-size: 10px; font-weight: 500; color: var(--text-3); }
-  .tabbar .nav-item svg { width: 22px; height: 22px; }
-  .tabbar .nav-item span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .tabbar .nav-item:hover { background: transparent; color: var(--text-1); }
-  .tabbar .nav-item.on { background: transparent; color: var(--accent); }
+  .sidebar { display: none; }
   .only-mobile { display: inline-flex; }
 
-  .main { padding: 16px 16px calc(84px + env(safe-area-inset-bottom)); gap: 16px; }
-  .topbar { padding: 0 16px; gap: 10px; }
+  /* app bar: range tabs on Overview/Analysis, search on Calls/List, the name on Agent/Settings */
+  .topbar {
+    height: calc(var(--topbar-h) + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) max(16px, env(safe-area-inset-right)) 0 max(16px, env(safe-area-inset-left));
+    gap: 0;
+    background: var(--bg-sidebar);
+    background: color-mix(in srgb, var(--bg-sidebar) 85%, transparent);
+    -webkit-backdrop-filter: saturate(1.5) blur(16px); backdrop-filter: saturate(1.5) blur(16px);
+  }
   .topbar-center { display: flex; flex: 1; min-width: 0; }
-  .topbar-center .input { width: 100%; min-width: 0; }
-  .topbar:has(#rangetabs:not([hidden])) .topbar-center { display: none; }   /* the range tabs take the room on the Overview */
-  .topbar-right { margin-inline-start: auto; }                                /* stays at the end even when the search is hidden */
-  .topbar-right > .faint, #themeswitch { display: none; }                     /* theme lives in Settings on a phone */
+  .topbar-center .input { width: 100%; min-width: 0; height: 40px; }
+  :root[data-page="overview"] .topbar-center, :root[data-page="analysis"] .topbar-center,
+  :root[data-page="agent"] .topbar-center, :root[data-page="settings"] .topbar-center { display: none; }
+  :root[data-page="agent"] .topbar-brand, :root[data-page="settings"] .topbar-brand { display: block; }
+  :root .topbar-brand.wordmark { font-size: 0; padding: 0; white-space: nowrap; }        /* only the accent name, not "Headquarters" */
+  :root .topbar-brand.wordmark b { display: inline; font-size: 17px; }
+  .topbar-right { margin-inline-start: auto; padding-inline-start: 10px; gap: 8px; }     /* stays at the end whatever sits before it */
+  .topbar-right > .faint, #themeswitch { display: none; }                                /* theme lives in Settings on a phone */
+  .topbar .icon-btn { width: 40px; height: 40px; }
   .profile { padding: 0; }
   .profile > div { display: none; }
-  .toast { bottom: calc(84px + env(safe-area-inset-bottom)); }
+
+  /* tab bar: translucent, a pill behind the active icon (colour alone is too weak in the light theme) */
+  .tabbar {
+    display: flex; position: fixed; inset-inline: 0; bottom: 0; z-index: 6;
+    background: var(--bg-sidebar);
+    background: color-mix(in srgb, var(--bg-sidebar) 85%, transparent);
+    -webkit-backdrop-filter: saturate(1.5) blur(16px); backdrop-filter: saturate(1.5) blur(16px);
+    border-top: 1px solid var(--border-1);
+    padding: 0 max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(4px, env(safe-area-inset-left));
+  }
+  .tabbar .nav-item { flex: 1 1 0; min-width: 0; height: var(--tabbar-h); flex-direction: column; justify-content: center; gap: 2px; padding: 0; border-radius: 0; font-size: 10.5px; font-weight: 500; color: var(--text-2); background: transparent; }
+  .tabbar .nav-item svg { box-sizing: content-box; width: 22px; height: 22px; padding: 4px 14px; border-radius: var(--radius-pill); transition: background var(--transition-med); }
+  .tabbar .nav-item span { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tabbar .nav-item:hover { background: transparent; }
+  .tabbar .nav-item.on { background: transparent; color: var(--accent); font-weight: 600; }
+  .tabbar .nav-item.on svg { background: var(--accent-soft); stroke-width: 2; }
+  .tabbar .nav-item:active svg { background: var(--surface-3); }
+  .kb-open body:has(.topbar input:focus, .chatbar input:focus) .tabbar { display: none; }   /* out of the way while the keyboard is up (kb-open: app.js) */
+
+  .main {
+    padding: 16px max(16px, env(safe-area-inset-right)) calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 24px) max(16px, env(safe-area-inset-left));
+    gap: 16px;
+  }
+  .grid { gap: 16px; }
+  .card { padding: 16px; }
+  .card-head { margin-bottom: 12px; }
+  .login-card { padding: 24px 20px; }
   .page-empty { padding: 40px 16px; }
+  [data-theme="light"] .page-sub { color: var(--text-2); }
 
-  /* list filters: each group scrolls sideways instead of wrapping into a wall of pills */
-  .filters { flex-direction: column; width: 100%; }
-  .filters .tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding: 3px; margin: -3px; scrollbar-width: none; }   /* padding keeps focus rings inside the scroll box */
-  .filters .tabs::-webkit-scrollbar { display: none; }
-  .filters .tabs > button { flex: none; white-space: nowrap; }
+  /* thumb-sized controls; 16px text so iOS does not zoom into a focused field */
+  .input > input, .select > select { font-size: 16px; }
+  .badge { white-space: nowrap; }
+  .pw-toggle { width: 40px; height: 40px; }
+  .switch { position: relative; }
+  .switch::after { content: ""; position: absolute; inset: -12px -8px; }                /* bigger hit area, same look */
 
-  /* a selected call replaces the list; the back button above the conversation returns */
+  /* touch: pressed states instead of hover */
+  a, button, [role="switch"], .row, .quote, tr.clickable { touch-action: manipulation; }
+  .btn, .icon-btn, .tabs > button { transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast); }
+  .btn:active:not(:disabled), .icon-btn:active:not(:disabled), .tabs > button:active, .pw-toggle:active { transform: scale(.96); }
+  .row:active, .table tbody tr.clickable:active, .table.cards tbody tr.clickable:active { background: var(--surface-2); }
+  .row:active { box-shadow: 0 0 0 6px var(--surface-2); border-radius: 2px; }
+  .quote:active .verbatim { background: var(--surface-2); border-color: var(--border-2); }
+  @media (hover: none) {
+    .btn:hover:not(:disabled) { background: var(--accent); }
+    .btn.secondary:hover:not(:disabled) { background: var(--pill-bg); }
+    .btn.ghost:hover:not(:disabled), .icon-btn.ghost:hover { background: transparent; }
+    .icon-btn:hover { background: var(--pill-bg); }
+    .icon-btn.solid:hover { background: var(--accent); }
+    .row:hover { background: transparent; margin-inline: 0; padding-inline: 0; border-radius: 0; }
+    .table tbody tr.clickable:not(.on):hover td, .table.cards tbody tr.clickable:not(.on):hover { background: transparent; }
+    .pw-toggle:hover { background: transparent; color: var(--text-2); }
+    .quote:hover .verbatim { border-color: var(--border-1); }
+    .mic:hover:not(:disabled) { background: var(--accent); }
+    .orb.live .mic:hover { background: var(--negative); }
+  }
+  @media (hover: hover) { .tabbar .nav-item:not(.on):hover { color: var(--text-1); } }
+
+  .toast {
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 12px);
+    inset-inline: auto; left: max(16px, env(safe-area-inset-left)); right: max(16px, env(safe-area-inset-right));
+    animation: toast-in var(--transition-med) both;
+  }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } }
+  .feed, .quotes, .diag { overscroll-behavior: contain; }
+  /* numbers in lists read as figures, not code */
+  .row .mono, .calls-table .mono, .detail-head .mono, .lead-meta .mono { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; }
+
+  /* stat tiles: the hero is a full-width banner (number at the end), the rest an even grid below */
+  .stat-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .stat-row.four { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* the hero banner is short and the number sits at its end: keep the crowd to the middle */
+  .stat.hero .stat-rings { opacity: .62; -webkit-mask-image: linear-gradient(90deg, transparent, #000 34%, #000 66%, transparent); mask-image: linear-gradient(90deg, transparent, #000 34%, #000 66%, transparent); }
+  .stat-row > .stat.hero { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 16px; padding: 16px 20px; }
+  .stat-row > .stat.hero > .stat-label { grid-column: 1; grid-row: 1; }
+  .stat-row > .stat.hero > .stat-foot { grid-column: 1; grid-row: 2; margin-top: 4px; }
+  .stat-row > .stat.hero > .stat-value { grid-column: 2; grid-row: 1 / span 2; margin: 0; font-size: 32px; line-height: var(--leading-tight); }
+  .stat-row > .stat.hero:not(:has(> .stat-value)) { display: block; }                     /* loading skeleton */
+  .stat-row > .stat.hero:not(:has(> .stat-value)) > .skel-line:nth-child(3) { display: none; }
+  .stat-row > .stat:not(.hero) { display: flex; flex-direction: column; padding: 12px 14px; }
+  .stat-row > .stat:not(.hero) > .stat-label { margin-bottom: 6px; }
+  .stat-row > .stat:not(.hero) > .stat-value { margin: auto 0 2px; font-size: var(--text-xl); line-height: var(--leading-tight); }   /* values line up when a label wraps */
+  .stat-row .stat-foot { min-height: calc(var(--text-xs) * var(--leading-normal)); }
+
+  /* charts */
+  .chart-box.dense .chart-values span:not(.peak) { display: none; }                     /* 30 bars in 300px: only the tallest keeps its number */
+  .linechart-plot { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .donut { display: grid; grid-template-columns: 120px minmax(0, 300px); gap: 20px; align-items: center; }
+  .donut-svg { width: 120px; height: 120px; }
+  .donut-legend { min-width: 0; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto auto; column-gap: 8px; row-gap: 12px; align-items: center; }
+  .donut-row { display: contents; font-size: 13px; }
+  .donut-label { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .donut-pct { min-width: 0; }
+
+  /* analysis */
+  .quotes { max-height: none; flex-direction: row; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 2px; }
+  .quotes::-webkit-scrollbar { display: none; }
+  .quote { flex: 0 0 min(86%, 360px); scroll-snap-align: start; display: flex; flex-direction: column; }
+  .quote:only-child { flex-basis: 100%; }
+  .quote .verbatim { flex: 1; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; }   /* the whole answer is one tap away */
+  .mini-stats { gap: 8px; }
+  .mini-stats .stat { padding: 12px; }
+  .mini-stats .stat-label { text-wrap: balance; font-size: var(--text-xs); line-height: 1.35; min-height: calc(2em * 1.35); align-items: flex-start; }
+  .mini-stats .stat-value { margin: 6px 0 0; font-size: var(--text-xl); line-height: var(--leading-tight); }
+  /* wide tables scroll sideways: the first column stays put, a shade marks more columns at the end */
+  .table.nowrap { border-collapse: separate; border-spacing: 0; }
+  .table.nowrap th, .table.nowrap td { padding: 10px; }
+  .table.nowrap th:first-child, .table.nowrap td:first-child { position: sticky; inset-inline-start: 0; z-index: 1; background: var(--surface-1); padding-inline: 0 12px; border-inline-end: 1px solid var(--border-1); }
+  .card > div:has(> .table.nowrap) {
+    overscroll-behavior-x: contain;
+    background:
+      linear-gradient(to left, var(--surface-1) 14px, transparent 28px) right center / 28px 100% no-repeat local,
+      linear-gradient(to left, var(--scrim), transparent) right center / 14px 100% no-repeat scroll;
+  }
+  [dir="rtl"] .card > div:has(> .table.nowrap) {
+    background:
+      linear-gradient(to right, var(--surface-1) 14px, transparent 28px) left center / 28px 100% no-repeat local,
+      linear-gradient(to right, var(--scrim), transparent) left center / 14px 100% no-repeat scroll;
+  }
+
+  /* calls: a selected call replaces the list and the back button is its header */
   .split.has-detail > .card:first-child { display: none; }         /* by position: the loading skeleton has no id */
   .split:not(.has-detail) > .card:last-child { display: none; }   /* no room for a "pick a call" placeholder */
-  .detail-back { margin-bottom: 12px; }
+  .main:has(> .split.has-detail) > .page-head { display: none; }
+  .split.has-detail > .card:last-child { padding-top: 8px; }
+  .split .btn.detail-back, .split .btn.detail-back:hover { height: 40px; padding-inline: 2px 12px; margin-inline-start: -6px; margin-bottom: 4px; gap: 4px; background: transparent; border-color: transparent; color: var(--accent); font-size: 15px; }
+  .split .btn.detail-back:active { background: var(--surface-2); }
+  .split .btn.detail-back svg { width: 20px; height: 20px; }
   [dir="rtl"] .detail-back svg { transform: scaleX(-1); }
-  .chart-box.dense .chart-values { display: none; }                 /* 30 bars in 300px: the values would overprint */
+  .detail-head { gap: 6px 12px; margin-bottom: 12px; }
+  .detail-head .card-title { font-size: 16px; }
+  .detail-head .card-title .count { white-space: nowrap; }         /* source and date move to the next line as one piece */
+  .split audio { display: block; height: 44px; margin: 0 0 16px; }
+  .split .card.nested { background: transparent; border: 0; border-top: 1px solid var(--border-1); border-radius: 0; box-shadow: none; padding: 16px 0 0; }   /* analysis: a section, not a card in a card */
+  .split .analysis-grid { gap: 14px; }
+  .split .analysis-grid > div:has(> .badge) { display: none; }      /* intent: already the badge in the header */
+  .split .verbatim { background: var(--surface-2); }
+  .convo { gap: 6px; }
+  .bubble { padding: 8px 12px; font-size: 14px; line-height: 1.55; border-end-start-radius: 4px; }
+  .turn.user .bubble { border-end-start-radius: var(--radius-md); border-end-end-radius: 4px; }   /* the tail on the speaker's side */
+  .split .convo > .turn:nth-child(n+3) .who { display: none; }      /* turns alternate: the name once per speaker is enough */
+  [data-theme="light"] .turn.user .bubble { background: var(--accent); color: var(--accent-fg); }
+  [data-theme="light"] .turn.user .who { color: var(--accent-fg); opacity: .65; }
 
-  /* .table.cards become stacked cards: each row a small grid, cells placed by column.
-     Plain .table (analysis) keeps its columns inside its overflow-x wrapper. */
+  /* voice agent */
+  .agent-stage { padding: 24px 16px; }
+  .controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; max-width: 420px; margin: 20px auto 0; }
+  .controls > label { justify-self: start; font-size: 13px; color: var(--text-2); }
+  .controls > .select { grid-column: 2 / -1; min-width: 0; }
+  .controls > .select > select { width: 100%; min-width: 0; text-overflow: ellipsis; }   /* a long voice name must not widen the page */
+  .controls input[type=range] { width: 100%; min-width: 0; height: 32px; }
+  #speedval { min-width: 4ch; text-align: end; }
+  .orb.live ~ .controls, .orb.live ~ .chat-hint { display: none; }  /* both are locked during a call; the transcript moves up */
+  .feed { max-height: 55vh; }
+  .chatbar .input { height: 44px; }
+  .chatbar .btn { height: 44px; padding-inline: 18px; }
+  .chat-hint { display: block; margin: 8px 0 0; font-size: 12px; color: var(--text-3); text-align: center; }
+  .lead-card.card.nested { background: transparent; border: 0; border-bottom: 1px solid var(--border-1); border-radius: 0; box-shadow: none; padding: 0 0 16px; margin-bottom: 24px; }
+  .lead-name { font-size: 18px; }
+  .lead-meta { gap: 2px 12px; }
+  .lead-meta .mono { font-size: 13px; }
+
+  /* list filters: each group scrolls sideways to the card edge and fades where more pills wait */
+  .filters { flex-direction: column; flex-wrap: nowrap; width: 100%; min-width: 0; gap: 8px; }   /* one line, so each pill row is as wide as the card and scrolls inside it */
+  .filters .tabs {
+    display: flex; flex-wrap: nowrap; overflow-x: auto; max-width: none; margin: -3px -16px; padding: 3px 16px;
+    scroll-padding-inline: 16px; scrollbar-width: none; overscroll-behavior-x: contain;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+  }
+  .filters .tabs::-webkit-scrollbar { display: none; }
+  .filters .tabs > button { flex: none; white-space: nowrap; padding-inline: 14px; }
+
+  /* settings: label over control when the value is long */
+  .setting { padding-block: 14px; }
+  .setting > div:last-child { min-width: 0; text-align: end; overflow-wrap: anywhere; }
+  .setting:has(.tabs), .setting:has([dir="auto"]) { flex-direction: column; align-items: stretch; gap: 10px; }
+  .setting:has([dir="auto"]) > div:last-child { text-align: start; }
+  .setting .tabs { display: grid; grid-template-columns: 1fr 1fr; }
+  .setting [dir="auto"] { display: block; text-align: start; font-size: 13.5px !important; line-height: 1.6; color: var(--text-1) !important;   /* !important only beats the inline style */
+    padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border-1); border-radius: var(--radius-sm); }
+}
+
+/* tablets: room for two columns and for real tables again */
+@media (min-width: 720px) and (max-width: 900px) {
+  .stat-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .stat-row.four { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid.halves:not(.wide-end), .grid.overview-pair, .grid.settings-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .tabbar { justify-content: center; }
+  .tabbar .nav-item { flex: 0 1 112px; }
+}
+
+/* up to 719px the calls table becomes stacked cards (tablets have room for its six columns).
+   Plain .table (analysis) keeps its columns. */
+@media (max-width: 719px) {
+  .grid.settings-grid { grid-template-columns: minmax(0, 1fr); }
+
   .table.cards, .table.cards tbody, .table.cards td { display: block; }
   .table.cards thead { display: none; }
   .table.cards tr { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 12px 10px; border-bottom: 1px solid var(--border-1); }
@@ -313,19 +542,104 @@ audio { width: 100%; margin: 14px 0; }
   .table.cards td { padding: 0; border: 0; min-width: 0; }
   .table.cards tbody tr.clickable:hover td, .table.cards tbody tr.on td { background: transparent; }
   .table.cards tbody tr.clickable:hover, .table.cards tbody tr.on { background: var(--surface-2); border-radius: var(--radius-md); }
-  /* calls: status | intent / source | length / started | cost */
-  .calls-table td:nth-child(1) { grid-column: 1; grid-row: 1; }
-  .calls-table td:nth-child(5) { grid-column: 2; grid-row: 1; justify-self: end; }
-  .calls-table td:nth-child(2) { grid-column: 1; grid-row: 2; font-weight: 500; }
-  .calls-table td:nth-child(4) { grid-column: 2; grid-row: 2; justify-self: end; }
-  .calls-table td:nth-child(3) { grid-column: 1; grid-row: 3; font-size: 12px; }
-  .calls-table td:nth-child(6) { grid-column: 2; grid-row: 3; justify-self: end; font-size: 12px; color: var(--text-3); }
-  /* leads: name | call / phone / city / status | outcome */
+
+  /* calls:  source ............ [intent]
+             ● started .... length · cost   (the word only for failed or live calls) */
+  .table.cards.calls-table tr { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 0; padding: 12px; }
+  .table.cards.calls-table tr::after { content: ""; order: 3; flex-basis: 100%; height: 6px; }
+  .calls-table td:nth-child(2) { order: 1; flex: 1 1 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .calls-table td:nth-child(5) { order: 2; flex: none; }
+  .calls-table td:nth-child(1) { order: 4; flex: none; font-size: 12px; color: var(--text-2); }
+  .calls-table td:nth-child(1):has(.dot.ended) { font-size: 0; margin-inline-end: -8px; }
+  .calls-table td:nth-child(3) { order: 5; flex: 1 1 0; font-size: 12px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .calls-table td:nth-child(4) { order: 6; flex: none; font-size: 12px; color: var(--text-2); }
+  .calls-table td:nth-child(6) { order: 7; flex: none; font-size: 12px; color: var(--text-3); }
+  .calls-table td:nth-child(6)::before { content: "·"; margin-inline-end: 8px; }
+}
+
+/* the calling list is cards up to 900px: its eight columns do not fit a tablet.
+   leads:  name (2 lines) ...... [Call]
+           phone · city           [Call]
+           [status] [outcome .........]    */
+@media (max-width: 900px) {
+  .leads-table.cards, .leads-table.cards tbody, .leads-table.cards td { display: block; }
+  .leads-table.cards thead { display: none; }
+  .table.cards.leads-table tr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 0; row-gap: 3px; align-items: center; padding: 14px 12px; border-bottom: 1px solid var(--border-1); }
+  .table.cards.leads-table tr:last-child { border-bottom: none; }
+  .leads-table.cards td { padding: 0; border: 0; min-width: 0; }
+  .leads-table.cards tbody tr.clickable:hover td, .leads-table.cards tbody tr.on td { background: transparent; }
+  .leads-table.cards tbody tr.clickable:hover, .leads-table.cards tbody tr.on { background: var(--surface-2); border-radius: var(--radius-md); }
   .leads-table td:nth-child(1), .leads-table td:nth-child(6), .leads-table td:nth-child(7) .when { display: none; }
-  .leads-table td:nth-child(2) { grid-column: 1; grid-row: 1; font-weight: 500; }
-  .leads-table td:nth-child(8) { grid-column: 2; grid-row: 1 / span 2; }
-  .leads-table td:nth-child(3) { grid-column: 1; grid-row: 2; font-size: 12px; }
-  .leads-table td:nth-child(4) { grid-column: 1; grid-row: 3; font-size: 12px; color: var(--text-3); }
-  .leads-table td:nth-child(5) { grid-column: 1; grid-row: 4; padding-top: 4px; }
-  .leads-table td:nth-child(7) { grid-column: 2; grid-row: 3 / span 2; justify-self: end; text-align: end; }
+  .leads-table td:nth-child(2) { grid-column: 1 / 3; grid-row: 1; font-size: var(--text-base); font-weight: 500; line-height: 1.35; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+  .leads-table td:nth-child(3) { grid-column: 1; grid-row: 2; font-size: 12px; color: var(--text-2); white-space: nowrap; font-family: var(--font-numeric); font-variant-numeric: tabular-nums; }
+  .leads-table td:nth-child(4) { grid-column: 2; grid-row: 2; font-size: 12px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .leads-table td:nth-child(4)::before { content: "·"; margin-inline: 6px; }
+  .leads-table td:nth-child(5) { grid-column: 1; grid-row: 3; padding-top: 6px; }
+  .leads-table td:nth-child(7) { grid-column: 2 / 4; grid-row: 3; padding-top: 6px; padding-inline-start: 6px; justify-self: start; }
+  .leads-table td:nth-child(7):not(:has(.badge)) { display: none; }                      /* no lone dash on never-called rows */
+  .leads-table td:nth-child(8) { grid-column: 3; grid-row: 1 / 3; align-self: center; padding-inline-start: 12px; }
+  .leads-table .lead-call { height: 40px; padding-inline: 14px; }
+  .leads-table .lead-call svg { margin-inline-end: 0; }
+  .leads-table td:nth-child(5) .badge.accent { background: var(--accent-soft); color: var(--accent); }   /* "Called" quieter than the outcome */
+  .leads-table td:nth-child(5) .badge.accent::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+}
+
+/* phones */
+@media (max-width: 600px) {
+  .bubble { max-width: 86%; }
+
+  /* pager: range and page size on one row, previous / "page of pages" / next on the next */
+  .pager { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px 8px; padding: 14px 4px 2px; }
+  .pager-nav { display: contents; }
+  .pager-info { grid-column: 1 / 3; grid-row: 1; }
+  .pager .select { grid-column: 3; grid-row: 1; justify-self: end; }
+  .pager #page-nums { display: none; }
+  .pager #page-prev { grid-column: 1; grid-row: 2; }
+  .pager .pager-page { display: block; grid-column: 1 / -1; grid-row: 2; justify-self: center; font-size: 13px; font-weight: 500; color: var(--text-2); font-variant-numeric: tabular-nums; }
+  .pager #page-next { grid-column: 3; grid-row: 2; justify-self: end; }
+  .pager .icon-btn { width: 44px; height: 44px; }
+
+  #leads-count { display: none; }                                   /* the same total is in the hero tile and the card head */
+
+  /* Analysis: title and Export share the first line; the range is the active tab right above */
+  .page-head:has(#an-export) { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 12px; }
+  .page-head:has(#an-export) > div { display: contents; }
+  .page-head:has(#an-export) .page-title { grid-column: 1; grid-row: 1; }
+  .page-head:has(#an-export) .page-sub { grid-column: 1 / -1; grid-row: 2; }
+  .page-head > span:has(> #an-export) { grid-column: 2; grid-row: 1; }
+  .page-head > span:has(> #an-export) > .badge { display: none; }
+  .bar-val { text-align: end; }
+  .bar-of { display: block; font-size: var(--text-xs); }
+
+  /* running-total legend as a three-up strip under the title */
+  .card-head.wrap > .legend { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-size: var(--text-xs); }
+  .card-head.wrap > .legend .legend-item { display: grid; grid-template-columns: 8px minmax(0, 1fr); column-gap: 6px; row-gap: 2px; align-items: center; line-height: 1.3; }
+  .card-head.wrap > .legend .legend-item > b { grid-column: 2; font-size: var(--text-lg); line-height: var(--leading-tight); }
+
+  /* sign-in: a full screen, top-aligned so the keyboard leaves the field and button visible */
+  .login { place-items: stretch; padding: 0; background: var(--surface-1); overflow-y: auto; overscroll-behavior: contain; }
+  .login-card { width: 100%; min-width: 0; min-height: 100%; border: 0; border-radius: 0; box-shadow: none; background: transparent;
+    padding: calc(env(safe-area-inset-top) + max(32px, 10vh)) max(24px, env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 20px) max(24px, env(safe-area-inset-left)); }
+  .login-mark { margin-bottom: 36px; }
+  .login-title { font-size: var(--text-2xl); }
+  .login-sub { font-size: var(--text-base); margin-bottom: 22px; }
+  .login .input.login-field { height: 52px; padding-inline-end: 4px; }
+  .login .pw-toggle { width: 44px; height: 44px; }
+  .login-submit { height: 52px; font-size: 15px; }
+  .login-lang { margin-top: auto; height: var(--control-md); padding-inline: 20px; }
+}
+
+@media (max-width: 340px) {
+  .row-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stat-row .stat-foot { min-width: 0; }
+  .stat-row .stat-sub { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }   /* one line, so the values of a tile row stay level */
+  .tabbar .nav-item { font-size: 10px; }
+  .tabbar .nav-item svg { padding-inline: 10px; }
+  .donut { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .donut-legend { justify-self: stretch; }
+}
+
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .toast { animation: none; }
+  .btn:active:not(:disabled), .icon-btn:active:not(:disabled), .tabs > button:active, .pw-toggle:active { transform: none; }
 }

@@ -52,6 +52,11 @@ Object.assign(I18N.en, {
   'an.ap.thankedYes': 'Thanked a "yes" with the script line', 'an.ap.politeExit': 'Ended politely on request', 'an.ap.askedQuestion': 'Person asked her a question',
   'an.ap.of.noUnsure': 'of no/unsure', 'an.ap.of.closing': 'of closings', 'an.ap.of.yes': 'of yes', 'an.ap.of.reached': 'of reached', 'an.ap.of.conv': 'of conversations',
   'an.ap.turns': 'On calls with a conversation she spoke {a} times and the person {b} times on average.',
+  'ai.title': 'What this means', 'ai.sub': 'written by AI from the numbers on this page', 'ai.findings': 'Findings',
+  'ai.why': 'Why they will not vote', 'ai.wrong': 'What went wrong', 'ai.advice': 'What to change',
+  'ai.writing': 'Reading the calls…', 'ai.refresh': 'Write again', 'ai.stale': 'New calls since this was written',
+  'ai.by': 'Written by {m}, {t}', 'ai.none': 'No AI analysis for this range yet.',
+  'ai.nokey': 'Set OPENROUTER_API_KEY to turn this on.', 'ai.failed': 'Could not write the analysis. {e}',
   'an.cities': 'By city', 'an.cities.empty': 'No calls to numbers from the list in this range yet.', 'an.daily': 'Day by day', 'an.daily.sub': 'days with calls, newest first',
   'an.col.city': 'City', 'an.col.calls': 'Calls', 'an.col.reached': 'Reached', 'an.col.yes': 'Will vote', 'an.col.no': 'Will not', 'an.col.unsure': 'Unsure', 'an.col.refused': 'Refused',
   'an.col.nr': 'Not reached', 'an.col.rate': 'Yes rate', 'an.col.day': 'Day', 'an.col.optout': 'Opt-outs', 'an.col.cost': 'Cost',
@@ -73,7 +78,7 @@ Object.assign(I18N.en, {
   'agent.connected': 'Connected', 'agent.connected.sub': 'speak or type', 'agent.ended': 'Call ended. Start again whenever.',
   'agent.mic.blocked': 'The browser blocked the microphone. Allow access and try again.', 'agent.start.failed': 'Could not start the call. Try refreshing.',
   'agent.error': 'The call hit an error. Try again.', 'agent.type': 'Or just type here. English works too, she answers in Hebrew.',
-  'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
+  'agent.type.short': 'Type a message', 'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
   'agent.lead': 'Calling', 'agent.lead.sub': 'You answer as the person who picked up. The call is recorded against this number.',
   'agent.dial': 'Dial this number', 'agent.dial.note': 'Needs a phone number in Vapi. Until then the same call runs in the browser.',
   'agent.dial.dnc': 'This number asked not to be called.', 'agent.dialed': 'Dialing. The call will appear in Calls.', 'agent.pick': 'Pick a number from the List to call it.',
@@ -126,6 +131,11 @@ Object.assign(I18N.he, {
   'an.ap.thankedYes': 'הודתה על "כן" לפי התסריט', 'an.ap.politeExit': 'סיימה בנימוס לפי בקשה', 'an.ap.askedQuestion': 'האדם שאל אותה שאלה',
   'an.ap.of.noUnsure': 'מתוך לא/לא בטוח', 'an.ap.of.closing': 'מתוך סיומים', 'an.ap.of.yes': 'מתוך כן', 'an.ap.of.reached': 'מתוך מי שהושגו', 'an.ap.of.conv': 'מתוך שיחות',
   'an.ap.turns': 'בשיחות עם דיאלוג היא דיברה בממוצע {a} פעמים והאדם {b} פעמים.',
+  'ai.title': 'מה זה אומר', 'ai.sub': 'נכתב על ידי בינה מלאכותית מהנתונים שבעמוד', 'ai.findings': 'ממצאים',
+  'ai.why': 'למה לא יצביעו', 'ai.wrong': 'מה השתבש', 'ai.advice': 'מה לשנות',
+  'ai.writing': 'קורא את השיחות…', 'ai.refresh': 'כתוב שוב', 'ai.stale': 'היו שיחות חדשות מאז הכתיבה',
+  'ai.by': 'נכתב על ידי {m}, {t}', 'ai.none': 'עדיין אין ניתוח בינה מלאכותית לטווח הזה.',
+  'ai.nokey': 'הגדירו OPENROUTER_API_KEY כדי להפעיל.', 'ai.failed': 'לא הצלחנו לכתוב את הניתוח. {e}',
   'an.cities': 'לפי עיר', 'an.cities.empty': 'עדיין אין שיחות למספרים מהרשימה בטווח הזה.', 'an.daily': 'יום אחר יום', 'an.daily.sub': 'ימים עם שיחות, מהחדש לישן',
   'an.col.city': 'עיר', 'an.col.calls': 'שיחות', 'an.col.reached': 'הושגו', 'an.col.yes': 'יצביעו', 'an.col.no': 'לא יצביעו', 'an.col.unsure': 'לא בטוחים', 'an.col.refused': 'סירבו',
   'an.col.nr': 'לא הושגו', 'an.col.rate': 'אחוז כן', 'an.col.day': 'יום', 'an.col.optout': 'הסרות', 'an.col.cost': 'עלות',
@@ -147,7 +157,7 @@ Object.assign(I18N.he, {
   'agent.connected': 'מחובר', 'agent.connected.sub': 'דבר או כתוב', 'agent.ended': 'השיחה הסתיימה. אפשר להתחיל שוב.',
   'agent.mic.blocked': 'הדפדפן חסם את המיקרופון. אשרו גישה ונסו שוב.', 'agent.start.failed': 'לא הצלחנו להתחיל את השיחה. נסו לרענן.',
   'agent.error': 'נפלה שגיאה בשיחה. נסו שוב.', 'agent.type': 'או פשוט תכתבו פה. גם באנגלית, היא עונה בעברית.',
-  'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
+  'agent.type.short': 'כתבו הודעה', 'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
   'agent.lead': 'מתקשרים אל', 'agent.lead.sub': 'אתם עונים כמי שהרים את הטלפון. השיחה נרשמת על המספר הזה.',
   'agent.dial': 'חיוג למספר', 'agent.dial.note': 'דורש מספר טלפון ב-Vapi. עד אז אותה שיחה רצה בדפדפן.',
   'agent.dial.dnc': 'המספר הזה ביקש שלא להתקשר.', 'agent.dialed': 'מחייג. השיחה תופיע בעמוד השיחות.', 'agent.pick': 'בחרו מספר מהרשימה כדי להתקשר אליו.',
@@ -237,6 +247,16 @@ const INTENT_COLOR = { yes: 'var(--positive)', no: 'var(--negative)', unsure: 'v
 const intentKey = (c) => (INTENT_ORDER.includes(c.intent) ? c.intent : 'unknown');
 const intentBadge = (c) => `<span class="badge ${INTENT_TONE[intentKey(c)]}">${t('intent.' + intentKey(c))}</span>`;
 const reasonLabel = (k) => (k ? t('reason.' + k) : '—');
+// Vapi's endedReason in words; the same folding as endedGroup() in api/_analysis.js. Unknown keys stay raw.
+const endedKey = (k = '') => (k === 'customer-ended-call' ? 'hungUp' : k === 'silence-timed-out' ? 'silence' : k === 'voicemail' ? 'voicemail'
+  : k === 'customer-did-not-answer' ? 'noAnswer' : k === 'customer-busy' ? 'busy' : k.startsWith('assistant-') ? 'agentEnded'
+  : k === 'exceeded-max-duration' ? 'tooLong' : k.includes('microphone') ? 'noMic' : /error|fail|pipeline/.test(k) ? 'technical' : 'other');
+// Phones and small tablets (the tab-bar layout).
+const isPhoneLayout = () => matchMedia('(max-width: 900px)').matches;
+// After a page turn from the pager at the bottom, bring the list card's top back into view (phones; the app bar is subtracted by scroll-padding).
+// The chat placeholder is text, not layout: swap it when the window crosses the phone breakpoint.
+matchMedia('(max-width: 900px)').addEventListener('change', () => { const input = $('chatinput'); if (input) input.placeholder = isPhoneLayout() ? t('agent.type.short') : t('agent.type'); });
+const scrollToCard = (box) => { if (isPhoneLayout() && box.getBoundingClientRect().top < document.querySelector('.topbar').offsetHeight) box.scrollIntoView({ block: 'start', behavior: 'smooth' }); };
 
 // ------------------------------------------------------------------ topbar search
 
@@ -274,8 +294,26 @@ $('rangetabs').querySelectorAll('button').forEach((b) => {
   b.onclick = () => { range = Number(b.dataset.range); store.set('range', String(range)); $('rangetabs').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); render(); };
 });
 
+// The hero tile's backdrop: the people the agent is calling. A gathering, nearer
+// rows larger and stronger, kept to the end half so it never crowds the label or
+// the number. The SVG is cropped to cover the tile (slice), and a phone sees the
+// middle band of it, so the rows are spread to read at any height. [dir="rtl"]
+// mirrors the whole thing (.stat-rings in app.css).
+const person = (x, y, size, o) => `<g fill="var(--text-1)" fill-opacity="${o}" transform="translate(${x.toFixed(1)} ${y}) scale(${size})">
+  <circle cx="0" cy="-7" r="4.6"/><path d="M-7.4 8v-2.6a7.4 7.4 0 0 1 14.8 0V8z"/></g>`;
+
+const CROWD = [
+  { y: 164, size: 1.3, n: 6, o: 0.075 },
+  { y: 128, size: 1.1, n: 7, o: 0.055 },
+  { y: 96, size: 0.92, n: 8, o: 0.04 },
+  { y: 66, size: 0.78, n: 9, o: 0.028 },
+  { y: 38, size: 0.66, n: 10, o: 0.02 },
+];
 const rings = () => `<svg class="stat-rings" aria-hidden="true" viewBox="0 0 320 190" preserveAspectRatio="xMidYMid slice">${
-  [0,1,2,3,4,5,6,7].map((i) => `<circle cx="265" cy="30" r="${18 + i * 24}" fill="none" stroke="var(--text-1)" stroke-opacity="${(0.05 - i * 0.004).toFixed(3)}" stroke-width="13"/>`).join('')}</svg>`;
+  CROWD.map((row) => {
+    const gap = 172 / row.n;                        // the crowd lives in x 148..320
+    return Array.from({ length: row.n }, (_, i) => person(150 + gap * (i + 0.5), row.y, row.size, row.o)).join('');
+  }).join('')}</svg>`;
 
 const statTile = ({ label, value, sub, hero }) => `<div class="stat${hero ? ' hero' : ''}">${hero ? rings() : ''}
   <div class="stat-label">${label}</div><div class="stat-value">${value}</div>
@@ -295,11 +333,11 @@ function barChart(buckets) {
   const max = Math.max(1, ...buckets.map((b) => b.n));
   const n = buckets.length, slot = w / n, bw = Math.min(46, slot * 0.58);
   // Values sit in an HTML layer over the SVG: text inside the stretched SVG would warp with the width.
-  const labels = [];
+  const labels = [], peakAt = buckets.findIndex((b) => b.n === max);
   const bars = buckets.map((b, i) => {
     const bh = b.n ? Math.max(4, (b.n / max) * (h - pad - 6)) : 3;
     const x = i * slot + (slot - bw) / 2, y = h - bh;
-    if (b.n) labels.push(`<span style="left:${((x + bw / 2) / w * 100).toFixed(2)}%;top:${(y - 4).toFixed(0)}px">${b.n}</span>`);
+    if (b.n) labels.push(`<span${i === peakAt ? ' class="peak"' : ''} style="left:${((x + bw / 2) / w * 100).toFixed(2)}%;top:${(y - 4).toFixed(0)}px">${b.n}</span>`);
     return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="6" fill="${b.n ? 'var(--chart-line)' : 'var(--chart-grid)'}"/>`;
   }).join('');
   const grid = [0.33, 0.66].map((f) => `<line x1="0" x2="${w}" y1="${(h * f).toFixed(1)}" y2="${(h * f).toFixed(1)}" stroke="var(--chart-grid)"/>`).join('');
@@ -376,9 +414,9 @@ function bindLineChart(root, buckets) {
   const svg = plot.querySelector('svg'), guide = plot.querySelector('.linechart-guide'), tip = plot.querySelector('.linechart-tip');
   const n = buckets.length, locale = lang === 'he' ? 'he-IL' : 'en-GB';
   tip.dir = document.documentElement.dir;           // the plot is LTR; the tooltip text follows the UI
-  plot.onpointermove = (e) => {
+  const show = (clientX) => {
     const r = svg.getBoundingClientRect();
-    const i = Math.max(0, Math.min(n - 1, Math.floor((e.clientX - r.left) / r.width * n)));
+    const i = Math.max(0, Math.min(n - 1, Math.floor((clientX - r.left) / r.width * n)));
     const b = buckets[i], x = (i + 0.5) / n * r.width;
     guide.style.left = `${x}px`; guide.hidden = false;
     tip.innerHTML = `<b>${b.date.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })}</b>` +
@@ -387,7 +425,13 @@ function bindLineChart(root, buckets) {
     const flip = x + 14 + tip.offsetWidth > r.width;
     tip.style.left = `${Math.max(0, Math.min(r.width - tip.offsetWidth, flip ? x - 14 - tip.offsetWidth : x + 14))}px`;
   };
-  plot.onpointerleave = () => { guide.hidden = true; tip.hidden = true; };
+  const hide = () => { guide.hidden = true; tip.hidden = true; };
+  plot.onpointermove = (e) => show(e.clientX);
+  plot.onpointerdown = (e) => { if (e.pointerType !== 'mouse') show(e.clientX); };   // a tap shows that day
+  plot.onpointerleave = (e) => { if (e.pointerType !== 'touch') hide(); };          // a lifted finger keeps it
+  // A tap anywhere else closes it; the listener removes itself once the chart is gone.
+  const ac = new AbortController();
+  document.addEventListener('pointerdown', (e) => { if (!plot.isConnected) ac.abort(); else if (!plot.contains(e.target)) hide(); }, { signal: ac.signal });
 }
 
 function donut(counts, total) {
@@ -399,17 +443,17 @@ function donut(counts, total) {
     offset += len; return el;
   }).join('');
   const legend = INTENT_ORDER.filter((k) => counts[k]).map((k) => `
-    <div style="display:flex;align-items:center;gap:10px;font-size:12px">
+    <div class="donut-row">
       <span class="dot" style="background:${INTENT_COLOR[k]}"></span>
-      <span style="flex:1;color:var(--text-2)">${t('intent.' + k)}</span>
-      <b style="font-weight:600">${counts[k]}</b>
-      <span class="faint" style="min-width:34px;text-align:end">${Math.round(counts[k] / total * 100)}%</span></div>`).join('');
-  return `<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap">
-    <svg width="140" height="140" viewBox="0 0 140 140" style="flex:none">
+      <span class="donut-label">${t('intent.' + k)}</span>
+      <b>${counts[k]}</b>
+      <span class="faint donut-pct">${Math.round(counts[k] / total * 100)}%</span></div>`).join('');
+  return `<div class="donut">
+    <svg class="donut-svg" width="140" height="140" viewBox="0 0 140 140">
       <circle r="${r}" cx="70" cy="70" fill="none" stroke="var(--chart-grid)" stroke-width="16"/>${arcs}
       <text x="70" y="66" text-anchor="middle" font-size="22" font-weight="600" fill="var(--text-1)" font-family="var(--font-ui)">${total}</text>
       <text x="70" y="84" text-anchor="middle" font-size="10" fill="var(--text-3)" font-family="var(--font-ui)">${t('unit.calls')}</text></svg>
-    <div style="flex:1;min-width:180px;display:flex;flex-direction:column;gap:8px">${legend}</div></div>`;
+    <div class="donut-legend">${legend}</div></div>`;
 }
 
 const recentRows = (calls) => !calls.length ? `<div class="page-empty">${t('empty.calls')}</div>` : `<div class="rows">${calls.map((c) => `
@@ -422,12 +466,11 @@ const recentRows = (calls) => !calls.length ? `<div class="page-empty">${t('empt
     <div class="row-end"><div class="row-val mono">${fmtDur(c.startedAt, c.endedAt)}</div><div class="row-sub">${money(c.cost)}</div></div>
   </div>`).join('')}</div>`;
 
-const twoCol = () => (innerWidth < 1100 ? '1fr' : '1fr 380px');
 
 registerPage('overview', {
   skeleton: () => `
     <div class="stat-row">${sk.stat(true)}${sk.stat()}${sk.stat()}${sk.stat()}${sk.stat()}</div>
-    <div class="grid" style="grid-template-columns:${twoCol()}">
+    <div class="grid overview-pair">
       ${sk.card(`${sk.line('w30')}<div class="skeleton skel-block" style="margin-top:16px"></div>`)}
       ${sk.card(`${sk.line('w30')}<div style="display:flex;gap:20px;align-items:center;margin-top:16px"><div class="skeleton skel-circle"></div><div style="flex:1">${sk.line()}${sk.line('w70')}${sk.line('w50')}</div></div>`)}
     </div>
@@ -449,7 +492,7 @@ registerPage('overview', {
         ${statTile({ label: t('stat.cost'), value: money(s.cost) })}
         ${statTile({ label: t('stat.yes'), value: `${yesPct}%`, sub: `${fmtN(counts.yes || 0)}/${fmtN(answered)} ${t('stat.yes.sub')}` })}
       </div>
-      <div class="grid" style="grid-template-columns:${twoCol()}">
+      <div class="grid overview-pair">
         <div class="card"><div class="card-head"><span class="card-title">${t('card.week')} <span class="count">· ${fmtN(s.inRange)} ${t('unit.calls')}</span></span><span class="badge">${range}d</span></div>${barChart(buckets)}</div>
         <div class="card"><div class="card-head"><span class="card-title">${t('card.intent')}</span></div>${s.total ? donut(counts, s.total) : `<div class="page-empty">${t('empty.calls')}</div>`}</div>
       </div>
@@ -494,7 +537,7 @@ function findings(a) {
 
 // label / value on one line, a bar under it; share is of `base`
 const barList = (items, base) => `<div class="bars">${items.map((it) => `
-  <div class="bar-row"><span class="bar-label">${it.label}</span><span class="bar-val"><b>${it.n}</b> · ${pctOf(it.n, it.base ?? base)}%${it.of ? ` ${it.of}` : ''}</span>
+  <div class="bar-row"><span class="bar-label">${it.label}</span><span class="bar-val"><b>${it.n}</b> · ${pctOf(it.n, it.base ?? base)}%${it.of ? ` <span class="bar-of">${it.of}</span>` : ''}</span>
     <div class="bar-track"><div class="bar-fill ${it.tone ?? ''}" style="width:${it.n ? Math.max(1, Math.min(100, pctOf(it.n, it.base ?? base))) : 0}%"></div></div></div>`).join('')}</div>`;
 
 async function exportReport(btn) {
@@ -514,6 +557,53 @@ async function exportReport(btn) {
     setTimeout(() => URL.revokeObjectURL(url), 10000);
     toast(t('an.exported'));
   } catch (e) { toast(e.message, true); } finally { btn.disabled = false; btn.innerHTML = label; }
+}
+
+// The AI write-up (Gemini through OpenRouter). The numbers come from /api/analysis,
+// the model only reads them; /api/insights keeps the last one, so a page view is free.
+const SPARK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 3v4"/><path d="M12 17v4"/><path d="M3 12h4"/><path d="M17 12h4"/><path d="m5.6 5.6 2.8 2.8"/><path d="m15.6 15.6 2.8 2.8"/><path d="m18.4 5.6-2.8 2.8"/><path d="m8.4 15.6-2.8 2.8"/></svg>';
+const aiList = (title, items) => (items?.length ? `<div class="ai-block"><div class="ai-block-title">${title}</div><ul class="ai-points">${items.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : '');
+
+function insightBody(ins) {
+  if (!ins) return `<div class="page-empty">${t('ai.none')}</div>`;
+  const d = ins.data ?? {};
+  return `${d.headline ? `<p class="ai-headline">${escapeHtml(d.headline)}</p>` : ''}
+    ${d.findings?.length ? `<ul class="findings ai-findings">${d.findings.map((x) => `<li class="${x.tone ?? ''}"><span class="dot"></span><span>${escapeHtml(x.text)}</span></li>`).join('')}</ul>` : ''}
+    <div class="ai-blocks">${aiList(t('ai.why'), d.why_not_voting)}${aiList(t('ai.wrong'), d.what_went_wrong)}${aiList(t('ai.advice'), d.advice)}</div>
+    <div class="ai-foot"><span class="faint">${tf('ai.by', { m: escapeHtml((ins.model || '').split('/').pop()), t: fmtTime(ins.generatedAt) })}</span>${ins.stale ? `<span class="badge accent">${t('ai.stale')}</span>` : ''}</div>`;
+}
+
+const insightCard = (ins, busy) => `<div class="card ai-card" id="ai-card">
+  <div class="card-head wrap"><span class="card-title">${SPARK_ICON} ${t('ai.title')} <span class="count">· ${t('ai.sub')}</span></span>
+    <button class="btn secondary sm" id="ai-again" type="button"${busy ? ' disabled' : ''}>${busy ? t('ai.writing') : t('ai.refresh')}</button></div>
+  <div id="ai-body">${busy ? `${sk.line('w70')}${sk.line()}${sk.line('w50')}` : insightBody(ins)}</div></div>`;
+
+// One write at a time per range+language, so a re-render cannot start a second one.
+const aiBusy = new Set();
+async function loadInsight(main, { write } = {}) {
+  const card = main.querySelector('#ai-card'); if (!card) return;
+  const key = `${range}/${lang}`;
+  const paint = (html) => { const box = main.querySelector('#ai-body'); if (box) box.innerHTML = html; };
+  const button = () => main.querySelector('#ai-again');
+  const idle = () => { const b = button(); if (b) { b.disabled = false; b.textContent = t('ai.refresh'); } };
+  try {
+    let { insight, hasKey } = await api(`/api/insights?days=${range}&lang=${lang}`);
+    const needsWrite = write || !insight || insight.stale;
+    if (needsWrite && hasKey && !aiBusy.has(key)) {
+      aiBusy.add(key);
+      const b = button(); if (b) { b.disabled = true; b.textContent = t('ai.writing'); }
+      if (!insight) paint(`${sk.line('w70')}${sk.line()}${sk.line('w50')}`);
+      try { ({ insight } = await api(`/api/insights?days=${range}&lang=${lang}${write ? '&force=1' : ''}`, { method: 'POST' })); }
+      finally { aiBusy.delete(key); idle(); }
+    }
+    if (!main.isConnected) return;
+    idle();
+    paint(insight ? insightBody(insight) : `<div class="page-empty">${hasKey ? t('ai.none') : t('ai.nokey')}</div>`);
+  } catch (e) {
+    if (!main.isConnected) return;
+    idle();
+    paint(`<div class="page-empty">${escapeHtml(tf('ai.failed', { e: e.message }))}</div>`);
+  }
 }
 
 registerPage('analysis', {
@@ -578,7 +668,7 @@ registerPage('analysis', {
     const citiesCard = `<div class="card"><div class="card-head"><span class="card-title">${t('an.cities')}</span></div>
       ${a.cities.length ? `<div style="overflow-x:auto"><table class="table nowrap">
         <thead><tr><th>${t('an.col.city')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.nr')}</th><th class="end">${t('an.col.rate')}</th></tr></thead>
-        <tbody>${a.cities.map((c) => `<tr><td dir="auto">${escapeHtml(c.city)}</td><td class="end mono">${c.total}</td><td class="end mono">${c.yes}</td><td class="end mono">${c.no}</td><td class="end mono">${c.notReached}</td><td class="end mono">${pctOf(c.yes, c.yes + c.no + c.unsure)}%</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('an.cities.empty')}</div>`}</div>`;
+        <tbody>${a.cities.map((c) => `<tr><td><bdi>${escapeHtml(c.city)}</bdi></td><td class="end mono">${c.total}</td><td class="end mono">${c.yes}</td><td class="end mono">${c.no}</td><td class="end mono">${c.notReached}</td><td class="end mono">${pctOf(c.yes, c.yes + c.no + c.unsure)}%</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('an.cities.empty')}</div>`}</div>`;
 
     const days = a.daily.filter((d) => d.total).reverse();
     const dailyCard = `<div class="card"><div class="card-head wrap"><span class="card-title">${t('an.daily')} <span class="count">· ${t('an.daily.sub')}</span></span></div>
@@ -586,12 +676,14 @@ registerPage('analysis', {
         <thead><tr><th>${t('an.col.day')}</th><th class="end">${t('an.col.calls')}</th><th class="end">${t('an.col.reached')}</th><th class="end">${t('an.col.yes')}</th><th class="end">${t('an.col.no')}</th><th class="end">${t('an.col.unsure')}</th><th class="end">${t('an.col.refused')}</th><th class="end">${t('an.col.nr')}</th><th class="end">${t('an.col.optout')}</th><th class="end">${t('an.col.cost')}</th></tr></thead>
         <tbody>${days.map((d) => `<tr><td class="mono">${d.day}</td><td class="end mono">${d.total}</td><td class="end mono">${d.reached}</td><td class="end mono">${d.yes}</td><td class="end mono">${d.no}</td><td class="end mono">${d.unsure}</td><td class="end mono">${d.refused}</td><td class="end mono">${d.notReached}</td><td class="end mono">${d.optOut}</td><td class="end mono">${money(d.cost)}</td></tr>`).join('')}</tbody></table></div>` : `<div class="page-empty">${t('f.none')}</div>`}</div>`;
 
-    const html = head + tiles + findingsCard
+    const html = head + tiles + insightCard(null, true) + findingsCard
       + `<div class="grid halves">${reasonsCard}${quotesCard}</div>`
       + `<div class="grid halves">${wrongCard}${approachCard}</div>`
       + `<div class="grid halves wide-end">${citiesCard}${dailyCard}</div>`;
     return { html, mount(main) {
       main.querySelector('#an-export').onclick = (e) => exportReport(e.currentTarget);
+      main.querySelector('#ai-again').onclick = () => loadInsight(main, { write: true });
+      loadInsight(main);
       main.querySelectorAll('.quote[data-id]').forEach((el) => { el.onclick = () => { location.hash = `#/calls/${el.dataset.id}`; }; });
     } };
   },
@@ -622,12 +714,13 @@ function pagerBar(total, page, pages, size = pager.size) {
   const from = total ? (page - 1) * size + 1 : 0, to = Math.min(total, page * size);
   const chev = (d) => `<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d === 'prev' ? 'm15 18-6-6 6-6' : 'm9 18 6-6-6-6'}"/></svg>`;
   return `<div class="pager">
-    <span class="pager-info faint">${t('pager.of').replace('{a}', fmtN(from)).replace('{b}', fmtN(to)).replace('{n}', fmtN(total))}</span>
+    <span class="pager-info faint">${t('pager.of').replace('{a}–{b}', `<bdi dir="ltr">${fmtN(from)}–${fmtN(to)}</bdi>`).replace('{n}', fmtN(total))}</span>
     <div class="pager-nav">
       <label class="select sm"><select id="page-size" aria-label="${t('pager.size')}">${PAGE_SIZES.map((n) => `<option value="${n}"${n === size ? ' selected' : ''}>${n} ${t('pager.size')}</option>`).join('')}</select>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></label>
       ${pages > 1 ? `
       <button class="icon-btn" id="page-prev" type="button"${page <= 1 ? ' disabled' : ''} title="${t('pager.prev')}" aria-label="${t('pager.prev')}">${chev('prev')}</button>
+      <span class="pager-page"><bdi dir="ltr">${fmtN(page)} / ${fmtN(pages)}</bdi></span>
       <div class="tabs" id="page-nums">${pageNumbers(page, pages).map((p) => p === '…' ? `<span class="pager-gap">…</span>` : `<button type="button" data-page="${p}"${p === page ? ' class="on" aria-current="page"' : ''}>${p}</button>`).join('')}</div>
       <button class="icon-btn" id="page-next" type="button"${page >= pages ? ' disabled' : ''} title="${t('pager.next')}" aria-label="${t('pager.next')}">${chev('next')}</button>` : ''}
     </div>
@@ -664,6 +757,7 @@ function renderCallsList(main, res, selectedId) {
     if (busy) return; busy = true;
     pager.page = p; pager.keep = relocate ? null : selectedId;
     box.innerHTML = sk.rows(Math.min(pager.size, 7));
+    scrollToCard(box);
     try {
       const next = await fetchCallsPage(selectedId);
       if (!box.isConnected) return;             // the page was re-rendered meanwhile; leave the new card alone
@@ -730,10 +824,10 @@ function detailPanel(d) {
       <div class="card-head" style="margin-bottom:12px"><span class="card-title" style="font-size:13px">${t('detail.analysis')}</span>${flags ? `<span class="flags">${flags}</span>` : ''}</div>
       <div class="analysis-grid">
         ${sd ? `<div><div class="k">${t('col.intent')}</div>${intentBadge(d)}</div>
-        <div><div class="k">${t('detail.reason')}</div>${escapeHtml(reasonLabel(sd.reason_category))}</div>` : ''}
+        ${sd.reason_category && sd.reason_category !== 'not_applicable' ? `<div><div class="k">${t('detail.reason')}</div>${escapeHtml(reasonLabel(sd.reason_category))}</div>` : ''}` : ''}
         ${sd?.reason_verbatim ? `<div style="grid-column:1/-1"><div class="k">${t('detail.verbatim')}</div><div class="verbatim" dir="auto">${escapeHtml(sd.reason_verbatim)}</div></div>` : ''}
-        ${d.analysis?.summary ? `<div style="grid-column:1/-1"><div class="k">${t('detail.summary')}</div><div class="summary">${escapeHtml(d.analysis.summary)}</div></div>` : ''}
-        ${d.endedReason ? `<div><div class="k">${t('detail.ended')}</div><span class="mono faint">${escapeHtml(d.endedReason)}</span></div>` : ''}
+        ${d.analysis?.summary ? `<div style="grid-column:1/-1"><div class="k">${t('detail.summary')}</div><div class="summary" dir="auto">${escapeHtml(d.analysis.summary)}</div></div>` : ''}
+        ${d.endedReason ? `<div><div class="k">${t('detail.ended')}</div>${endedKey(d.endedReason) === 'other' ? `<span class="mono faint">${escapeHtml(d.endedReason)}</span>` : `<span title="${escapeHtml(d.endedReason)}">${t('ended.' + endedKey(d.endedReason))}</span>`}</div>` : ''}
       </div></div>` : ''}
   </div>`;
 }
@@ -796,30 +890,34 @@ function chips(id, current, options) {
 
 const fetchLeadsPage = () => cached('/api/leads?' + qs({ page: listPager.page, size: listPager.size, q: query, city: listPager.city, status: listPager.status }));
 
-function renderLeadsList(main, res) {
+// chipScroll: the filter rows' scroll positions, kept across a re-render (they scroll sideways on a phone).
+function renderLeadsList(main, res, chipScroll = []) {
   const box = main.querySelector('#leads-list'); if (!box) return;
   listPager.page = res.page;
-  const cityOpts = [['', t('list.all')], ...res.cities.filter((c) => c.city).map((c) => [c.city, `${escapeHtml(c.city)} <span class="faint">${fmtN(c.n)}</span>`])];
+  const cityOpts = [['', t('list.all')], ...res.cities.filter((c) => c.city).map((c) => [c.city, `<bdi>${escapeHtml(c.city)}</bdi> <span class="faint">${fmtN(c.n)}</span>`])];
   const statusOpts = [['', t('list.any')], ['new', t('status.new')], ['called', t('status.called')], ['do_not_call', t('status.do_not_call')]];
   box.innerHTML = `
     <div class="card-head" style="flex-wrap:wrap;gap:10px"><span class="card-title">${t('list.card')} <span class="count">· ${fmtN(res.total)}</span></span>
       <span class="filters">${chips('lead-city', listPager.city, cityOpts)}${chips('lead-status', listPager.status, statusOpts)}</span></div>
     ${leadsTable(res.items)}${res.total ? pagerBar(res.total, res.page, res.pages, listPager.size) : ''}`;
+  box.querySelectorAll('.filters .tabs').forEach((row, i) => { row.scrollLeft = chipScroll[i] || 0; });
   const head = main.querySelector('#leads-count'); if (head) head.textContent = `${fmtN(res.total)} ${t('unit.numbers')}`;
   let busy = false;
   const go = async (patch) => {
     if (busy) return; busy = true;
     const before = { ...listPager };
+    const chipScroll = [...box.querySelectorAll('.filters .tabs')].map((row) => row.scrollLeft);
     Object.assign(listPager, patch);
     box.querySelector('table')?.replaceWith(Object.assign(document.createElement('div'), { innerHTML: sk.rows(Math.min(listPager.size, 7)) }));
+    scrollToCard(box);
     try {
       const next = await fetchLeadsPage();
       if (!box.isConnected) return;
-      renderLeadsList(main, next);
+      renderLeadsList(main, next, chipScroll);
     } catch (e) {
       if (!box.isConnected) return;
       Object.assign(listPager, before);          // keep the filters the user had
-      renderLeadsList(main, res);                // put the previous page back
+      renderLeadsList(main, res, chipScroll);    // put the previous page back
       toast(e.message, true);
     }
     busy = false;
@@ -994,8 +1092,8 @@ registerPage('agent', {
           </div>
           <div class="faint" style="font-size:12px;margin-top:8px">${t('agent.lead.sub')}</div>` : `<div class="page-empty">${escapeHtml(leadErr || t('err.generic'))}</div>`}</div>` : '';
     const html = pageHead('page.agent', 'page.agent.sub') + `
-      <div class="grid" style="grid-template-columns:${innerWidth < 1100 ? '1fr' : 'minmax(0,1fr) 380px'}">
-        <div class="card" style="padding:28px 24px">
+      <div class="grid agent-grid">
+        <div class="card agent-stage">
           ${leadCard}
           <div class="orb" id="orb"><div class="ring" id="ring"></div><button class="mic" id="mic" type="button">${t('agent.talk')}</button></div>
           <div class="state" id="state">${t('agent.ready')}</div>
@@ -1010,9 +1108,10 @@ registerPage('agent', {
           </div>
           <div class="feed notranslate convo" id="feed" translate="no"></div>
           <form class="chatbar" id="chatbar" autocomplete="off">
-            <label class="input"><input id="chatinput" dir="auto" placeholder="${t('agent.type')}" disabled></label>
+            <label class="input"><input id="chatinput" dir="auto" placeholder="${isPhoneLayout() ? t('agent.type.short') : t('agent.type')}" disabled></label>
             <button class="btn" id="chatsend" type="submit" disabled>${t('agent.send')}</button>
           </form>
+          <p class="chat-hint">${t('agent.type')}</p>
         </div>
         <div class="card"><div class="card-head"><span class="card-title">${t('card.recent')}</span><a class="btn secondary sm" href="#/calls">${t('see.all')}</a></div><div id="agent-recent">${sk.rows(4)}</div></div>
       </div>
@@ -1068,14 +1167,14 @@ registerPage('agent', {
 // ------------------------------------------------------------------ settings
 
 registerPage('settings', {
-  skeleton: () => `<div class="grid" style="grid-template-columns:${innerWidth < 900 ? '1fr' : '1fr 1fr'}">${sk.card(`${sk.line('w30')}${sk.rows(3)}`)}${sk.card(`${sk.line('w30')}${sk.rows(5)}`)}</div>`,
+  skeleton: () => `<div class="grid settings-grid">${sk.card(`${sk.line('w30')}${sk.rows(3)}`)}${sk.card(`${sk.line('w30')}${sk.rows(5)}`)}</div>`,
   async load() {
     const cfg = await loadConfig().catch((e) => ({ error: e.message }));
     const row = (k, v, sub) => `<div class="setting"><div><div class="setting-k">${k}</div>${sub ? `<div class="setting-sub">${sub}</div>` : ''}</div><div>${v}</div></div>`;
     const html = pageHead('page.settings', 'page.settings.sub') + `
-      <div class="grid" style="grid-template-columns:${innerWidth < 900 ? '1fr' : '1fr 1fr'}">
+      <div class="grid settings-grid">
         <div class="card"><div class="card-head"><span class="card-title">${t('set.appearance')}</span></div>
-          ${row(t('set.theme'), `<span class="switch${currentTheme() === 'light' ? ' on' : ''}" id="set-theme" data-theme-switch role="switch" tabindex="0"><span></span></span>`, t('set.theme.sub'))}
+          ${row(t('set.theme'), `<span class="switch${currentTheme() === 'light' ? ' on' : ''}" id="set-theme" data-theme-switch role="switch" tabindex="0" aria-checked="${currentTheme() === 'light'}" aria-label="${t('set.theme')}"><span></span></span>`, t('set.theme.sub'))}
           ${row(t('set.lang'), `<div class="tabs"><button id="set-en"${lang === 'en' ? ' class="on"' : ''}>English</button><button id="set-he"${lang === 'he' ? ' class="on"' : ''}>עברית</button></div>`, t('set.lang.sub'))}
           ${authRequired ? row(t('set.password'), `<button class="btn secondary sm" id="set-signout">${t('set.signout')}</button>`, t('set.password.sub')) : ''}
         </div>
@@ -1090,7 +1189,9 @@ registerPage('settings', {
         </div>
       </div>`;
     return { html, mount() {
-      $('set-theme').onclick = toggleTheme;
+      const sw = $('set-theme');
+      sw.closest('.setting').onclick = toggleTheme;   // the whole row is the target; a tap on the switch bubbles here once
+      sw.onkeydown = (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleTheme(); } };
       $('set-en').onclick = () => applyLang('en');
       $('set-he').onclick = () => applyLang('he');
       const f = $('set-signout'); if (f) f.onclick = signOut;

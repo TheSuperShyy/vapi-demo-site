@@ -560,7 +560,7 @@ async function exportReport(btn) {
 }
 
 // The AI write-up (Gemini through OpenRouter). The numbers come from /api/analysis,
-// the model only reads them; /api/insights keeps the last one, so a page view is free.
+// the model only reads them; /api/analysis?insight=1 keeps the last one, so a page view is free.
 const SPARK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M12 3v4"/><path d="M12 17v4"/><path d="M3 12h4"/><path d="M17 12h4"/><path d="m5.6 5.6 2.8 2.8"/><path d="m15.6 15.6 2.8 2.8"/><path d="m18.4 5.6-2.8 2.8"/><path d="m8.4 15.6-2.8 2.8"/></svg>';
 const aiList = (title, items) => (items?.length ? `<div class="ai-block"><div class="ai-block-title">${title}</div><ul class="ai-points">${items.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul></div>` : '');
 
@@ -587,13 +587,13 @@ async function loadInsight(main, { write } = {}) {
   const button = () => main.querySelector('#ai-again');
   const idle = () => { const b = button(); if (b) { b.disabled = false; b.textContent = t('ai.refresh'); } };
   try {
-    let { insight, hasKey } = await api(`/api/insights?days=${range}&lang=${lang}`);
+    let { insight, hasKey } = await api(`/api/analysis?insight=1&days=${range}&lang=${lang}`);
     const needsWrite = write || !insight || insight.stale;
     if (needsWrite && hasKey && !aiBusy.has(key)) {
       aiBusy.add(key);
       const b = button(); if (b) { b.disabled = true; b.textContent = t('ai.writing'); }
       if (!insight) paint(`${sk.line('w70')}${sk.line()}${sk.line('w50')}`);
-      try { ({ insight } = await api(`/api/insights?days=${range}&lang=${lang}${write ? '&force=1' : ''}`, { method: 'POST' })); }
+      try { ({ insight } = await api(`/api/analysis?insight=1&days=${range}&lang=${lang}${write ? '&force=1' : ''}`, { method: 'POST' })); }
       finally { aiBusy.delete(key); idle(); }
     }
     if (!main.isConnected) return;

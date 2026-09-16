@@ -24,7 +24,7 @@
     }
   ],
   "functions": {
-    "api/insights.js": {
+    "api/analysis.js": {
       "maxDuration": 60
     }
   }

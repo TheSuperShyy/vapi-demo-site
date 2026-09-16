@@ -65,10 +65,11 @@ it through OpenRouter (`OPENROUTER_API_KEY`, model in `OPENROUTER_MODEL`, defaul
 hands it only the counts from `/api/analysis` and the recorded quotes, and the prompt
 forbids inventing anything, so every sentence traces back to a number on the page.
 
-Each write-up is stored in the `insights` table, so opening the page costs nothing. The
-page rewrites it by itself once more calls have landed than it was written from, and
-"Write again" forces a fresh one. A run costs about $0.002. Without the key the page
-still works and shows the counted findings only.
+Each write-up is stored in the `insights` table, so opening the page costs nothing:
+`/api/analysis?insight=1&days=N&lang=en|he` reads the stored one, and a `POST` to the
+same route writes a new one. The page rewrites it by itself once more calls have landed
+than it was written from, and "Write again" forces a fresh one. A run costs about
+$0.002. Without the key the page still works and shows the counted findings only.
 
 `/api/export?days=N&lang=en|he` downloads the same data as an `.xlsx` workbook
 (Summary, Daily, Calls, Reasons, Cities, Quotes) written by `api/_xlsx.js`, with

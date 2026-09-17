@@ -1158,7 +1158,7 @@ registerPage('agent', {
             <label for="speed">${t('agent.speed')}</label>
             <input type="range" id="speed" min="0.75" max="1.25" step="0.05" value="${speedVal}"><span class="mono" id="speedval">${Number(speedVal).toFixed(2)}</span>
           </div>
-          <div class="feed notranslate convo" id="feed" translate="no" lang="he"></div>
+          <div class="feed convo" id="feed" lang="he"></div>
           <form class="chatbar" id="chatbar" autocomplete="off">
             <label class="input"><input id="chatinput" dir="auto" placeholder="${isPhoneLayout() ? t('agent.type.short') : t('agent.type')}" disabled></label>
             <button class="btn" id="chatsend" type="submit" disabled>${t('agent.send')}</button>

@@ -705,7 +705,7 @@ registerPage('analysis', {
         <div class="answer"><b class="answer-n">${fmtN(f.unsure)}</b><span>${t('an.said.unsure')}</span></div></div>
       <p class="after-note strong">${escapeHtml(reasonSentence(a))}</p>
       ${a.quotes.length ? `<p class="quotes-label">${t('an.quotes')}</p><div class="quotes">${a.quotes.map((q) => `<div class="quote" data-id="${escapeHtml(q.callId)}">
-        <div class="verbatim" dir="auto">${escapeHtml(q.text)}</div>
+        <div class="verbatim" dir="auto" lang="he">${escapeHtml(q.text)}</div>
         <div class="quote-meta">${intentBadge({ intent: q.intent })}${q.city ? `<span dir="auto">${escapeHtml(q.city)}</span>` : ''}<span>${fmtTime(q.createdAt)}</span></div></div>`).join('')}</div>` : ''}
       ${f.refused || f.optOut ? `<p class="after-note">${[f.refused ? tf('an.said.refused', { n: fmtN(f.refused) }) : '', f.optOut ? tn('an.said.optout', f.optOut, { n: fmtN(f.optOut) }) : ''].filter(Boolean).join(' ')}</p>` : ''}`
       : `<div class="page-empty">${t('an.said.none')}</div>`}</div>`;
@@ -864,7 +864,7 @@ function detailPanel(d) {
     else turns.push({ role: m.role, text: m.text });
   }
   const convo = turns.length
-    ? `<div class="convo">${turns.map((m) => bubble(m.role, m.text.trim())).join('')}</div>`
+    ? `<div class="convo" lang="he">${turns.map((m) => bubble(m.role, m.text.trim())).join('')}</div>`
     : `<div class="page-empty">${d.endedAt ? t('detail.empty') : t('detail.live')}</div>`;
   return `<div class="card">
     ${backLink()}
@@ -879,7 +879,7 @@ function detailPanel(d) {
       <div class="analysis-grid">
         ${sd ? `<div><div class="k">${t('col.intent')}</div>${intentBadge(d)}</div>
         ${sd.reason_category && sd.reason_category !== 'not_applicable' ? `<div><div class="k">${t('detail.reason')}</div>${escapeHtml(reasonLabel(sd.reason_category))}</div>` : ''}` : ''}
-        ${sd?.reason_verbatim ? `<div style="grid-column:1/-1"><div class="k">${t('detail.verbatim')}</div><div class="verbatim" dir="auto">${escapeHtml(sd.reason_verbatim)}</div></div>` : ''}
+        ${sd?.reason_verbatim ? `<div style="grid-column:1/-1"><div class="k">${t('detail.verbatim')}</div><div class="verbatim" dir="auto" lang="he">${escapeHtml(sd.reason_verbatim)}</div></div>` : ''}
         ${d.analysis?.summary ? `<div style="grid-column:1/-1"><div class="k">${t('detail.summary')}</div><div class="summary" dir="auto">${escapeHtml(d.analysis.summary)}</div></div>` : ''}
         ${d.endedReason ? `<div><div class="k">${t('detail.ended')}</div>${endedKey(d.endedReason) === 'other' ? `<span class="mono faint">${escapeHtml(d.endedReason)}</span>` : `<span title="${escapeHtml(d.endedReason)}">${t('ended.' + endedKey(d.endedReason))}</span>`}</div>` : ''}
       </div></div>` : ''}
@@ -1158,7 +1158,7 @@ registerPage('agent', {
             <label for="speed">${t('agent.speed')}</label>
             <input type="range" id="speed" min="0.75" max="1.25" step="0.05" value="${speedVal}"><span class="mono" id="speedval">${Number(speedVal).toFixed(2)}</span>
           </div>
-          <div class="feed notranslate convo" id="feed" translate="no"></div>
+          <div class="feed notranslate convo" id="feed" translate="no" lang="he"></div>
           <form class="chatbar" id="chatbar" autocomplete="off">
             <label class="input"><input id="chatinput" dir="auto" placeholder="${isPhoneLayout() ? t('agent.type.short') : t('agent.type')}" disabled></label>
             <button class="btn" id="chatsend" type="submit" disabled>${t('agent.send')}</button>

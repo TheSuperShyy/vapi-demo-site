@@ -1011,7 +1011,16 @@ registerPage('list', {
 
 // ------------------------------------------------------------------ voice agent
 
+// Cartesia first: the live assistant runs Hila - Warm Guide since 17 Sep 2026 (native
+// Hebrew on sonic-3.5, the newest model Vapi accepts for Hebrew). The Cartesia key sits
+// on the Vapi account as a provider credential; without it Vapi falls back to Azure.
+const CARTESIA = { model: 'sonic-3.5', language: 'he', fallbackPlan: { voices: [{ provider: 'azure', voiceId: 'he-IL-HilaNeural' }] } };
 const VOICES = [
+  { id: 'cartesia:hila', label: 'Hila · Cartesia (native, live)', provider: 'cartesia', voiceId: '1cd6668f-84b9-41a2-adbd-b7328f8d6ef4', extra: CARTESIA },
+  { id: 'cartesia:shira', label: 'Shira · Cartesia (native)', provider: 'cartesia', voiceId: 'd0be495c-5e23-4b88-b12d-bc42d38be9a5', extra: CARTESIA },
+  { id: 'cartesia:yael', label: 'Yael · Cartesia (native, casual)', provider: 'cartesia', voiceId: '1daba551-67af-465e-a189-f91495aa2347', extra: CARTESIA },
+  { id: 'cartesia:talia', label: 'Talia · Cartesia (native)', provider: 'cartesia', voiceId: 'bd05edd9-cec9-4600-9af4-c9ba4e032ff9', extra: CARTESIA },
+  { id: 'cartesia:gil', label: 'Gil · Cartesia (native, male)', provider: 'cartesia', voiceId: '84b969ad-19c7-428d-b742-48d387f7f138', extra: CARTESIA },
   { id: 'azure:he-IL-HilaNeural', label: 'Hila · Azure (native)', provider: 'azure', voiceId: 'he-IL-HilaNeural' },
   { id: 'azure:he-IL-AvriNeural', label: 'Avri · Azure (native, male)', provider: 'azure', voiceId: 'he-IL-AvriNeural' },
   // Vapi's own multilingual voice (generation 2), pinned to Hebrew: the same "Primary language" setting as in the Vapi dashboard. Generation 1 rejects Hebrew.
@@ -1190,7 +1199,10 @@ registerPage('agent', {
           if (!$('mic')) return;                       // navigated away while the SDK loaded
           $('mic').disabled = true; $('state').textContent = t('agent.connecting');
           const pick = VOICES.find((x) => x.id === $('voice').value) ?? VOICES[0];
-          const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, ...pick.extra, speed: Number($('speed').value), chunkPlan: { formatPlan: { enabled: false } } } };
+          const speed = Number($('speed').value);
+          // Cartesia keeps speed under generationConfig; a top-level speed is refused.
+          const pace = pick.provider === 'cartesia' ? { generationConfig: { speed } } : { speed };
+          const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, ...pick.extra, ...pace, chunkPlan: { formatPlan: { enabled: false } } } };
           // Tag the call with the number it stands in for; the server reads it back
           // from call.assistantOverrides.variableValues and updates the lead.
           if (agent.lead && agent.lead.status !== 'do_not_call') overrides.variableValues = { leadId: String(agent.lead.id), leadPhone: agent.lead.phone, leadName: agent.lead.name ?? '', leadCity: agent.lead.city ?? '' };

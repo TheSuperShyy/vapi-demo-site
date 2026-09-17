@@ -91,7 +91,7 @@ Object.assign(I18N.en, {
   'agent.connected': 'Connected', 'agent.connected.sub': 'speak or type', 'agent.ended': 'Call ended. Start again whenever.',
   'agent.mic.blocked': 'The browser blocked the microphone. Allow access and try again.', 'agent.start.failed': 'Could not start the call. Try refreshing.',
   'agent.error': 'The call hit an error. Try again.', 'agent.type': 'Or just type here. English works too, she answers in Hebrew.',
-  'agent.type.short': 'Type a message', 'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
+  'agent.type.short': 'Type a message', 'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.mute': 'Mute mic', 'agent.unmute': 'Unmute', 'agent.muted': 'Your mic is muted; she cannot hear you.', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
   'agent.lead': 'Calling', 'agent.lead.sub': 'You answer as the person who picked up. The call is recorded against this number.',
   'agent.dial': 'Dial this number', 'agent.dial.note': 'Needs a phone number in Vapi. Until then the same call runs in the browser.',
   'agent.dial.dnc': 'This number asked not to be called.', 'agent.dialed': 'Dialing. The call will appear in Calls.', 'agent.pick': 'Pick a number from the List to call it.',
@@ -183,7 +183,7 @@ Object.assign(I18N.he, {
   'agent.connected': 'מחובר', 'agent.connected.sub': 'דבר או כתוב', 'agent.ended': 'השיחה הסתיימה. אפשר להתחיל שוב.',
   'agent.mic.blocked': 'הדפדפן חסם את המיקרופון. אשרו גישה ונסו שוב.', 'agent.start.failed': 'לא הצלחנו להתחיל את השיחה. נסו לרענן.',
   'agent.error': 'נפלה שגיאה בשיחה. נסו שוב.', 'agent.type': 'או פשוט תכתבו פה. גם באנגלית, היא עונה בעברית.',
-  'agent.type.short': 'כתבו הודעה', 'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
+  'agent.type.short': 'כתבו הודעה', 'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.mute': 'השתקת מיקרופון', 'agent.unmute': 'ביטול השתקה', 'agent.muted': 'המיקרופון מושתק; היא לא שומעת אותך.', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
   'agent.lead': 'מתקשרים אל', 'agent.lead.sub': 'אתם עונים כמי שהרים את הטלפון. השיחה נרשמת על המספר הזה.',
   'agent.dial': 'חיוג למספר', 'agent.dial.note': 'דורש מספר טלפון ב-Vapi. עד אז אותה שיחה רצה בדפדפן.',
   'agent.dial.dnc': 'המספר הזה ביקש שלא להתקשר.', 'agent.dialed': 'מחייג. השיחה תופיע בעמוד השיחות.', 'agent.pick': 'בחרו מספר מהרשימה כדי להתקשר אליו.',
@@ -920,6 +920,8 @@ function fmtPhone(e164) {
   return local.length === 10 ? `${local.slice(0, 3)}-${local.slice(3, 6)}-${local.slice(6)}` : `${local.slice(0, 2)}-${local.slice(2, 5)}-${local.slice(5)}`;
 }
 const STATUS_TONE = { new: '', called: 'accent', do_not_call: 'negative' };
+const MIC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>';
+const MIC_OFF_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M15 9.3V5a3 3 0 0 0-6 0v1M9 9v2a3 3 0 0 0 5.1 2.1M5 10a7 7 0 0 0 11.4 5.4M19 10a7 7 0 0 1-.6 2.8M12 17v5M8 22h8M3 3l18 18"/></svg>';
 const PHONE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>';
 const fmtN = (n) => Number(n || 0).toLocaleString(lang === 'he' ? 'he-IL' : 'en-US');
 
@@ -1021,7 +1023,7 @@ const VOICES = [
 
 // The SDK instance and call state outlive the page so navigating away mid-call
 // does not drop the call; coming back re-binds the UI to the live state.
-const agent = { vapi: null, live: false, partial: null, feedHtml: '', log: [], lead: null, callId: null };
+const agent = { vapi: null, live: false, muted: false, partial: null, feedHtml: '', log: [], lead: null, callId: null };
 const dlog = (m) => { agent.log.push(m); console.log('[agent]', m); const d = $('diag'); if (d) d.textContent = agent.log.join('\n'); };
 
 async function getVapi() {
@@ -1032,7 +1034,7 @@ async function getVapi() {
   if (typeof Vapi !== 'function') throw new Error('SDK export is ' + typeof Vapi + ', not a constructor');
   dlog('SDK loaded');
   const v = new Vapi(PUBLIC_KEY);
-  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.feedHtml = ''; syncAgentUi(); });
+  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.muted = false; agent.feedHtml = ''; syncAgentUi(); });
   v.on('call-end', () => { dlog('event: call-end'); agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
   v.on('speech-start', () => $('orb')?.classList.add('speaking'));
   v.on('speech-end', () => $('orb')?.classList.remove('speaking'));
@@ -1065,6 +1067,10 @@ function syncAgentUi() {
   state.innerHTML = agent.live ? `<b>${t('agent.connected')}</b> — ${t('agent.connected.sub')}` : (agent.feedHtml ? t('agent.ended') : t('agent.ready'));
   chat.disabled = send.disabled = !agent.live;
   voice.disabled = speed.disabled = agent.live;
+  const actions = $('call-actions'), mute = $('mute');
+  if (actions) actions.hidden = !agent.live;
+  if (mute) { mute.innerHTML = (agent.muted ? MIC_OFF_ICON : MIC_ICON) + ' ' + t(agent.muted ? 'agent.unmute' : 'agent.mute'); mute.classList.toggle('on', agent.muted); mute.setAttribute('aria-pressed', String(agent.muted)); }
+  if (agent.live && agent.muted) state.innerHTML = '<b>' + t('agent.muted') + '</b>';
   const feed = $('feed'); if (feed) feed.innerHTML = agent.feedHtml;
 }
 
@@ -1150,6 +1156,7 @@ registerPage('agent', {
           <div class="orb" id="orb"><div class="ring" id="ring"></div><button class="mic" id="mic" type="button">${t('agent.talk')}</button></div>
           <div class="state" id="state">${t('agent.ready')}</div>
           <div class="err" id="err"></div>
+          <div class="call-actions" id="call-actions" hidden><button class="btn secondary sm" id="mute" type="button" aria-pressed="false">${MIC_ICON} ${t('agent.mute')}</button></div>
           <div class="diag" id="diag"></div>
           <div class="controls">
             <label for="voice">${t('agent.voice')}</label>
@@ -1179,6 +1186,8 @@ registerPage('agent', {
         catch (e) { toast(e.message, true); dial.disabled = false; }
       };
       $('voice').onchange = () => store.set('voice', $('voice').value);
+      // Mutes the browser mic only; her side keeps playing. The SDK starts every call unmuted.
+      $('mute').onclick = () => { if (!agent.live || !agent.vapi) return; agent.muted = !agent.muted; agent.vapi.setMuted(agent.muted); syncAgentUi(); };
       $('speed').oninput = () => { $('speedval').textContent = Number($('speed').value).toFixed(2); store.set('speed', $('speed').value); };
       $('mic').onclick = async () => {
         $('err').textContent = '';

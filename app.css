@@ -133,6 +133,9 @@ audio { width: 100%; margin: 14px 0; }
 .chat-hint { display: none; }
 .controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 16px; font-size: 12px; color: var(--text-3); }
 .controls input[type=range] { width: 110px; accent-color: var(--accent); }
+.call-actions { display: flex; justify-content: center; margin-top: 10px; }
+.call-actions[hidden] { display: none; }
+#mute.on { color: var(--negative); border-color: var(--negative); }
 
 .toast {
   position: fixed; bottom: 18px; inset-inline: 16px; margin-inline: auto; width: fit-content; max-width: 100%;

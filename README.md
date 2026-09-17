@@ -41,7 +41,7 @@ partial results shown faded until they finalize.
 
 Overview (totals, calls per day, intent split), Calls (every conversation with
 transcript, recording and analysis, paged), Analysis (see below), List (the
-calling list in campaign order with per-number status), Voice Agent (talk to her
+calling list in campaign order with per-number status), Voice Agent (talk to him
 from the browser) and Settings. Totals and pages are computed by the database, so
 the dashboard stays fast at any number of calls. Under 900px wide the sidebar
 becomes a bottom tab bar and tables become stacked cards.
@@ -65,13 +65,13 @@ four cards of whole numbers and plain sentences, in reading order:
    `pages.js`), so the list is the same with or without the AI.
 
 There are no percentages and no charts on the page: "4 of 25" needs no decoding,
-"16%" does. Everything an analyst would still want — how Shir handled the calls,
+"16%" does. Everything an analyst would still want — how Yoav handled the calls,
 by city, day by day — is counted the same way and folded under **All the numbers**
 at the bottom, along with the Excel export.
 
 `/api/analysis?days=7|30|90` returns everything those cards need: the funnel
 (reached, answered, yes/no/unsure, refused, not reached, opt-outs, early hang-ups),
-reasons for not voting, how unanswered calls ended, what Shir did, by city, by day,
+reasons for not voting, how unanswered calls ended, what Yoav did, by city, by day,
 and the latest quotes.
 
 ## The AI read of the numbers

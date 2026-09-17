@@ -34,7 +34,7 @@ Object.assign(I18N.en, {
   'detail.live': 'Call in progress…', 'detail.recording': 'Recording', 'detail.analysis': 'Analysis', 'detail.summary': 'Summary',
   'detail.reason': 'Reason', 'detail.verbatim': 'In their words', 'detail.flags': 'Flags', 'detail.ended': 'Ended because',
   'flag.optout': 'Asked to be removed', 'flag.bot': 'Asked if bot', 'flag.quality': 'Call quality issue',
-  'who.agent': 'Shir', 'who.user': 'Customer', 'who.you': 'You',
+  'who.agent': 'Yoav', 'who.user': 'Customer', 'who.you': 'You',
   'reason.no_trust_in_politicians': 'No trust in politicians', 'reason.not_interested_in_politics': 'Not interested in politics',
   'reason.no_suitable_option': 'No suitable option', 'reason.deliberate_protest': 'Deliberate protest', 'reason.abroad_or_away': 'Abroad or away',
   'reason.health_or_mobility': 'Health or mobility', 'reason.logistics_polling_station': 'Polling station logistics', 'reason.work_or_schedule': 'Work or schedule',
@@ -47,11 +47,11 @@ Object.assign(I18N.en, {
   'an.small': 'Only {n} people answered. That is far too few to tell you what the public thinks. Calling many more people is the one thing that changes it.',
   'an.small.one': 'Only one person answered. That is far too few to tell you what the public thinks. Calling many more people is the one thing that changes it.',
   'an.why': 'Why the other {n} calls did not work', 'an.why.one': 'Why the other call did not work',
-  'an.why.early': '{a} of them hung up in the first 12 seconds, before Shir could ask anything.',
-  'an.why.early.one': 'One of them hung up in the first 12 seconds, before Shir could ask anything.',
+  'an.why.early': '{a} of them hung up in the first 12 seconds, before Yoav could ask anything.',
+  'an.why.early.one': 'One of them hung up in the first 12 seconds, before Yoav could ask anything.',
   'end.hungUp': 'picked up, then hung up', 'end.silence': 'nobody said a word', 'end.voicemail': 'went to voicemail',
   'end.noAnswer': 'nobody picked up', 'end.busy': 'the line was busy', 'end.technical': 'the call broke',
-  'end.noMic': 'no microphone', 'end.agentEnded': 'Shir ended the call', 'end.tooLong': 'the call ran too long', 'end.other': 'something else',
+  'end.noMic': 'no microphone', 'end.agentEnded': 'Yoav ended the call', 'end.tooLong': 'the call ran too long', 'end.other': 'something else',
   'an.said': 'What the {n} people said', 'an.said.one': 'What the one person said', 'an.said.title.none': 'What people said',
   'an.said.yes': 'will vote', 'an.said.no': 'will not vote', 'an.said.unsure': 'not sure',
   'an.said.none': 'Nobody has answered the question in this period yet.',
@@ -64,20 +64,20 @@ Object.assign(I18N.en, {
   'an.todo': 'What to do next', 'an.todo.none': 'Nothing in these calls needs fixing.',
   'do.more': 'Call many more people', 'do.more.note': '{n} answers cannot tell you what a city thinks. Until that number is in the hundreds, everything else here is a hint, not a result.',
   'do.silence': 'Check the phone system', 'do.silence.note': 'On {n} calls nobody said a word. That usually means the call connected but no sound came through.',
-  'do.early': 'Change the first thing Shir says', 'do.early.note': '{n} people hung up in the first 12 seconds, before she could ask anything.',
+  'do.early': 'Change the first thing Yoav says', 'do.early.note': '{n} people hung up in the first 12 seconds, before he could ask anything.',
   'do.technical': 'Look at the calls that broke', 'do.technical.note': '{n} calls stopped because something went wrong, not because the person left. That is money spent for nothing.',
   'do.retry': 'Try the numbers that did not pick up again', 'do.retry.note': '{n} calls rang out, went to voicemail or found the line busy. A second try at a different hour often works.',
-  'do.bot': 'Say up front that Shir is a computer', 'do.bot.note': '{n} people asked if they were talking to a machine. Saying it first usually costs less than being caught out.',
+  'do.bot': 'Say up front that Yoav is a computer', 'do.bot.note': '{n} people asked if they were talking to a machine. Saying it first usually costs less than being caught out.',
   'do.audio': 'Check the sound quality', 'do.audio.note': 'The sound was poor on {n} calls, so the person may not have heard the question properly.',
-  'do.reason': 'Ask more people why', 'do.reason.note': 'In {n} of the calls where someone said no or was not sure, Shir never asked why. That answer is the most useful thing the survey can get.',
+  'do.reason': 'Ask more people why', 'do.reason.note': 'In {n} of the calls where someone said no or was not sure, Yoav never asked why. That answer is the most useful thing the survey can get.',
   'an.more': 'All the numbers',
-  'ah.title': 'How Shir handled the calls',
-  'ah.askedWhy': 'She asked why in {a} of the {b} calls where someone said no or was not sure.',
+  'ah.title': 'How Yoav handled the calls',
+  'ah.askedWhy': 'He asked why in {a} of the {b} calls where someone said no or was not sure.',
   'ah.noClosing': 'No call has got as far as the closing line yet.',
-  'ah.closing': 'She said the closing line {a} times.', 'ah.closing.one': 'She said the closing line once.',
-  'ah.thanked': 'She said the thank-you line to {a} of the {b} people who said they will vote.',
-  'ah.askedBack': '{a} people asked her a question back.', 'ah.askedBack.one': 'One person asked her a question back.',
-  'ah.turns': 'In a real conversation she speaks about {a} times and the person about {b} times.',
+  'ah.closing': 'He said the closing line {a} times.', 'ah.closing.one': 'He said the closing line once.',
+  'ah.thanked': 'He said the thank-you line to {a} of the {b} people who said they will vote.',
+  'ah.askedBack': '{a} people asked him a question back.', 'ah.askedBack.one': 'One person asked him a question back.',
+  'ah.turns': 'In a real conversation he speaks about {a} times and the person about {b} times.',
   'an.cities': 'By city', 'an.daily': 'Day by day',
   'an.col.city': 'City', 'an.col.calls': 'Calls', 'an.col.answered': 'Answered', 'an.col.yes': 'Will vote', 'an.col.no': 'Will not',
   'an.col.nr': 'No answer', 'an.col.day': 'Day', 'an.col.cost': 'Cost',
@@ -90,8 +90,8 @@ Object.assign(I18N.en, {
   'agent.talk': 'Talk to me', 'agent.end': 'End', 'agent.ready': 'Ready. Microphone permission needed.', 'agent.connecting': 'Connecting…',
   'agent.connected': 'Connected', 'agent.connected.sub': 'speak or type', 'agent.ended': 'Call ended. Start again whenever.',
   'agent.mic.blocked': 'The browser blocked the microphone. Allow access and try again.', 'agent.start.failed': 'Could not start the call. Try refreshing.',
-  'agent.error': 'The call hit an error. Try again.', 'agent.type': 'Or just type here. English works too, she answers in Hebrew.',
-  'agent.type.short': 'Type a message', 'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.mute': 'Mute mic', 'agent.unmute': 'Unmute', 'agent.muted': 'Your mic is muted; she cannot hear you.', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
+  'agent.error': 'The call hit an error. Try again.', 'agent.type': 'Or just type here. English works too, he answers in Hebrew.',
+  'agent.type.short': 'Type a message', 'agent.send': 'Send', 'agent.voice': 'Voice', 'agent.speed': 'Speed', 'agent.mute': 'Mute mic', 'agent.unmute': 'Unmute', 'agent.muted': 'Your mic is muted; he cannot hear you.', 'agent.note': 'Runs in the browser through your microphone. Nobody is phoned. Works best in Chrome.',
   'agent.lead': 'Calling', 'agent.lead.sub': 'You answer as the person who picked up. The call is recorded against this number.',
   'agent.dial': 'Dial this number', 'agent.dial.note': 'Needs a phone number in Vapi. Until then the same call runs in the browser.',
   'agent.dial.dnc': 'This number asked not to be called.', 'agent.dialed': 'Dialing. The call will appear in Calls.', 'agent.pick': 'Pick a number from the List to call it.',
@@ -126,7 +126,7 @@ Object.assign(I18N.he, {
   'detail.live': 'השיחה בעיצומה…', 'detail.recording': 'הקלטה', 'detail.analysis': 'ניתוח', 'detail.summary': 'סיכום',
   'detail.reason': 'סיבה', 'detail.verbatim': 'במילים שלהם', 'detail.flags': 'דגלים', 'detail.ended': 'הסתיימה כי',
   'flag.optout': 'ביקשו הסרה', 'flag.bot': 'שאלו אם בוט', 'flag.quality': 'בעיית איכות',
-  'who.agent': 'שיר', 'who.user': 'לקוח', 'who.you': 'אתה',
+  'who.agent': 'יואב', 'who.user': 'לקוח', 'who.you': 'אתה',
   'reason.no_trust_in_politicians': 'אין אמון בפוליטיקאים', 'reason.not_interested_in_politics': 'לא מתעניינים בפוליטיקה',
   'reason.no_suitable_option': 'אין למי להצביע', 'reason.deliberate_protest': 'מחאה מכוונת', 'reason.abroad_or_away': 'בחו״ל או לא בעיר',
   'reason.health_or_mobility': 'בריאות או ניידות', 'reason.logistics_polling_station': 'קלפי רחוקה או לא נגישה', 'reason.work_or_schedule': 'עבודה או לוח זמנים',
@@ -139,11 +139,11 @@ Object.assign(I18N.he, {
   'an.small': 'רק {n} אנשים ענו. זה מעט מדי מכדי לדעת מה הציבור חושב. הדבר היחיד שישנה את זה הוא להתקשר להרבה יותר אנשים.',
   'an.small.one': 'רק אדם אחד ענה. זה מעט מדי מכדי לדעת מה הציבור חושב. הדבר היחיד שישנה את זה הוא להתקשר להרבה יותר אנשים.',
   'an.why': 'למה {n} השיחות האחרות לא עבדו', 'an.why.one': 'למה השיחה האחרת לא עבדה',
-  'an.why.early': '{a} מהם ניתקו ב-12 השניות הראשונות, עוד לפני ששיר הספיקה לשאול.',
-  'an.why.early.one': 'אחד מהם ניתק ב-12 השניות הראשונות, עוד לפני ששיר הספיקה לשאול.',
+  'an.why.early': '{a} מהם ניתקו ב-12 השניות הראשונות, עוד לפני שיואב הספיק לשאול.',
+  'an.why.early.one': 'אחד מהם ניתק ב-12 השניות הראשונות, עוד לפני שיואב הספיק לשאול.',
   'end.hungUp': 'ענו ואז ניתקו', 'end.silence': 'אף אחד לא אמר מילה', 'end.voicemail': 'הגיעו לתא קולי',
   'end.noAnswer': 'אף אחד לא ענה', 'end.busy': 'הקו היה תפוס', 'end.technical': 'השיחה נקטעה',
-  'end.noMic': 'אין מיקרופון', 'end.agentEnded': 'שיר סיימה את השיחה', 'end.tooLong': 'השיחה נמשכה יותר מדי', 'end.other': 'משהו אחר',
+  'end.noMic': 'אין מיקרופון', 'end.agentEnded': 'יואב סיים את השיחה', 'end.tooLong': 'השיחה נמשכה יותר מדי', 'end.other': 'משהו אחר',
   'an.said': 'מה אמרו {n} האנשים', 'an.said.one': 'מה אמר האדם האחד', 'an.said.title.none': 'מה אנשים אמרו',
   'an.said.yes': 'יצביעו', 'an.said.no': 'לא יצביעו', 'an.said.unsure': 'לא בטוחים',
   'an.said.none': 'עדיין אף אחד לא ענה על השאלה בתקופה הזו.',
@@ -156,20 +156,20 @@ Object.assign(I18N.he, {
   'an.todo': 'מה לעשות עכשיו', 'an.todo.none': 'אין מה לתקן בשיחות האלה.',
   'do.more': 'להתקשר להרבה יותר אנשים', 'do.more.note': '{n} תשובות לא יכולות לומר לכם מה עיר שלמה חושבת. עד שהמספר הזה יהיה במאות, כל השאר כאן הוא רמז ולא תוצאה.',
   'do.silence': 'לבדוק את מערכת הטלפון', 'do.silence.note': 'ב-{n} שיחות אף אחד לא אמר מילה. בדרך כלל זה אומר שהשיחה התחברה אבל לא עבר קול.',
-  'do.early': 'לשנות את המשפט הראשון של שיר', 'do.early.note': '{n} אנשים ניתקו ב-12 השניות הראשונות, עוד לפני שהספיקה לשאול.',
+  'do.early': 'לשנות את המשפט הראשון של יואב', 'do.early.note': '{n} אנשים ניתקו ב-12 השניות הראשונות, עוד לפני שהספיק לשאול.',
   'do.technical': 'לבדוק את השיחות שנקטעו', 'do.technical.note': '{n} שיחות נעצרו כי משהו השתבש, לא כי האדם עזב. זה כסף שיוצא בלי שום תמורה.',
   'do.retry': 'לנסות שוב את המספרים שלא ענו', 'do.retry.note': '{n} שיחות צלצלו בלי מענה, הגיעו לתא קולי או מצאו קו תפוס. ניסיון שני בשעה אחרת לרוב עובד.',
-  'do.bot': 'לומר מראש ששיר היא מחשב', 'do.bot.note': '{n} אנשים שאלו אם הם מדברים עם מכונה. לומר את זה קודם בדרך כלל עולה פחות מלהיתפס.',
+  'do.bot': 'לומר מראש שיואב הוא מחשב', 'do.bot.note': '{n} אנשים שאלו אם הם מדברים עם מכונה. לומר את זה קודם בדרך כלל עולה פחות מלהיתפס.',
   'do.audio': 'לבדוק את איכות הקול', 'do.audio.note': 'הקול היה גרוע ב-{n} שיחות, ויכול להיות שהאדם לא שמע את השאלה כמו שצריך.',
-  'do.reason': 'לשאול יותר אנשים למה', 'do.reason.note': 'ב-{n} מהשיחות שבהן מישהו אמר לא או לא בטוח, שיר לא שאלה למה. התשובה הזו היא הדבר הכי שימושי שהסקר יכול להשיג.',
+  'do.reason': 'לשאול יותר אנשים למה', 'do.reason.note': 'ב-{n} מהשיחות שבהן מישהו אמר לא או לא בטוח, יואב לא שאל למה. התשובה הזו היא הדבר הכי שימושי שהסקר יכול להשיג.',
   'an.more': 'כל המספרים',
-  'ah.title': 'איך שיר ניהלה את השיחות',
-  'ah.askedWhy': 'היא שאלה למה ב-{a} מתוך {b} השיחות שבהן מישהו אמר לא או לא בטוח.',
+  'ah.title': 'איך יואב ניהל את השיחות',
+  'ah.askedWhy': 'הוא שאל למה ב-{a} מתוך {b} השיחות שבהן מישהו אמר לא או לא בטוח.',
   'ah.noClosing': 'עדיין אף שיחה לא הגיעה עד משפט הסיום.',
-  'ah.closing': 'היא אמרה את משפט הסיום {a} פעמים.', 'ah.closing.one': 'היא אמרה את משפט הסיום פעם אחת.',
-  'ah.thanked': 'היא אמרה את משפט התודה ל-{a} מתוך {b} האנשים שאמרו שיצביעו.',
-  'ah.askedBack': '{a} אנשים שאלו אותה שאלה בחזרה.', 'ah.askedBack.one': 'אדם אחד שאל אותה שאלה בחזרה.',
-  'ah.turns': 'בשיחה אמיתית היא מדברת בערך {a} פעמים והאדם בערך {b} פעמים.',
+  'ah.closing': 'הוא אמר את משפט הסיום {a} פעמים.', 'ah.closing.one': 'הוא אמר את משפט הסיום פעם אחת.',
+  'ah.thanked': 'הוא אמר את משפט התודה ל-{a} מתוך {b} האנשים שאמרו שיצביעו.',
+  'ah.askedBack': '{a} אנשים שאלו אותו שאלה בחזרה.', 'ah.askedBack.one': 'אדם אחד שאל אותו שאלה בחזרה.',
+  'ah.turns': 'בשיחה אמיתית הוא מדבר בערך {a} פעמים והאדם בערך {b} פעמים.',
   'an.cities': 'לפי עיר', 'an.daily': 'יום אחר יום',
   'an.col.city': 'עיר', 'an.col.calls': 'שיחות', 'an.col.answered': 'ענו', 'an.col.yes': 'יצביעו', 'an.col.no': 'לא יצביעו',
   'an.col.nr': 'אין מענה', 'an.col.day': 'יום', 'an.col.cost': 'עלות',
@@ -182,8 +182,8 @@ Object.assign(I18N.he, {
   'agent.talk': 'דבר איתי', 'agent.end': 'סיים', 'agent.ready': 'מוכן. צריך אישור למיקרופון.', 'agent.connecting': 'מתחבר…',
   'agent.connected': 'מחובר', 'agent.connected.sub': 'דבר או כתוב', 'agent.ended': 'השיחה הסתיימה. אפשר להתחיל שוב.',
   'agent.mic.blocked': 'הדפדפן חסם את המיקרופון. אשרו גישה ונסו שוב.', 'agent.start.failed': 'לא הצלחנו להתחיל את השיחה. נסו לרענן.',
-  'agent.error': 'נפלה שגיאה בשיחה. נסו שוב.', 'agent.type': 'או פשוט תכתבו פה. גם באנגלית, היא עונה בעברית.',
-  'agent.type.short': 'כתבו הודעה', 'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.mute': 'השתקת מיקרופון', 'agent.unmute': 'ביטול השתקה', 'agent.muted': 'המיקרופון מושתק; היא לא שומעת אותך.', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
+  'agent.error': 'נפלה שגיאה בשיחה. נסו שוב.', 'agent.type': 'או פשוט תכתבו פה. גם באנגלית, הוא עונה בעברית.',
+  'agent.type.short': 'כתבו הודעה', 'agent.send': 'שלח', 'agent.voice': 'קול', 'agent.speed': 'קצב', 'agent.mute': 'השתקת מיקרופון', 'agent.unmute': 'ביטול השתקה', 'agent.muted': 'המיקרופון מושתק; הוא לא שומע אותך.', 'agent.note': 'רץ בדפדפן דרך המיקרופון. לא מתקשרים לאף אחד. עובד הכי טוב בכרום.',
   'agent.lead': 'מתקשרים אל', 'agent.lead.sub': 'אתם עונים כמי שהרים את הטלפון. השיחה נרשמת על המספר הזה.',
   'agent.dial': 'חיוג למספר', 'agent.dial.note': 'דורש מספר טלפון ב-Vapi. עד אז אותה שיחה רצה בדפדפן.',
   'agent.dial.dnc': 'המספר הזה ביקש שלא להתקשר.', 'agent.dialed': 'מחייג. השיחה תופיע בעמוד השיחות.', 'agent.pick': 'בחרו מספר מהרשימה כדי להתקשר אליו.',
@@ -574,7 +574,7 @@ function reasonSentence(a) {
   return tf('an.said.mixed', { list: a.reasons.map((r) => `${t('reason.' + r.key)} (${r.n})`).join(', ') });
 }
 
-// What Shir herself did, as sentences. Kept under "All the numbers" because it is
+// What Yoav himself did, as sentences. Kept under "All the numbers" because it is
 // about the script rather than about the people.
 function agentLines(a) {
   const ap = a.approach, f = a.funnel, out = [];
@@ -855,7 +855,7 @@ function detailPanel(d) {
     sd.asked_if_bot && `<span class="badge accent">${t('flag.bot')}</span>`,
     sd.call_quality_ok === false && `<span class="badge">${t('flag.quality')}</span>`,
   ].filter(Boolean).join('') : '';
-  // Vapi stores the agent's speech as one message per TTS chunk ("היי", "מדברת שיר", …).
+  // Vapi stores the agent's speech as one message per TTS chunk ("היי", "מדבר יואב", …).
   // Merge consecutive same-speaker fragments so it reads like a conversation.
   const turns = [];
   for (const m of d.messages) {
@@ -1186,7 +1186,7 @@ registerPage('agent', {
         catch (e) { toast(e.message, true); dial.disabled = false; }
       };
       $('voice').onchange = () => store.set('voice', $('voice').value);
-      // Mutes the browser mic only; her side keeps playing. The SDK starts every call unmuted.
+      // Mutes the browser mic only; his side keeps playing. The SDK starts every call unmuted.
       $('mute').onclick = () => { if (!agent.live || !agent.vapi) return; agent.muted = !agent.muted; agent.vapi.setMuted(agent.muted); syncAgentUi(); };
       $('speed').oninput = () => { $('speedval').textContent = Number($('speed').value).toFixed(2); store.set('speed', $('speed').value); };
       $('mic').onclick = async () => {

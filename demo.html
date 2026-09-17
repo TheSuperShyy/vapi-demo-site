@@ -251,7 +251,7 @@ function bubble(role, text, isPartial) {
   turn.className = 'turn ' + (role === 'user' ? 'me' : 'bot');
   turn.innerHTML =
     `<div class="bubble${isPartial ? ' partial' : ''}">
-       <div class="who">${role === 'user' ? 'אתה' : 'שיר'}</div>
+       <div class="who">${role === 'user' ? 'אתה' : 'יואב'}</div>
        <div class="say"></div>
      </div>`;
   turn.querySelector('.say').textContent = text;

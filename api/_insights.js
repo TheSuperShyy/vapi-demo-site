@@ -29,7 +29,7 @@ export function brief(a, days) {
     },
     reasons_for_no_or_unsure: a.reasons.map((r) => ({ reason: label(LABELS.en.reason, r.key), people: r.n })),
     how_calls_ended_without_an_answer: a.endedReasons.map((e) => ({ ended: label(LABELS.en.ended, e.key), calls: e.n })),
-    what_shir_did: {
+    what_yoav_did: {
       asked_why_when_someone_said_no: a.approach.askedReason, said_the_closing_line: a.approach.closingDelivered,
       thanked_a_yes: a.approach.thankedYes, person_asked_her_a_question: a.approach.askedQuestion,
       real_conversations: a.approach.conversations,
@@ -47,7 +47,7 @@ const SHAPE = `{
 
 function prompt(data, lang) {
   const language = lang === 'he' ? 'Hebrew' : 'English';
-  return `You are a political campaign analyst reading the results of an automated pre-election phone survey in Israel. A voice agent named Shir asks people whether they intend to vote, and asks those who say no or unsure for the reason.
+  return `You are a political campaign analyst reading the results of an automated pre-election phone survey in Israel. A voice agent named Yoav asks people whether they intend to vote, and asks those who say no or unsure for the reason.
 
 You are writing for the person running the campaign. They are not technical and
 they are not an analyst. Write the way you would explain it to them out loud.
@@ -58,15 +58,15 @@ Hard rules:
   dataset, data set, statistically, infrastructure, optimise, optimize, leverage, funnel,
   conversion rate, respondents, attrition, KPI.
 - Never write a percentage. Write "7 of 25 calls", never "28%".
-- Say "people", not "contacts", "leads", "records" or "users". Shir is the person calling.
+- Say "people", not "contacts", "leads", "records" or "users". Yoav is the person calling.
 - The reader can see every count beside your text. Do NOT list them back. Say what they add
   up to and what it means for the campaign. Two numbers in the summary at most.
 - A note under your text already warns when too few people have answered, so do not repeat
   that warning. But never write as if a handful of answers were a verdict: say "the 2 people
   who said no", never "people", "voters", "the public" or "the room".
 - The page has already worked out these actions from the numbers, and shows any that apply:
-  call many more people; check the phone system; change Shir's opening line; look at the calls
-  that broke; try the numbers that did not pick up again; say up front that Shir is a computer;
+  call many more people; check the phone system; change Yoav's opening line; look at the calls
+  that broke; try the numbers that did not pick up again; say up front that Yoav is a computer;
   check the sound quality; ask more people why they said no. Your "advice" must NOT repeat any
   of them, however differently worded. Only add something they miss, for example about what
   people actually said, the wording of a specific answer, who to call next, or when to call.

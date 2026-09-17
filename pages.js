@@ -1051,7 +1051,14 @@ async function getVapi() {
     }
     if (feed) { feed.innerHTML = agent.feedHtml + (agent.partial ? bubble(agent.partial.role, agent.partial.text, true) : ''); feed.scrollTop = feed.scrollHeight; }
   });
-  v.on('error', (e) => { dlog('event: error -> ' + (e?.message ?? e?.error?.message ?? JSON.stringify(e)?.slice(0, 200))); agent.live = false; syncAgentUi(); const er = $('err'); if (er) er.textContent = t('agent.error'); });
+  v.on('error', (e) => {
+    const msg = e?.message ?? e?.error?.message ?? e?.error?.errorMsg ?? e?.errorMsg ?? JSON.stringify(e)?.slice(0, 200) ?? '';
+    dlog('event: error -> ' + msg);
+    // When the assistant hangs up (endCall, an end-call phrase) the server closes the room
+    // and the browser is ejected; Daily reports that as an error. It is a normal ending.
+    if (e?.error?.type === 'ejected' || /meeting has ended|ejected/i.test(String(msg))) return;
+    agent.live = false; syncAgentUi(); const er = $('err'); if (er) er.textContent = t('agent.error');
+  });
   agent.vapi = v;
   dlog('Vapi instance created');
   return v;

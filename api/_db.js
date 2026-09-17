@@ -8,6 +8,7 @@
 // connection lifetime guard against silently dropped sockets.
 
 import postgres from 'postgres';
+import { assistantFirstMessage, renderFirstMessage } from './_vapi.js';
 
 let _sql = null;
 export function sql() {
@@ -97,12 +98,22 @@ async function useSpokenLines(s, r) {
   let lines = [];
   try { lines = await s`select at, text from spoken_lines where call_id = ${r.id} order by at`; }
   catch (e) { console.error('[spoken_lines]', e.message); return; }
-  if (!lines.length) return;
-  const t0 = new Date(r.started_at ?? lines[0].at).getTime();
+  const t0 = new Date(r.started_at ?? lines[0]?.at ?? r.created_at).getTime();
   const bot = lines.map((l) => ({ role: 'bot', text: l.text, seconds_from_start: Math.max(0, Math.round((new Date(l.at).getTime() - t0) / 100) / 10) }));
+  // The opening line is spoken from a fixed template and never arrives as voice-input,
+  // so whatever the transcriber made of it (everything the agent said before the first
+  // spoken line) is replaced by the template rendered for the hour of the call.
+  const opening = [];
+  const first = r.assistant_id ? renderFirstMessage(await assistantFirstMessage(r.assistant_id).catch(() => ''), new Date(t0)) : '';
+  if (first) {
+    const firstSpokenAt = bot.length ? bot[0].seconds_from_start : Infinity;
+    const heard = r.messages.filter((m) => m.role === 'bot' && (m.seconds_from_start ?? 0) < firstSpokenAt);
+    if (heard.length) opening.push({ role: 'bot', text: first, seconds_from_start: heard[0].seconds_from_start ?? 0 });
+  }
+  if (!lines.length && !opening.length) return;
   const user = r.messages.filter((m) => m.role === 'user');
   const merged = [];
-  for (const m of [...bot, ...user].sort((a, b) => (a.seconds_from_start ?? 0) - (b.seconds_from_start ?? 0))) {
+  for (const m of [...opening, ...bot, ...user].sort((a, b) => (a.seconds_from_start ?? 0) - (b.seconds_from_start ?? 0))) {
     const last = merged[merged.length - 1];
     if (last && last.role === 'bot' && m.role === 'bot') last.text += ' ' + m.text;
     else merged.push({ ...m });

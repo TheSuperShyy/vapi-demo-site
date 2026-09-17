@@ -1023,7 +1023,20 @@ const VOICES = [
 
 // The SDK instance and call state outlive the page so navigating away mid-call
 // does not drop the call; coming back re-binds the UI to the live state.
-const agent = { vapi: null, live: false, muted: false, partial: null, turns: [], log: [], lead: null, callId: null };
+const agent = { vapi: null, live: false, muted: false, partial: null, turns: [], seeded: false, log: [], lead: null, callId: null };
+
+// The opening line is a small Liquid template Vapi fills in at call time (a greeting by
+// the hour, Israel time) and never reports as text, only as a transcription of the
+// audio. Rendered here for the feed; api/_vapi.js has the same function for storage.
+function renderFirst(tpl, when = new Date()) {
+  if (!tpl || !tpl.includes('{%')) return tpl ?? '';
+  const h = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Jerusalem', hour: 'numeric', hour12: false }).format(when)) % 24;
+  return tpl
+    .replace(/\{%\s*assign[\s\S]*?%\}/g, '')
+    .replace(/\{%\s*if\s+h\s*<\s*(\d+)\s*%\}([^{]*)\{%\s*elsif\s+h\s*<\s*(\d+)\s*%\}([^{]*)\{%\s*else\s*%\}([^{]*)\{%\s*endif\s*%\}/g,
+      (_, a, A, b, B, C) => (h < Number(a) ? A : h < Number(b) ? B : C))
+    .trim();
+}
 
 // The feed is a list of turns. The agent's side is the text Vapi hands the voice
 // (voice-input), word for word; the transcriber's rendering of his audio is dropped,
@@ -1046,14 +1059,20 @@ async function getVapi() {
   if (typeof Vapi !== 'function') throw new Error('SDK export is ' + typeof Vapi + ', not a constructor');
   dlog('SDK loaded');
   const v = new Vapi(PUBLIC_KEY);
-  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.muted = false; agent.turns = []; agent.partial = null; syncAgentUi(); });
+  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.muted = false; agent.turns = []; agent.partial = null; agent.seeded = false; syncAgentUi(); });
   v.on('call-end', () => { dlog('event: call-end'); agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
   v.on('speech-start', () => $('orb')?.classList.add('speaking'));
   v.on('speech-end', () => $('orb')?.classList.remove('speaking'));
   v.on('volume-level', (lvl) => { const r = $('ring'); if (r) r.style.transform = `scale(${1 + Math.min(lvl, 1) * 0.22})`; });
   v.on('message', (m) => {
     if (m.type === 'voice-input') { const text = String(m.input ?? '').trim(); if (text) { addTurn('bot', text); paintFeed(); } return; }
-    if (m.type !== 'transcript' || !m.transcript || m.role !== 'user') return;
+    if (m.type !== 'transcript' || !m.transcript) return;
+    if (m.role !== 'user') {
+      // His first sound: put the opening line in, as written, and ignore the rest of
+      // what the transcriber makes of his audio (every later turn arrives as voice-input).
+      if (!agent.seeded) { agent.seeded = true; const first = renderFirst(cache.config?.firstTemplate); if (first) { addTurn('bot', first); agent.turns[agent.turns.length - 1].open = false; paintFeed(); } }
+      return;
+    }
     if (m.transcriptType === 'partial') agent.partial = { role: 'user', text: m.transcript };
     else { agent.partial = null; addTurn('user', m.transcript); }
     paintFeed();

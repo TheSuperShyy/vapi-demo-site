@@ -1,5 +1,5 @@
 // GET /api/config -> which assistant the dashboard is looking at, plus its stack.
-import { vapi, requireAuth, fail } from './_vapi.js';
+import { vapi, requireAuth, fail, renderFirstMessage } from './_vapi.js';
 
 // Same assistant the Voice Agent page talks to. Kept in one place so the two
 // cannot drift apart.
@@ -15,7 +15,8 @@ export default async function handler(req, res) {
       transcriber: `${a.transcriber?.provider ?? '?'}${a.transcriber?.language ? ' · ' + a.transcriber.language : ''}`,
       voice: `${a.voice?.provider ?? '?'} · ${a.voice?.voiceId ?? '?'}`,
       model: `${a.model?.provider ?? '?'} · ${a.model?.model ?? '?'}`,
-      firstMessage: a.firstMessage ?? '',
+      firstMessage: renderFirstMessage(a.firstMessage ?? ''),   // as it would be spoken right now
+      firstTemplate: a.firstMessage ?? '',                      // the page renders it at call time for the feed
       updatedAt: a.updatedAt,
       // True once a Vapi phone number is connected (VAPI_PHONE_NUMBER_ID); until
       // then the List's Call button runs the agent in the browser instead.

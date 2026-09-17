@@ -71,6 +71,7 @@ export function callToRow(c, source = 'webhook') {
 export async function upsertCall(c, source) {
   const r = callToRow(c, source);
   const s = sql();
+  await useSpokenLines(s, r);
   const row = { ...r, messages: s.json(r.messages), raw: s.json(r.raw) };
   await s`
     insert into calls ${s(row)}
@@ -86,6 +87,28 @@ export async function upsertCall(c, source) {
       raw = excluded.raw, source = excluded.source`;
   if (r.customer_number) { try { await refreshLead(s, r.customer_number); } catch (e) { console.error('[lead refresh]', e.message); } }   // the call is stored; the lead can catch up on the next sync
   return r.id;
+}
+
+// The agent's lines in Vapi's messages are a re-transcription of its audio. When the
+// webhook has the text it was actually given (spoken_lines), use that instead: the
+// person's lines stay as transcribed, the two sides interleave by time, and the
+// agent's chunks of one turn join into one message so turn counts stay honest.
+async function useSpokenLines(s, r) {
+  let lines = [];
+  try { lines = await s`select at, text from spoken_lines where call_id = ${r.id} order by at`; }
+  catch (e) { console.error('[spoken_lines]', e.message); return; }
+  if (!lines.length) return;
+  const t0 = new Date(r.started_at ?? lines[0].at).getTime();
+  const bot = lines.map((l) => ({ role: 'bot', text: l.text, seconds_from_start: Math.max(0, Math.round((new Date(l.at).getTime() - t0) / 100) / 10) }));
+  const user = r.messages.filter((m) => m.role === 'user');
+  const merged = [];
+  for (const m of [...bot, ...user].sort((a, b) => (a.seconds_from_start ?? 0) - (b.seconds_from_start ?? 0))) {
+    const last = merged[merged.length - 1];
+    if (last && last.role === 'bot' && m.role === 'bot') last.text += ' ' + m.text;
+    else merged.push({ ...m });
+  }
+  r.messages = merged;
+  r.transcript = merged.map((m) => `${m.role === 'bot' ? 'AI' : 'User'}: ${m.text}`).join('\n');
 }
 
 // Keeps the calling list in step with the calls: attempts, latest outcome, and

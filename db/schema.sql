@@ -48,6 +48,19 @@ create table if not exists webhook_log (
 );
 create index if not exists webhook_log_received_idx on webhook_log (received_at desc);
 
+-- What the agent actually said, word for word. Vapi re-transcribes the agent's own
+-- audio for the transcript, and in Hebrew that mishears the organisation's name on
+-- most calls; but it also sends every text chunk it hands to the voice as a
+-- "voice-input" server message, and the webhook keeps those here. upsertCall swaps
+-- them in for the agent's side of calls.messages.
+create table if not exists spoken_lines (
+  call_id  text        not null,
+  at       timestamptz not null,
+  text     text        not null,
+  primary key (call_id, at, text)
+);
+create index if not exists spoken_lines_call_idx on spoken_lines (call_id);
+
 -- keep updated_at honest
 create or replace function touch_updated_at() returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
@@ -58,6 +71,7 @@ create trigger calls_touch before update on calls for each row execute function 
 -- connection string, so nothing needs anon/public access through PostgREST.
 alter table calls       enable row level security;
 alter table webhook_log enable row level security;
+alter table spoken_lines enable row level security;
 
 -- ---------------------------------------------------------------- calling list
 -- One row per number to call, in campaign order. Filled by db/leads.mjs from the

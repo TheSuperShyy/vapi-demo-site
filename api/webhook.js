@@ -39,6 +39,18 @@ export default async function handler(req, res) {
   const call = msg?.call ?? null;
   const callId = call?.id ?? null;
 
+  // Every text chunk the agent is about to speak (serverMessages includes voice-input).
+  // Kept as-is; upsertCall uses them as the agent's side of the transcript.
+  if (type === 'voice-input') {
+    const text = typeof msg.input === 'string' ? msg.input.trim() : '';
+    if (callId && text) {
+      const at = new Date(Number(msg.timestamp) || Date.now());
+      try { await sql()`insert into spoken_lines ${sql()({ call_id: callId, at, text })} on conflict do nothing`; }
+      catch (e) { console.error('[voice-input]', e.message); }
+    }
+    return res.status(200).json({ ok: true });
+  }
+
   // Only end-of-call-report carries the finished data. Ack everything else so
   // Vapi does not retry, and log it so we can see what arrives.
   if (type !== 'end-of-call-report' || !callId) {

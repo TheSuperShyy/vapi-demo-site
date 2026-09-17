@@ -841,8 +841,8 @@ function callsTable(calls, selectedId) {
       <td class="mono">${fmtDur(c.startedAt, c.endedAt)}</td><td>${intentBadge(c)}</td><td class="end mono">${money(c.cost)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 
-const bubble = (role, text, partial = false) => `<div class="turn ${role === 'user' ? 'user' : ''}"><div class="bubble${partial ? ' partial' : ''}">
-  <div class="who">${role === 'user' ? t('who.user') : t('who.agent')}</div><div class="say" dir="auto">${escapeHtml(text)}</div></div></div>`;
+const bubble = (role, text, partial = false, who) => `<div class="turn ${role === 'user' ? 'user' : ''}"><div class="bubble${partial ? ' partial' : ''}">
+  <div class="who">${who ?? (role === 'user' ? t('who.user') : t('who.agent'))}</div><div class="say" dir="auto">${escapeHtml(text)}</div></div></div>`;
 
 // Phones hide the list behind an open call; this is the way back (desktop hides it).
 const backLink = () => `<a class="btn secondary sm only-mobile detail-back" href="#/calls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> ${t('detail.back')}</a>`;
@@ -1023,7 +1023,19 @@ const VOICES = [
 
 // The SDK instance and call state outlive the page so navigating away mid-call
 // does not drop the call; coming back re-binds the UI to the live state.
-const agent = { vapi: null, live: false, muted: false, partial: null, feedHtml: '', log: [], lead: null, callId: null };
+const agent = { vapi: null, live: false, muted: false, partial: null, turns: [], log: [], lead: null, callId: null };
+
+// The feed is a list of turns. The agent's side is the text Vapi hands the voice
+// (voice-input), word for word; the transcriber's rendering of his audio is dropped,
+// because in Hebrew it mishears the organisation's name on most calls. The person's
+// side is the transcriber's, partials included. Consecutive agent chunks join up.
+function addTurn(role, text, who) {
+  const last = agent.turns[agent.turns.length - 1];
+  if (role === 'bot' && last?.role === 'bot' && last.open) last.text += ' ' + text;
+  else { if (last) last.open = false; agent.turns.push({ role, text, who, open: role === 'bot' }); }
+}
+const feedHtml = () => agent.turns.map((x) => bubble(x.role, x.text, false, x.who)).join('') + (agent.partial ? bubble(agent.partial.role, agent.partial.text, true) : '');
+function paintFeed() { const feed = $('feed'); if (!feed) return; feed.innerHTML = feedHtml(); feed.scrollTop = feed.scrollHeight; }
 const dlog = (m) => { agent.log.push(m); console.log('[agent]', m); const d = $('diag'); if (d) d.textContent = agent.log.join('\n'); };
 
 async function getVapi() {
@@ -1034,22 +1046,17 @@ async function getVapi() {
   if (typeof Vapi !== 'function') throw new Error('SDK export is ' + typeof Vapi + ', not a constructor');
   dlog('SDK loaded');
   const v = new Vapi(PUBLIC_KEY);
-  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.muted = false; agent.feedHtml = ''; syncAgentUi(); });
+  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.muted = false; agent.turns = []; agent.partial = null; syncAgentUi(); });
   v.on('call-end', () => { dlog('event: call-end'); agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
   v.on('speech-start', () => $('orb')?.classList.add('speaking'));
   v.on('speech-end', () => $('orb')?.classList.remove('speaking'));
   v.on('volume-level', (lvl) => { const r = $('ring'); if (r) r.style.transform = `scale(${1 + Math.min(lvl, 1) * 0.22})`; });
   v.on('message', (m) => {
-    if (m.type !== 'transcript' || !m.transcript) return;
-    const feed = $('feed');
-    if (m.transcriptType === 'partial') {
-      if (agent.partial && agent.partial.role === m.role) agent.partial.text = m.transcript;
-      else agent.partial = { role: m.role, text: m.transcript };
-    } else {
-      agent.partial = null;
-      agent.feedHtml += bubble(m.role, m.transcript);
-    }
-    if (feed) { feed.innerHTML = agent.feedHtml + (agent.partial ? bubble(agent.partial.role, agent.partial.text, true) : ''); feed.scrollTop = feed.scrollHeight; }
+    if (m.type === 'voice-input') { const text = String(m.input ?? '').trim(); if (text) { addTurn('bot', text); paintFeed(); } return; }
+    if (m.type !== 'transcript' || !m.transcript || m.role !== 'user') return;
+    if (m.transcriptType === 'partial') agent.partial = { role: 'user', text: m.transcript };
+    else { agent.partial = null; addTurn('user', m.transcript); }
+    paintFeed();
   });
   v.on('error', (e) => {
     const msg = e?.message ?? e?.error?.message ?? e?.error?.errorMsg ?? e?.errorMsg ?? JSON.stringify(e)?.slice(0, 200) ?? '';
@@ -1071,14 +1078,14 @@ function syncAgentUi() {
   if (!agent.live) { orb.classList.remove('speaking'); const r = $('ring'); if (r) r.style.transform = ''; }
   mic.disabled = false;
   mic.textContent = agent.live ? t('agent.end') : t('agent.talk');
-  state.innerHTML = agent.live ? `<b>${t('agent.connected')}</b> — ${t('agent.connected.sub')}` : (agent.feedHtml ? t('agent.ended') : t('agent.ready'));
+  state.innerHTML = agent.live ? `<b>${t('agent.connected')}</b> — ${t('agent.connected.sub')}` : (agent.turns.length ? t('agent.ended') : t('agent.ready'));
   chat.disabled = send.disabled = !agent.live;
   voice.disabled = speed.disabled = agent.live;
   const actions = $('call-actions'), mute = $('mute');
   if (actions) actions.hidden = !agent.live;
   if (mute) { mute.innerHTML = (agent.muted ? MIC_OFF_ICON : MIC_ICON) + ' ' + t(agent.muted ? 'agent.unmute' : 'agent.mute'); mute.classList.toggle('on', agent.muted); mute.setAttribute('aria-pressed', String(agent.muted)); }
   if (agent.live && agent.muted) state.innerHTML = '<b>' + t('agent.muted') + '</b>';
-  const feed = $('feed'); if (feed) feed.innerHTML = agent.feedHtml;
+  const feed = $('feed'); if (feed) feed.innerHTML = feedHtml();
 }
 
 // Recent-calls card on the Voice Agent page.
@@ -1226,8 +1233,7 @@ registerPage('agent', {
         const text = $('chatinput').value.trim();
         if (!text || !agent.live || !agent.vapi) return;
         agent.partial = null;
-        agent.feedHtml += `<div class="turn user"><div class="bubble"><div class="who">${t('who.you')}</div><div class="say" dir="auto">${escapeHtml(text)}</div></div></div>`;
-        $('feed').innerHTML = agent.feedHtml; $('feed').scrollTop = $('feed').scrollHeight;
+        addTurn('user', text, t('who.you')); paintFeed();
         agent.vapi.send({ type: 'add-message', message: { role: 'user', content: text } });
         $('chatinput').value = '';
       };

@@ -1011,23 +1011,12 @@ registerPage('list', {
 
 // ------------------------------------------------------------------ voice agent
 
-// Cartesia first: the live assistant runs Hila - Warm Guide since 17 Sep 2026 (native
-// Hebrew on sonic-3.5, the newest model Vapi accepts for Hebrew). The Cartesia key sits
-// on the Vapi account as a provider credential; without it Vapi falls back to Azure.
-const CARTESIA = { model: 'sonic-3.5', language: 'he', fallbackPlan: { voices: [{ provider: 'azure', voiceId: 'he-IL-HilaNeural' }] } };
+// One voice: the Ido clone on Cartesia ("Echo Stone Long", the 55 s clip), sonic-3.5,
+// the newest model Vapi accepts for Hebrew. The Cartesia key sits on the Vapi account as
+// a provider credential; without it Vapi falls back to the Azure voice below.
 const VOICES = [
-  { id: 'cartesia:hila', label: 'Hila · Cartesia (native, live)', provider: 'cartesia', voiceId: '1cd6668f-84b9-41a2-adbd-b7328f8d6ef4', extra: CARTESIA },
-  { id: 'cartesia:shira', label: 'Shira · Cartesia (native)', provider: 'cartesia', voiceId: 'd0be495c-5e23-4b88-b12d-bc42d38be9a5', extra: CARTESIA },
-  { id: 'cartesia:yael', label: 'Yael · Cartesia (native, casual)', provider: 'cartesia', voiceId: '1daba551-67af-465e-a189-f91495aa2347', extra: CARTESIA },
-  { id: 'cartesia:talia', label: 'Talia · Cartesia (native)', provider: 'cartesia', voiceId: 'bd05edd9-cec9-4600-9af4-c9ba4e032ff9', extra: CARTESIA },
-  { id: 'cartesia:gil', label: 'Gil · Cartesia (native, male)', provider: 'cartesia', voiceId: '84b969ad-19c7-428d-b742-48d387f7f138', extra: CARTESIA },
-  { id: 'azure:he-IL-HilaNeural', label: 'Hila · Azure (native)', provider: 'azure', voiceId: 'he-IL-HilaNeural' },
-  { id: 'azure:he-IL-AvriNeural', label: 'Avri · Azure (native, male)', provider: 'azure', voiceId: 'he-IL-AvriNeural' },
-  // Vapi's own multilingual voice (generation 2), pinned to Hebrew: the same "Primary language" setting as in the Vapi dashboard. Generation 1 rejects Hebrew.
-  { id: 'vapi:Naina', label: 'Naina · Vapi', provider: 'vapi', voiceId: 'Naina', extra: { version: '2', language: 'he' } },
-  { id: 'openai:shimmer', label: 'Shimmer · OpenAI', provider: 'openai', voiceId: 'shimmer' },
-  { id: 'openai:nova', label: 'Nova · OpenAI', provider: 'openai', voiceId: 'nova' },
-  { id: 'openai:alloy', label: 'Alloy · OpenAI', provider: 'openai', voiceId: 'alloy' },
+  { id: 'cartesia:ido', label: 'Ido · voice clone', provider: 'cartesia', voiceId: 'ba765d50-19c6-4b3e-bc15-9de3b45f82f7',
+    extra: { model: 'sonic-3.5', language: 'he', generationConfig: { volume: 1.4 }, fallbackPlan: { voices: [{ provider: 'azure', voiceId: 'he-IL-HilaNeural' }] } } },
 ];
 
 // The SDK instance and call state outlive the page so navigating away mid-call
@@ -1201,7 +1190,7 @@ registerPage('agent', {
           const pick = VOICES.find((x) => x.id === $('voice').value) ?? VOICES[0];
           const speed = Number($('speed').value);
           // Cartesia keeps speed under generationConfig; a top-level speed is refused.
-          const pace = pick.provider === 'cartesia' ? { generationConfig: { speed } } : { speed };
+          const pace = pick.provider === 'cartesia' ? { generationConfig: { ...pick.extra?.generationConfig, speed } } : { speed };
           const overrides = { voice: { provider: pick.provider, voiceId: pick.voiceId, ...pick.extra, ...pace, chunkPlan: { formatPlan: { enabled: false } } } };
           // Tag the call with the number it stands in for; the server reads it back
           // from call.assistantOverrides.variableValues and updates the lead.

@@ -65,13 +65,13 @@ four cards of whole numbers and plain sentences, in reading order:
    `pages.js`), so the list is the same with or without the AI.
 
 There are no percentages and no charts on the page: "4 of 25" needs no decoding,
-"16%" does. Everything an analyst would still want — how Michal handled the calls,
+"16%" does. Everything an analyst would still want — how Noa handled the calls,
 by city, day by day — is counted the same way and folded under **All the numbers**
 at the bottom, along with the Excel export.
 
 `/api/analysis?days=7|30|90` returns everything those cards need: the funnel
 (reached, answered, yes/no/unsure, refused, not reached, opt-outs, early hang-ups),
-reasons for not voting, how unanswered calls ended, what Michal did, by city, by day,
+reasons for not voting, how unanswered calls ended, what Noa did, by city, by day,
 and the latest quotes.
 
 ## The AI read of the numbers

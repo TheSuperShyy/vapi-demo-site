@@ -5,7 +5,7 @@
 import { TZ } from './_list.js';
 
 // Phrases from scripts/vapi/system_prompt.he.md that mark what the agent did on a call.
-// The agent's lines are Vapi's transcription of his audio, split into short fragments
+// The agent's lines are Vapi's transcription of her audio, split into short fragments
 // (joined with spaces below), so each marker is a short, distinctive stretch that
 // survives transcription: no niqqud, no rare words, nothing that crosses punctuation.
 export const SCRIPT_MARKERS = {

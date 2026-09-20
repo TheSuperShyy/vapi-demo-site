@@ -1222,11 +1222,20 @@ registerPage('agent', {
       // Mutes the browser mic only; her side keeps playing. The SDK starts every call unmuted.
       $('mute').onclick = () => { if (!agent.live || !agent.vapi) return; agent.muted = !agent.muted; agent.vapi.setMuted(agent.muted); syncAgentUi(); };
       $('speed').oninput = () => { $('speedval').textContent = Number($('speed').value).toFixed(2); store.set('speed', $('speed').value); };
+      // Phones: the SDK is fetched now, not at the tap, so the tap and the permission
+      // prompt stay close together (iOS ties both to the gesture).
+      getVapi().catch(() => {});
       $('mic').onclick = async () => {
         $('err').textContent = '';
         try {
+          if (agent.live) { agent.vapi?.stop(); return; }
+          // Ask for the microphone right here in the tap, before any other async work:
+          // on mobile browsers that is what makes the prompt show, and a refusal is
+          // reported at once instead of as a failed call. The SDK opens its own stream.
+          if (!navigator.mediaDevices?.getUserMedia) { $('err').textContent = t('agent.mic.blocked'); return; }   // http or an old browser
+          try { (await navigator.mediaDevices.getUserMedia({ audio: true })).getTracks().forEach((tr) => tr.stop()); }
+          catch (e) { $('err').textContent = t('agent.mic.blocked'); dlog('mic refused: ' + (e?.name ?? e)); return; }
           const v = await getVapi();
-          if (agent.live) { v.stop(); return; }
           if (!$('mic')) return;                       // navigated away while the SDK loaded
           $('mic').disabled = true; $('state').textContent = t('agent.connecting');
           const pick = VOICES.find((x) => x.id === $('voice').value) ?? VOICES[0];

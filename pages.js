@@ -4,8 +4,8 @@ import { registerPage, render, route, t, I18N, lang, escapeHtml, pageHead, toast
 const $ = (id) => document.getElementById(id);
 
 // Same assistant as api/config.js. A Vapi PUBLIC key is built to ship to browsers.
-const PUBLIC_KEY = '59fd1b6b-f27d-47ce-ab5b-ff7ccd56277e';
-const ASSISTANT_ID = '1c759c79-2692-43f0-b049-d1ffa363d386';
+const PUBLIC_KEY = '4df49a36-752b-4b2e-aca6-ced85264660d';
+const ASSISTANT_ID = '47e67fec-8dc1-45e5-a1ef-3f91e8a0e7c6';
 
 // ------------------------------------------------------------------ strings
 

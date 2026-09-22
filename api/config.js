@@ -3,7 +3,7 @@ import { vapi, requireAuth, fail, renderFirstMessage } from './_vapi.js';
 
 // Same assistant the Voice Agent page talks to. Kept in one place so the two
 // cannot drift apart.
-export const ASSISTANT_ID = '1c759c79-2692-43f0-b049-d1ffa363d386';
+export const ASSISTANT_ID = '47e67fec-8dc1-45e5-a1ef-3f91e8a0e7c6';
 
 export default async function handler(req, res) {
   if (!requireAuth(req, res)) return;

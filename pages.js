@@ -1060,7 +1060,7 @@ async function getVapi() {
   dlog('SDK loaded');
   const v = new Vapi(PUBLIC_KEY);
   v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.ending = false; agent.muted = false; agent.turns = []; agent.partial = null; agent.seeded = false; syncAgentUi(); });
-  v.on('call-end', () => { dlog('event: call-end'); agent.ending = true; agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
+  v.on('call-end', () => { dlog('event: call-end'); agent.ending = true; if (agent.suspectError) confirmCallError(agent.callId); agent.suspectError = false; agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
   v.on('speech-start', () => $('orb')?.classList.add('speaking'));
   v.on('speech-end', () => $('orb')?.classList.remove('speaking'));
   v.on('volume-level', (lvl) => { const r = $('ring'); if (r) r.style.transform = `scale(${1 + Math.min(lvl, 1) * 0.22})`; });
@@ -1085,6 +1085,9 @@ async function getVapi() {
     // and the browser is ejected; Daily reports that as an error. It is a normal ending.
     // Look through the whole object: the SDK nests the reason differently per event.
     if (agent.ending || /meeting has ended|meeting-ended|ejected|call has ended|ended the call/i.test(JSON.stringify(e ?? ''))) return;
+    // Anything else during a live call: do not trust the event, ask Vapi how the call
+    // ended once it has (see confirmCallError). Only a failure reason shows the red line.
+    if (agent.callId) { agent.suspectError = true; return; }
     agent.live = false; syncAgentUi(); const er = $('err'); if (er) er.textContent = t('agent.error');
   });
   agent.vapi = v;
@@ -1127,6 +1130,23 @@ function refreshAgentRecent() {
 // Vapi's call list can lag a few seconds after hangup, but the call is readable
 // by id at once, and /api/calls/:id stores it the moment it has ended. So we
 // poll that id (2s, 6s, 15s, 30s); without an id we fall back to a list sync.
+// The SDK reports some normal endings as errors. Vapi's own ended reason decides:
+// a hang-up, the closing phrase, silence or the time limit are fine; a reason with
+// "error" or "failed" in it is a real failure and gets the red line.
+async function confirmCallError(callId) {
+  if (!callId) return;
+  for (const wait of [1500, 4000, 8000]) {
+    await new Promise((r) => setTimeout(r, wait));
+    try {
+      const d = await api('/api/calls/' + encodeURIComponent(callId));
+      if (!d.endedReason) continue;
+      dlog('ended reason: ' + d.endedReason);
+      if (/error|fail|fault/i.test(d.endedReason)) { const er = $('err'); if (er) er.textContent = t('agent.error'); }
+      return;
+    } catch { /* try again */ }
+  }
+}
+
 function pullFinishedCall(callId = agent.callId) {
   const delays = [2000, 6000, 15000, 30000];
   const done = () => { invalidate(); if (route().name === 'agent') { refreshAgentRecent(); refreshLeadCard(); } else render(); };
@@ -1212,6 +1232,7 @@ registerPage('agent', {
       <p class="page-sub" style="text-align:center">${t('agent.note')} ${leadId ? '' : `<a href="#/list">${t('agent.pick')}</a>`}</p>`;
     return { html, async mount(main) {
       if (location.search.includes('debug')) { $('diag').style.display = 'block'; $('diag').textContent = agent.log.join('\n'); }
+      if (location.search.includes('debug')) window.__agent = agent;   // ?debug only: lets a test replay SDK events
       syncAgentUi();
       refreshAgentRecent();
       const dial = $('dial');

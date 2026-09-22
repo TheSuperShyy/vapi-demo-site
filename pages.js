@@ -842,7 +842,7 @@ function callsTable(calls, selectedId) {
 }
 
 const bubble = (role, text, partial = false, who) => `<div class="turn ${role === 'user' ? 'user' : ''}"><div class="bubble${partial ? ' partial' : ''}">
-  <div class="who">${who ?? (role === 'user' ? t('who.user') : t('who.agent'))}</div><div class="say" dir="auto">${escapeHtml(text)}</div></div></div>`;
+  <div class="who" translate="no">${who ?? (role === 'user' ? t('who.user') : t('who.agent'))}</div><div class="say" dir="auto">${escapeHtml(text)}</div></div></div>`;
 
 // Phones hide the list behind an open call; this is the way back (desktop hides it).
 const backLink = () => `<a class="btn secondary sm only-mobile detail-back" href="#/calls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="m15 18-6-6 6-6"/></svg> ${t('detail.back')}</a>`;
@@ -1059,12 +1059,13 @@ async function getVapi() {
   if (typeof Vapi !== 'function') throw new Error('SDK export is ' + typeof Vapi + ', not a constructor');
   dlog('SDK loaded');
   const v = new Vapi(PUBLIC_KEY);
-  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.muted = false; agent.turns = []; agent.partial = null; agent.seeded = false; syncAgentUi(); });
-  v.on('call-end', () => { dlog('event: call-end'); agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
+  v.on('call-start', () => { dlog('event: call-start'); agent.live = true; agent.ending = false; agent.muted = false; agent.turns = []; agent.partial = null; agent.seeded = false; syncAgentUi(); });
+  v.on('call-end', () => { dlog('event: call-end'); agent.ending = true; agent.live = false; agent.partial = null; syncAgentUi(); toast(t('agent.saved')); pullFinishedCall(); });
   v.on('speech-start', () => $('orb')?.classList.add('speaking'));
   v.on('speech-end', () => $('orb')?.classList.remove('speaking'));
   v.on('volume-level', (lvl) => { const r = $('ring'); if (r) r.style.transform = `scale(${1 + Math.min(lvl, 1) * 0.22})`; });
   v.on('message', (m) => {
+    if (m.type === 'status-update' && m.status === 'ended') agent.ending = true;
     if (m.type === 'voice-input') { const text = String(m.input ?? '').trim(); if (text) { addTurn('bot', text); paintFeed(); } return; }
     if (m.type !== 'transcript' || !m.transcript) return;
     if (m.role !== 'user') {
@@ -1082,7 +1083,8 @@ async function getVapi() {
     dlog('event: error -> ' + msg);
     // When the assistant hangs up (endCall, an end-call phrase) the server closes the room
     // and the browser is ejected; Daily reports that as an error. It is a normal ending.
-    if (e?.error?.type === 'ejected' || /meeting has ended|ejected/i.test(String(msg))) return;
+    // Look through the whole object: the SDK nests the reason differently per event.
+    if (agent.ending || /meeting has ended|meeting-ended|ejected|call has ended|ended the call/i.test(JSON.stringify(e ?? ''))) return;
     agent.live = false; syncAgentUi(); const er = $('err'); if (er) er.textContent = t('agent.error');
   });
   agent.vapi = v;
